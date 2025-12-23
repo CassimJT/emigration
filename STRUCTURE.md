@@ -13,6 +13,7 @@ STRUCTURE
     │   │   │   ├── LoginForm.jsx                  # Dumb UI components (no routing)
     │   │   │   ├── SignupForm.jsx
     │   │   │   └── OtpForm.jsx
+    |   |   |   └── ForgotPasswordForm.jsx
     │   │   ├── hooks/
     │   │   │   └── useAuth.js                    # Feature-specific auth logic
     │   │   │                                      # Uses auth.api.js internally
