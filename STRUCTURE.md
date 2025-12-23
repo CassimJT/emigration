@@ -1,4 +1,5 @@
 STRUCTURE
+
     src/
     ├── features/                                   # BUSINESS FEATURES (domain-driven)
     │                                                # Each feature is self-contained.
