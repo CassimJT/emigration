@@ -1,14 +1,10 @@
-import { useState } from 'react'
-
-function App() {
-
+export default function App() {
   return (
     <>
-      <div >
+      <div className=" h-screen w-screen bg-black">
+        <h1>App Works!</h1>
+      </div>
     
-      </div>  
     </>
   )
 }
-
-export default App
