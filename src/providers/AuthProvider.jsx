@@ -5,13 +5,22 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const isDev = import.meta.env.DEV
 
+  // Dev defaults
   const [user, setUser] = useState(
     isDev ? { id: 'dev-123', name: 'Dev User', role: 'admin' } : null
   )
   const [token, setToken] = useState(isDev ? 'dev-token-123' : null)
 
-  const login = async (credentials) => {
-    // orchestrated by feature hook
+  /**
+   * Update user and token after login
+   * @param {Object} newUser - User object returned from API
+   * @param {string} newToken - Token string returned from API
+   */
+  const login = (newUser, newToken) => {
+    if (!isDev) {
+      setUser(newUser)
+      setToken(newToken)
+    }
   }
 
   const logout = () => {
@@ -23,7 +32,7 @@ export function AuthProvider({ children }) {
     user,
     token,
     isAuthenticated: Boolean(user),
-    login,
+    login,   // now expects (user, token) in prod
     logout,
   }
 

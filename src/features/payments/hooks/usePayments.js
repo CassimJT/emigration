@@ -1,12 +1,33 @@
+// src/features/payments/hooks/usePayments.js
+import { initiatePayment, verifyPayment, fetchPaymentHistory } from '../api/payments.api'
+
 export function usePayments() {
-  const startPayment = async () => {
-    //..
+  // Start a new payment process
+  const startPayment = async (payload) => {
+    try {
+      const response = await initiatePayment(payload)
+      return response
+    } catch (error) {
+      console.error('Error starting payment:', error)
+      throw error
+    }
   }
-  const confirmPayment = async () => {
-    //..
+
+  // Confirm or verify payment by reference
+  const confirmPayment = async (reference) => {
+    try {
+      const response = await verifyPayment(reference)
+      return response
+    } catch (error) {
+      console.error('Error confirming payment:', error)
+      throw error
+    }
   }
+
+  // Cancel current payment (reset any local state if needed)
   const cancelPayment = () => {
-    //..
+    // Reset any temporary payment state here
+    console.log('Payment canceled')
   }
 
   return {
