@@ -1,3 +1,13 @@
+import { QueryClientProvider } from "./QueryClientProvider";
+import { AuthProvider } from "./AuthProvider";
+
 export function AppProviders({ children }) {
-  return children
+  return (
+    <QueryClientProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </QueryClientProvider>
+  );
 }
+

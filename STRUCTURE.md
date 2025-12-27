@@ -1,9 +1,9 @@
 STRUCTURE
 
     src/
-    ├── features/                                   # BUSINESS FEATURES (domain-driven)
-    │                                                # Each feature is self-contained.
-    │                                                # Do NOT import across features directly.
+    ├── features/                                  # BUSINESS FEATURES (domain-driven)
+    │                                              # Each feature is self-contained.
+    │                                              # Do NOT import across features directly.
     │
     │   ├── auth/                                  # Authentication & identity access
     │   │   ├── api/
@@ -13,26 +13,26 @@ STRUCTURE
     │   │   │   ├── LoginForm.jsx                  # Dumb UI components (no routing)
     │   │   │   ├── SignupForm.jsx
     │   │   │   └── OtpForm.jsx
-    |   |   |   └── ForgotPasswordForm.jsx
+    │   │   │   └── ForgotPasswordForm.jsx
     │   │   ├── hooks/
-    │   │   │   └── useAuth.js                    # Feature-specific auth logic
+    │   │   │   └── useAuth.js                     # Feature-specific auth logic
     │   │   │                                      # Uses auth.api.js internally
     │   │   ├── pages/
-    │   │   │   ├── LoginPage.jsx                 # Route-level component
+    │   │   │   ├── LoginPage.jsx                  # Route-level component
     │   │   │   ├── SignupPage.jsx
     │   │   │   └── OtpVerificationPage.jsx
-    │   │   │                                      # Pages wire UI + hooks together
-    │   │   └── index.js                          # Barrel exports (optional)
+    │   │   │                                       # Pages wire UI + hooks together
+    │   │   └── index.js                            # Barrel exports (optional)
     │
-    │   ├── identity/                              # NRB / National ID verification
+    │   ├── identity/                               # NRB / National ID verification
     │   │   ├── api/
-    │   │   │   └── identity.api.js                # Calls NRB verification endpoints
+    │   │   │   └── identity.api.js                 # Calls NRB verification endpoints
     │   │   ├── components/
-    │   │   │   └── NationalIdForm.jsx             # UI for National ID input
+    │   │   │   └── NationalIdForm.jsx              # UI for National ID input
     │   │   ├── hooks/
-    │   │   │   └── useIdentityVerification.js     # Verification workflow logic
+    │   │   │   └── useIdentityVerification.js      # Verification workflow logic
     │   │   ├── pages/
-    │   │   │   └── IdentityVerificationPage.jsx   # Page shown during ID verification
+    │   │   │   └── IdentityVerificationPage.jsx    # Page shown during ID verification
     │   │   └── index.js
     │
     │   ├── passport/                              # Passport application lifecycle
@@ -44,9 +44,9 @@ STRUCTURE
     │   │   │   ├── ReviewStep.jsx                 # Step 3: review & confirm
     │   │   │   └── ProgressIndicator.jsx          # Multi-step progress UI
     │   │   ├── hooks/
-    │   │   │   └── usePassportApplication.js      # Manages multi-step state
+    │   │   │   └── usePassportApplication.js       # Manages multi-step state
     │   │   ├── pages/
-    │   │   │   └── PassportApplicationPage.jsx    # Owns the entire flow
+    │   │   │   └── PassportApplicationPage.jsx     # Owns the entire flow
     │   │   └── index.js
     │
     │   ├── payments/                              # Payment handling
@@ -84,42 +84,46 @@ STRUCTURE
     │   │   │   └── DashboardPage.jsx
     │   │   └── index.js
     │
-    ├── providers/                                 # GLOBAL CONTEXT PROVIDERS
-    │   ├── AuthProvider.jsx                       # Owns user, token, login/logout
-    │   │                                        # Single source of auth truth
-    │   ├── QueryClientProvider.jsx                # React Query setup
-    │   └── AppProviders.jsx                      # Combines ALL providers
-    │                                            # Only imported in main.jsx
+    ├── layouts/                              # PAGE LAYOUTS
+    │   ├── AppLayout.jsx                     # NAV + FOOTER
+    │   └── BareLayout.jsx                    # NO NAV / NO FOOTER
     │
-    ├── lib/                                       # INFRASTRUCTURE (framework-level)
-    │   ├── axios.js                               # Axios instance + interceptors
-    │   │                                        # Token injection & refresh
-    │   ├── queryClient.js                         # React Query configuration
-    │   └── storage.js                             # local/session storage helpers
+    ├── providers/                            # GLOBAL CONTEXT PROVIDERS
+    │   ├── AuthProvider.jsx                  # Owns user, token, login/logout
+    │   │                                     # Single source of auth truth
+    │   ├── QueryClientProvider.jsx           # React Query setup
+    │   └── AppProviders.jsx                  # Combines ALL providers
+    │                                         # Only imported in main.jsx
     │
-    ├── routes/                                    # ROUTING & ACCESS CONTROL
-    │   ├── index.jsx                              # Application route definitions
-    │   ├── PrivateRoute.jsx                       # Auth-protected routes
-    │   │                                        # Redirects unauth users
-    │   └── RoleRoute.jsx                          # Role-based protection
-    │                                            # Citizen / Officer / Admin
+    ├── lib/                                  # INFRASTRUCTURE (framework-level)
+    │   ├── axios.js                          # Axios instance + interceptors
+    │   │                                     # Token injection & refresh
+    │   ├── queryClient.js                    # React Query configuration
+    │   └── storage.js                        # local/session storage helpers
     │
-    ├── components/                                # SHARED UI (cross-feature)
-    │   ├── Navbar.jsx                             # App navigation
+    ├── routes/                               # ROUTING & ACCESS CONTROL
+    │   ├── index.jsx                         # Application route definitions
+    │   ├── PrivateRoute.jsx                  # Auth-protected routes
+    │   │                                     # Redirects unauth users
+    │   └── RoleRoute.jsx                     # Role-based protection
+    │                                         # Citizen / Officer / Admin
+    │
+    ├── components/                           # SHARED UI (cross-feature)
+    │   ├── Navbar.jsx                        # App navigation
     │   ├── Footer.jsx
-    │   ├── Loader.jsx                             # Global loading indicator
-    │   └── ErrorMessage.jsx                       # Reusable error display
+    │   ├── Loader.jsx                        # Global loading indicator
+    │   └── ErrorMessage.jsx                  # Reusable error display
     │
-    ├── hooks/                                     # GLOBAL reusable hooks
-    │   ├── useAuth.js                             # Read AuthProvider state
-    │   └── useOnlineStatus.js                     # Connectivity awareness
+    ├── hooks/                                # GLOBAL reusable hooks
+    │   ├── useAuth.js                        # Read AuthProvider state
+    │   └── useOnlineStatus.js                # Connectivity awareness
     │
-    ├── utils/                                     # PURE FUNCTIONS (no React)
-    │   ├── helpers.js                             # Formatting, mapping
-    │   ├── validators.js                          # Form validation helpers
-    │   └── constants.js                           # App-wide constants
+    ├── utils/                                # PURE FUNCTIONS (no React)
+    │   ├── helpers.js                        # Formatting, mapping
+    │   ├── validators.js                     # Form validation helpers
+    │   └── constants.js                      # App-wide constants
     │
-    ├── App.jsx                                    # App shell (mounts router)
-    │                                              # NO business logic here
-    └── main.jsx                                   # Entry point
-                                                # Wraps App with AppProviders
+    ├── App.jsx                               # App shell (mounts router)
+    │                                         # NO business logic here
+    └── main.jsx                              # Entry point
+                                              # Wraps App with AppProviders
