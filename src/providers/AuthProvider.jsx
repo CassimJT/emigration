@@ -1,43 +1,38 @@
 import { createContext, useContext, useState } from 'react'
+import { setAuthSession, clearAuthSession, getStoredUser } from '@/lib/storage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const isDev = import.meta.env.DEV
 
-  // Dev defaults
   const [user, setUser] = useState(
-    isDev ? { id: 'dev-123', name: 'Dev User', role: 'admin' } : null
+    isDev ? { id: 'dev-123', name: 'Dev User', role: 'admin' } : getStoredUser()
   )
-  const [token, setToken] = useState(isDev ? 'dev-token-123' : null)
 
-  /**
-   * Update user and token after login
-   * @param {Object} newUser - User object returned from API
-   * @param {string} newToken - Token string returned from API
-   */
-  const login = (newUser, newToken) => {
-    if (!isDev) {
-      setUser(newUser)
-      setToken(newToken)
-    }
+  const login = (userData, tokens) => {
+    setAuthSession({
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: userData,
+    })
+    setUser(userData)
   }
 
   const logout = () => {
+    clearAuthSession()
     setUser(null)
-    setToken(null)
-  }
-
-  const value = {
-    user,
-    token,
-    isAuthenticated: Boolean(user),
-    login,   // now expects (user, token) in prod
-    logout,
   }
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: Boolean(user),
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   )

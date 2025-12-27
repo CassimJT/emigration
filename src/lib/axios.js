@@ -1,14 +1,52 @@
 import axios from 'axios'
-import { getToken } from './storage'
+import { getToken, getRefreshToken, setAuthSession, clearAuthSession } from './storage'
+import { refreshToken as refreshTokenApi } from '@/lib/auth.api'
 
-const instance = axios.create({
+const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
 })
 
-instance.interceptors.request.use(config => {
+// Attach access token
+api.interceptors.request.use(config => {
   const token = getToken()
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
   return config
 })
 
-export default instance
+// Handle expired access token
+api.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config
+
+    // Access token expired
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true
+
+      try {
+        const refreshToken = getRefreshToken()
+        if (!refreshToken) throw new Error('No refresh token')
+
+        const data = await refreshTokenApi({ token: refreshToken })
+
+        setAuthSession({
+          accessToken: data.accessToken,
+          refreshToken: data.refreshToken,
+        })
+
+        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
+        return api(originalRequest)
+      } catch (refreshError) {
+        clearAuthSession()
+        window.location.href = '/login'
+        return Promise.reject(refreshError)
+      }
+    }
+
+    return Promise.reject(error)
+  }
+)
+
+export default api
