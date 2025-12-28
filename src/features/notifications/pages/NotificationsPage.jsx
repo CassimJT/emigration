@@ -1,9 +1,12 @@
 import React from 'react'
 
+
 function NotificationsPage() {
+
   return (
-    <div>NotificationsPage</div>
-  )
+    <div >Notification Page</div>
+  );
+
 }
 
 export default NotificationsPage
