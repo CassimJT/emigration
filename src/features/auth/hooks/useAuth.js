@@ -1,6 +1,6 @@
 // src/hooks/useAuth.js
 import { useAuthContext } from '../providers/AuthProvider'
-import { login as apiLogin, signup as apiSignup, verifyOtp as apiVerifyOtp, forgotPassword as apiForgotPassword } from '../lib/auth.api'
+import { login as apiLogin, signup as apiSignup, verifyOtp as apiVerifyOtp, forgotPassword as apiForgotPassword } from '../api/auth.api'
 
 export function useAuth() {
   const { user, token, isAuthenticated, login: setLogin, logout: setLogout } = useAuthContext()
