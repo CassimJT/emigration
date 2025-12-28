@@ -3,8 +3,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpRight, CirclePlay } from "lucide-react";
 import { Link } from "react-router-dom";
 import home from "@/assets/home/home.png";
+import { useNavigate } from "react-router-dom";
 
 export default function Hero() {
+  const navigate = useNavigate()
+  const moveToIdentityPage = ()=> {
+    navigate("/identity/verify")
+  }
   return (
     <div className="w-full flex items-center justify-center overflow-hidden py-12 md:py-20 lg:py-24">
       <div className="max-w-screen-xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-12 px-6">
@@ -26,7 +31,9 @@ export default function Hero() {
           </p>
 
           <div className="mt-8 sm:mt-12 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-            <Button size="lg" className="rounded-full w-full sm:w-auto text-base bg-orange-400">
+            <Button size="lg" className="rounded-full w-full sm:w-auto text-base bg-orange-400"
+              onClick={moveToIdentityPage}
+            >
               Get Started <ArrowUpRight className="h-5 w-5 inline ml-1" />
             </Button>
             <Button variant="outline" size="lg" className="rounded-full w-full sm:w-auto text-base shadow-none">

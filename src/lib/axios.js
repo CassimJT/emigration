@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { getToken, getRefreshToken, setAuthSession, clearAuthSession } from './storage'
-import { refreshToken as refreshTokenApi } from '@/lib/auth.api'
+import { refreshToken as refreshTokenApi } from '@/features/auth/api/auth.api'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000',
