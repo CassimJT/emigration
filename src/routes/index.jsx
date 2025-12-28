@@ -30,7 +30,7 @@ export const router = createBrowserRouter([
       { path: '/signup', element: <SignupPage /> },
       { path: '/otp', element: <OtpVerificationPage /> },
       { path: '/unauthorized', element: <UnauthorizedPage /> },
-      { path: '/dashboard/identity/verify', element: <IdentityVerificationPage /> },
+      { path: '/identity/verify', element: <IdentityVerificationPage /> },
     ],
   },
 
