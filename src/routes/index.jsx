@@ -34,7 +34,6 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // APP LAYOUT (NAV + FOOTER)
   {
     element: <AppLayout />,
     children: [
