@@ -1,10 +1,10 @@
-// features/notifications/components/NotificationList.jsx
 import NotificationItem from "./NotificationItem"
-import { useNotifications } from '../hooks/useNotifications'
+//import { useNotifications } from '../hooks/useNotifications'
 
-export default function NotificationList() {
-  // Get real notifications directly from the shared hook
-  const { notifications = [] } = useNotifications()
+export default function NotificationList({ notifications = [] }) {
+  if (notifications.length === 0) {
+    return null // or show mini empty state if you want
+  }
 
   // If no notifications, return nothing (empty state is handled by NotificationsContent)
   if (notifications.length === 0) {
