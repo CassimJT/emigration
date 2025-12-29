@@ -19,8 +19,6 @@ The existing passport application process in Malawi creates unnecessary hardship
 - **No visibility** — applicants have zero idea about the status of their application after submission
 - **High corruption risk** — manual cash handling and physical file movement create opportunities for bribery
 
-_(Imagine long queues stretching outside government offices — this is the daily experience for many Malawians.)_
-
 ---
 
 ## The Vision – A Modern, Seamless Digital Passport System
@@ -109,5 +107,4 @@ Let us eliminate redundancy, reduce suffering in queues, increase transparency, 
 
 **Thank you**  
 Light Bekete  
-September 2025  
-[Your contact information here]
+September 2025
