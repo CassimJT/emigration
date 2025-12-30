@@ -1,10 +1,17 @@
 import React from 'react'
+import { useAuth } from '../hooks/useAuth'
+
 
 function LoginPage() {
-    
+
+
   return (
-    <div>LoginPage</div>
+    <div>LoginPage
+
+
+    </div>
   )
 }
 
 export default LoginPage
+

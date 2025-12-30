@@ -1,4 +1,3 @@
-// src/providers/QueryClientProvider.jsx
 import { QueryClientProvider as TanstackProvider } from '@tanstack/react-query'
 import { createQueryClient } from '../lib/queryClient'
 

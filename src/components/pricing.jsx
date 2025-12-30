@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { CircleCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const passports = [
   {
@@ -46,6 +47,12 @@ const passports = [
 ];
 
 const Pricing = () => {
+
+  const navigate = useNavigate()
+  const moveToIdentityPage = ()=> {
+    navigate("/identity/verify")
+    
+  }
   return (
     <div className="flex flex-col items-center justify-center py-5 px-6 bg-gradient-to-b from-gray-50 to-white">
       <h2 className="text-5xl font-bold text-center tracking-[-0.03em] text-gray-900">
@@ -85,6 +92,7 @@ const Pricing = () => {
               variant={passport.isPopular ? "default" : "outline"}
               size="lg"
               className="w-full mt-8 rounded-xl text-base sm:text-lg break-words"
+              onClick={moveToIdentityPage}
             >
               {passport.buttonText}
             </Button>
