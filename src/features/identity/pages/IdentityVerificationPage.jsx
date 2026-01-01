@@ -3,10 +3,13 @@ import NationalIdForm from '../components/NationalIdForm'
 
 function IdentityVerificationPage() {
   return (
-    <div  className="min-h-screen items-center justify-center bg-gray-300">
-      <NationalIdForm />
-
+    
+     <div className="bg-white flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-4xl">
+        <NationalIdForm />
+      </div>
     </div>
+
 
   )
 }
