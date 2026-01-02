@@ -52,7 +52,7 @@ export function LoginForm({
                   required 
                 />
               </div>
-              {/* text-center text-sm flex flex-row gap-4 mb-20 */}
+            
               <div className="flex items-center justify-center gap-8 mt-6 mb-8">
                 <Button 
                   type="submit"
