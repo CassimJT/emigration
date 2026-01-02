@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
 import LoginAvatar from "@/assets/LoginAvatar.png"
-
+import { Link } from "react-router-dom"
 export function LoginForm({
   className,
   ...props
+
 }) {
+   
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden">
@@ -57,9 +59,12 @@ export function LoginForm({
                   Log In
                 </Button>
                 {/* link to be implemented */}
-                <a href="#" className="ml-16 text-lg text-blue-500 hover:underline">
+                <Link
+                 to ="/signup" 
+                  className="ml-16 text-lg text-blue-500 hover:underline"
+                >
                   Create account
-                </a>
+                </Link>
               </div>
             </div>
           </form>
