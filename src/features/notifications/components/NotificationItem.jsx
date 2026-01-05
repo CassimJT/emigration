@@ -23,8 +23,7 @@ export default function NotificationItem(props) {
     if (isUnread && id) {
       readNotification(id)  // ← calls the real API via hook
     }
-    // Optional: add navigation later
-    // if (props.link) router.push(props.link)
+   
   }
 
   // Format time dynamically if createdAt is provided
