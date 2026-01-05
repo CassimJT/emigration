@@ -45,11 +45,11 @@ export default function StatusCard({ className = "" }) {
             <CardTitle className="flex items-center gap-2">
                 <span className="text-sm font-light text-indigo-600">Payment status :</span>  
                 { IS_PAID ?
-                    <Badge className="text-green-600 font-medium">
+                    <Badge className="bg-green-100 text-green-600 font-medium">
                         Paid
                     </Badge>
                     :
-                    <Badge className="text-red-600 font-medium">
+                    <Badge className="bg-red-100 text-red-600 font-medium">
                         Unpaid
                     </Badge>
                 }

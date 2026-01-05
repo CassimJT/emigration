@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
-  Bell, 
+  Bell,
   CreditCard, 
   FileText, 
   HelpCircle,
@@ -17,31 +17,31 @@ const NAV_ITEMS = [
   { 
     label: 'Overview', 
     icon: LayoutDashboard, 
-    type: 'main' 
+    path: '/dashboard' 
   },
   { 
     label: 'Passport Apply', 
     icon: FileText, 
-    type: 'main' 
+    path: '/dashboard/passport/apply'
   },
   { 
     label: 'Payments', 
     icon: CreditCard, 
-    type: 'main' 
+    path: '/dashboard/payments'
   },
   { 
     label: 'Notifications', 
     icon: Bell, 
     badge: '2', 
-    type: 'main' 
+    path: '/dashboard/notifications'
   },
 ];
 
 const QUICK_LINKS = [
-  { label: "How to Apply", icon: HelpCircle },
-  { label: "FAQs", icon: MessageCircle },
-  { label: "Contact Support", icon: Phone },
-  { label: "Payment History", icon: History },
+  { label: "How to Apply", icon: HelpCircle, path: '/demo' },
+  { label: "FAQs", icon: MessageCircle, path: '/faqs' },
+  { label: "Contact Support", icon: Phone, path: '/contacts' },
+  { label: "Payment History", icon: History, path: '/dashboard/history' },
 ];
 
 /*
@@ -108,13 +108,30 @@ function UserProfile({ user, onSignOut }) {
 }
 
 // DashboardNavBar - Main navigation sidebar component
+import { useNavigate, useLocation } from 'react-router-dom';
+
+
 export default function DashboardNavBar({ 
   onSelect, 
-  activeView, 
   onSignOut,
   user,
   className = "" 
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavigation = (path) => {
+    navigate(path);
+    if (onSelect) onSelect();
+  }
+
+  const isItemActive = (path) => {
+    // Exact match for root dashboard
+    if (path === '/dashboard') {
+      return location.pathname === '/dashboard';
+    }
+    return location.pathname.startsWith(path);
+  }
 
   return (
     <aside 
@@ -133,8 +150,8 @@ export default function DashboardNavBar({
             <NavItem
               key={item.label}
               item={item}
-              isActive={activeView === item.label}
-              onClick={onSelect}
+              isActive={isItemActive(item.path)}
+              onClick={() => handleNavigation(item.path)}
             />
           ))}
         </div>
@@ -150,8 +167,8 @@ export default function DashboardNavBar({
             <NavItem
               key={link.label}
               item={link}
-              isActive={activeView === link.label}
-              onClick={onSelect}
+              isActive={isItemActive(link.path)}
+              onClick={() => handleNavigation(link.path)}
             />
           ))}
         </div>

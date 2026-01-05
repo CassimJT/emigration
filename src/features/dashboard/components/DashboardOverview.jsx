@@ -2,6 +2,7 @@ import React from 'react'
 import StatusCard from './StatusCard'
 import CheckList from './DashboardCheckList'
 import QuickActions from './QuickActions'
+import ImportantInfor from './ImportantInfor'
 
 /*
  * Dashboard Overview Layout Component.
@@ -14,6 +15,9 @@ import QuickActions from './QuickActions'
 export default function DashboardOverview() {
     return (
         <div className="flex flex-col gap-6 w-full">
+            <section className="w-full">
+                <ImportantInfor />
+            </section>
             <section className="w-full">
                 <StatusCard />
             </section>
