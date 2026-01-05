@@ -52,8 +52,15 @@ function Navbar() {
             </NavigationMenuItem>
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
-                <Link className="px-3 py-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contact">
+                <Link className="px-3 py-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contacts">
                   <Settings size={18} /> Contact
+                </Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+             <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <Link className="px-3 py-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/faqs">
+                  <Settings size={18} /> FAQs
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -76,14 +83,17 @@ function Navbar() {
               <SheetTitle>Menu</SheetTitle>
             </SheetHeader>
             <nav className="mt-4 space-y-4">
-              <Link className="block p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/">
+              <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/">
                 <Home size={18} /> Home
               </Link>
-              <Link className="block p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/about">
+              <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/about">
                 <User size={18} /> About
               </Link>
-              <Link className="block p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contact">
+              <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contacts">
                 <Settings size={18} /> Contact
+              </Link>
+              <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/faqs">
+                <Settings size={18} /> FAQs
               </Link>
             </nav>
           </SheetContent>
