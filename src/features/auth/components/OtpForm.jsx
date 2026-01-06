@@ -24,11 +24,12 @@ export default function LoginForm({
     navigate("/login")
   }  
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden">
-        <CardContent className="grid p-0 md:grid-cols-2">
+   
+    <div className={cn("flex flex-col gap-6 h-screen ", className)} {...props}>
+      <Card className="h-screen w-screen">
+        <CardContent className="grid p-0 md:grid-cols-2 h-0">
           <form className="p-6 md:p-8 pb-12 bg-gray-300">
-            <div className="flex flex-col gap-6 pb-20">
+            <div className="flex flex-col gap-6 pb-20 justify-between">
               <div className="flex flex-col gap-8 items-center text-center ">
                  <img
                    src={Logo}
@@ -100,7 +101,7 @@ export default function LoginForm({
             </div>
           </form>
         
-          <div className="md:flex items-center justify-center bg-muted p-8">
+          <div className="md:flex items-center justify-center bg-muted p-8 h- bg-blue-600">
             <img
               src={home}
               alt="e-passport"
