@@ -12,8 +12,8 @@ export default function LoginForm({
 
 }) {
   const navigate = useNavigate()
-  const moveToOtpPage = ()=> {
-    navigate("/otp")
+  const moveToLoginPage = ()=> {
+    navigate("/login")
   }  
 
   return (
@@ -37,7 +37,7 @@ export default function LoginForm({
          </div>
           <div className="flex items-center justify-center gap-8 mt-20 mb-36">
               <Button 
-                onClick={moveToOtpPage}
+                onClick={moveToLoginPage}
                 type="submit"
                 className="h-16 w-64 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
                 Verify

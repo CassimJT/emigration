@@ -47,8 +47,8 @@ export default function LoginForm({ phoneNumber, onChange, onSubmit, loading , c
                 <Button 
                   onClick={moveToOtpPage}
                   type="submit"
-                  className="h-16 w-40 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
-                  Login
+                  className="h-14 w-40 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
+                  Log in
                 </Button>
                  <Link 
                   to="/signup"
