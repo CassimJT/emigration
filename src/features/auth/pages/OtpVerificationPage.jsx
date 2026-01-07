@@ -4,11 +4,6 @@ import home from "@/assets/home/home.png"
 
 function OtpVerificationPage() {
   return (
-    // // <div className="bg-mutted flex min-h-svh flex-col items-center justify-center p-6 md:p-10 ">
-    //   <div className="w-full  h-full">
-    //       <OtpForm/>
-    //   </div>
-    // //  max-w-sm md:max-w-4xl
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-40 p-6 md:p-10">
              

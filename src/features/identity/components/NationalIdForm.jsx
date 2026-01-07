@@ -39,7 +39,7 @@ export default function LoginForm({
               <Button 
                 onClick={moveToLoginPage}
                 type="submit"
-                className="h-16 w-64 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
+                className="rounded-full text-base w-60 h-12 bg-orange-500 hover:bg-orange-400" >
                 Verify
               </Button>
             {/* link to be implemented */}

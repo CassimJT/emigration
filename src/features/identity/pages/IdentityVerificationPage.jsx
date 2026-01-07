@@ -4,8 +4,6 @@ import home from "@/assets/home/home.png"
 
 function IdentityVerificationPage() {
   return (
-    
-    
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-40 p-6 md:p-10">
        
@@ -23,8 +21,6 @@ function IdentityVerificationPage() {
         />
       </div>
     </div>
-
-
   )
 }
 

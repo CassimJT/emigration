@@ -37,13 +37,8 @@ export default function LoginForm({
           </div>
           
           <div className="grid gap-2 mt-6 items-center justify-center">
-            {/* <Label htmlFor="Username" className="font-bold text-lg">National ID</Label>
-              <Input className="rounded-xl border-opacity-30 border-black h-14 w-80 placeholder:text-lg placeholder:text-gray-500 text-lg"
-                id="nationalId" type="nationalId" 
-                placeholder="Enter National ID" 
-                required /> */}
-                  <div className="flex items-center flex-col gap-2">
-                  <p>Enter the OTP we sent via your email</p>
+              <div className="flex items-center flex-col gap-2">
+                  <p>Enter the OTP we sent you via email</p>
                  <InputOTP maxLength={4}>
                   <InputOTPGroup className="flex gap-4" >
                      <InputOTPSlot 
@@ -51,9 +46,9 @@ export default function LoginForm({
                        style={{ 
                         borderRadius: '8px',
                         border: '2px solid black',
-                       height: '64px',
-                       width: '64px',
-                       fontSize: '32px',
+                        height: '56px',
+                        width: '56px',
+                        fontSize: '32px',
                      }}
                     />
                    <InputOTPSlot
@@ -61,28 +56,28 @@ export default function LoginForm({
                     style={{ 
                        borderRadius: '8px',
                         border: '2px solid black',
-                        height: '64px',
-                        width: '64px',
+                        height: '56px',
+                        width: '56px',
                          fontSize: '32px'
                      }}
                     />
                     <InputOTPSlot 
                       index={2}  
                      style={{ 
-                        borderRadius: '8px',
-                        border: '2px solid black',
-                     height: '64px',
-                       width: '64px',
-                        fontSize: '32px'
+                      borderRadius: '8px',
+                       border: '2px solid black',
+                       height: '56px',
+                       width: '56px',
+                       fontSize: '32px'
                      }}
                    />
                   <InputOTPSlot 
                     index={3}  
                      style={{ 
-                       borderRadius: '8px',
-                       border: '2px solid black',
-                     height: '64px',
-                      width: '64px',
+                      borderRadius: '8px',
+                      border: '2px solid black',
+                      height: '56px',
+                      width: '56px',
                       fontSize: '32px'
                      }}
                    />
@@ -95,7 +90,7 @@ export default function LoginForm({
                 <Button 
                   onClick={moveToDashboardPage}
                   type="submit"
-                  className="h-14 w-60 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
+                  className="rounded-full text-base w-60 h-12 bg-orange-500 hover:bg-orange-400" >
                   Verify
                 </Button>
               {/* link to be implemented */}

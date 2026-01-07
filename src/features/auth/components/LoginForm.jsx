@@ -8,8 +8,6 @@ import {Card, CardContent} from "@/components/ui/card"
 import { useNavigate } from "react-router-dom"
 import { Link } from "react-router-dom"
 
-//import { LoginForm }  from '@/components/login-form'
-
 export default function LoginForm({ phoneNumber, onChange, onSubmit, loading , className, ...props }) {
 
   const navigate = useNavigate()
@@ -44,10 +42,11 @@ export default function LoginForm({ phoneNumber, onChange, onSubmit, loading , c
                   required />
              </div>
               <div className="flex flex-row items-center justify-center gap-8 mt-6 mb-20">
-                <Button 
+                <Button size="lg"
                   onClick={moveToOtpPage}
                   type="submit"
-                  className="h-14 w-40 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
+                  className="rounded-full text-base w-40 h-12 bg-orange-500 hover:bg-orange-400" >
+                     
                   Log in
                 </Button>
                  <Link 

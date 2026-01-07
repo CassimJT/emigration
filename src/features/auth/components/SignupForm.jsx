@@ -53,7 +53,7 @@ export default function SignupForm({
                 <Button 
                   onClick={moveToLoginPage}
                   type="submit"
-                  className="h-14 w-60 rounded-full bg-yellow-500 text-black hover:bg-yellow-600 text-xl font-bold" >
+                  className="rounded-full text-base w-60 h-12 bg-orange-500 hover:bg-orange-400" >
                   Sign Up
                 </Button>
                  
