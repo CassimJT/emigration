@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Info, ChevronDown, ChevronUp } from "lucide-react"
-import passport from "@/assets/passport.png"
+import passport from "@/assets/dashboard/overview/passport.png"
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 

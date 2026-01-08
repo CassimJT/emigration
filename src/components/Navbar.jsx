@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Home, User, Settings, Menu } from 'lucide-react'
+import { Home, User, Settings, Menu, MessageCircleQuestionMark, Phone } from 'lucide-react'
 
 import {
   NavigationMenu,
@@ -53,14 +53,14 @@ function Navbar() {
             <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link className="px-3 py-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contacts">
-                  <Settings size={18} /> Contact
+                  <Phone size={18} /> Contact
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
              <NavigationMenuItem>
               <NavigationMenuLink asChild>
                 <Link className="px-3 py-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/faqs">
-                  <Settings size={18} /> FAQs
+                  <MessageCircleQuestionMark size={18} /> FAQs
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
@@ -90,10 +90,10 @@ function Navbar() {
                 <User size={18} /> About
               </Link>
               <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/contacts">
-                <Settings size={18} /> Contact
+                <Phone size={18} /> Contact
               </Link>
               <Link className="p-2 rounded hover:bg-gray-200 flex items-center gap-2" to="/faqs">
-                <Settings size={18} /> FAQs
+                <MessageCircleQuestionMark size={18} /> FAQs
               </Link>
             </nav>
           </SheetContent>
