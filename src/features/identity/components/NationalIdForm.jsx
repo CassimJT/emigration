@@ -1,49 +1,79 @@
+
+import React from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
 import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
+import { Loader2 } from "lucide-react"
 
-export default function LoginForm({
+export default function NationalIdForm({
+  onSubmit,
+  loading,
   className,
+  nationalId,
+  onChange,
   ...props
-
 }) {
   const navigate = useNavigate()
-  const moveToLoginPage = ()=> {
-    navigate("/login")
-  }  
+
+  const handleVerify = (e) => {
+    if (onSubmit) {
+      onSubmit(e)
+    } else {
+      e.preventDefault()
+      // Fallback for demo/dev
+      navigate("/login")
+    }
+  }
 
   return (
-    <form className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} {...props}>
-      
-        <div className="flex flex-col items-center gap-1 text-center">
-         <img
+
+    <form 
+      onSubmit={handleVerify}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+      {...props}
+    >
+      <div className="flex flex-col items-center gap-1 text-center">
+        <img
           src={Logo}
-          alt="coart of arm logo"
+          alt="Government Logo"
           className="opacity-50 w-40 h-40 mx-auto"
         />
-          <h1 className="text-lg font-semibold">Lets verify who you are</h1>
-        </div>
-        
-        <div className="grid gap-2 mt-6 items-center justify-center">
-          <Label htmlFor="Username" className="font-bold text-lg">National ID</Label>
-            <Input className="rounded-xl border-opacity-30 border-black h-14 w-80 placeholder:text-lg placeholder:text-gray-500 text-lg"
-              id="nationalId" type="nationalId" 
-              placeholder="Enter National ID" 
-              required />
-         </div>
-          <div className="flex items-center justify-center gap-8 mt-20 mb-36">
-              <Button 
-                onClick={moveToLoginPage}
-                type="submit"
-                className="rounded-full text-base w-60 h-12 bg-orange-500 hover:bg-orange-400" >
-                Verify
-              </Button>
-            {/* link to be implemented */}
-          </div> 
+        <h1 className="text-xl font-bold">Identity Verification</h1>
+        <p className="text-sm text-gray-600">Please provide your National ID to verify your identity</p>
+      </div>
+      
+      <div className="grid gap-2 mt-6">
+        <Label htmlFor="nationalId" className="font-bold text-base">National ID</Label>
+        <Input 
+          className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-gray-500 text-lg"
+          id="nationalId" 
+          name="nationalId"
+          type="text" 
+          placeholder="Enter National ID" 
+          required 
+          disabled={loading}
+        />
+      </div>
+
+      <div className="flex items-center justify-center mt-12 mb-8">
+        <Button 
+          type="submit"
+          disabled={loading}
+          className="rounded-full text-base w-full max-w-[240px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold" 
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Verifying...
+            </>
+          ) : (
+            "Verify"
+          )}
+        </Button>
+      </div> 
     </form>
   )
 }

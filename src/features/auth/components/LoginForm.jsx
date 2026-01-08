@@ -4,58 +4,93 @@ import Logo from "@/assets/Logo.svg"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import {Card, CardContent} from "@/components/ui/card"
-import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
+import { Loader2 } from "lucide-react"
 
-export default function LoginForm({ phoneNumber, onChange, onSubmit, loading , className, ...props }) {
-
+export default function LoginForm({ phoneNumber, onChange, onSubmit, loading, className, ...props }) {
   const navigate = useNavigate()
-  const moveToOtpPage = ()=> {
-    navigate("/otp")
+
+  const handleLogin = (e) => {
+    if (onSubmit) {
+      onSubmit(e)
+    } else {
+      e.preventDefault()
+      // Fallback for demo/dev if onSubmit prop isn't provided
+      navigate("/otp")
+    }
   }
 
   return (
-    
-        <form className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} {...props}>
-          
-            <div className="flex flex-col items-center gap-1 text-center">
-             <img
-              src={Logo}
-              alt="coart of arm logo"
-              className="opacity-50 w-40 h-40 mx-auto"
-            />
-              <h1 className="text-lg font-semibold">Log In</h1>
-            </div>
-            
-            <div className="grid gap-4 mt-6 items-center justify-center">
-              <Label htmlFor="Username" className="font-bold text-lg">Username</Label>
-                <Input className="rounded-xl border-opacity-30 border-black h-14 w-80 placeholder:text-lg placeholder:text-gray-500 text-lg"
-                  id="nationalId" type="nationalId" 
-                  placeholder="Enter username" 
-                  required />
+    <form 
+      onSubmit={handleLogin}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+      {...props}
+    >
+      <div className="flex flex-col items-center gap-1 text-center">
+        <img
+          src={Logo}
+          alt="Government Logo"
+          className="opacity-50 w-32 h-32 mx-auto"
+        />
+        <h1 className="text-xl font-bold">Log In</h1>
+        <p className="text-sm text-gray-600">Enter your credentials to access your account</p>
+      </div>
+      
+      <div className="grid gap-3 mt-4">
+        <div className="grid gap-1.5">
+          <Label htmlFor="username" className="font-bold text-base">Username</Label>
+          <Input 
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            id="username" 
+            name="username"
+            type="text" 
+            placeholder="Enter username" 
+            required 
+            disabled={loading}
+          />
+        </div>
 
-              <Label htmlFor="Username" className="font-bold text-lg">Password</Label>
-                <Input className="rounded-xl border-opacity-30 border-black h-14 w-80 placeholder:text-lg placeholder:text-gray-500 text-lg"
-                  id="nationalId" type="nationalId" 
-                  placeholder="Enter password" 
-                  required />
-             </div>
-              <div className="flex flex-row items-center justify-center gap-8 mt-6 mb-20">
-                <Button size="lg"
-                  onClick={moveToOtpPage}
-                  type="submit"
-                  className="rounded-full text-base w-40 h-12 bg-orange-500 hover:bg-orange-400" >
-                     
-                  Log in
-                </Button>
-                 <Link 
-                  to="/signup"
-                  className=" text-sm font-semibold text-blue-600 hover:underline">
-                  Create account
-                 </Link>
-                {/* link to be implemented */}
-              </div> 
-        </form>
- )
-}       
+        <div className="grid gap-1.5">
+          <Label htmlFor="password" className="font-bold text-base">Password</Label>
+          <Input 
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            id="password" 
+            name="password"
+            type="password" 
+            placeholder="Enter password" 
+            required 
+            disabled={loading}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-4 mt-4">
+        <Button 
+          size="lg"
+          type="submit"
+          disabled={loading}
+          className="rounded-full text-base w-full max-w-[200px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold" 
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            "Log in"
+          )}
+        </Button>
+        
+        <div className="text-sm">
+          <span>Don't have an account? </span>
+          <Link 
+            to="/signup"
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Create account
+          </Link>
+        </div>
+      </div> 
+    </form>
+  )
+}
