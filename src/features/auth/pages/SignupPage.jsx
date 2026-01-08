@@ -1,4 +1,6 @@
 import React from 'react'
+import SignupForm from '../components/SignupForm'
+import LoginAvatar from "@/assets/LoginAvatar.png"
 
 function SignupPage() {
   return (
