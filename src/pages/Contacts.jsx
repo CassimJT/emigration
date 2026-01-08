@@ -1,10 +1,9 @@
-import React from 'react'
+import Contact from '@/components/contact'
 
 export default function Contacts() {
   return (
-    <div className='flex flex-col items-center justify-center h-screen'>
-        <h1 className='text-2xl font-bold'>Contacts</h1>
-        <p className='text-gray-500'>comming soon...</p>
+    <div className="w-full min-h-screen bg-background">
+        <Contact />
     </div>
   )
 }

@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { APP_STATUS_ARRAY, IS_PAID} from "@/utils/constants";
-import { useDashboard } from "../hooks/useDashboard";
+import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
 
 /*
  * Application Status Widget.

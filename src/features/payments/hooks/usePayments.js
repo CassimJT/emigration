@@ -1,4 +1,4 @@
-import { initiatePayment, verifyPayment, fetchPaymentHistory } from '../api/payments.api'
+import { initiatePayment, verifyPayment, fetchPaymentHistory } from '@/features/payments/api/payments.api'
 
 export function usePayments() {
   // Start a new payment process

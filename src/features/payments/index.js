@@ -1,12 +1,12 @@
 // Export Components
-export { default as PaymentOptions } from './components/PaymentOptions'
-export { default as PaymentSummary } from './components/PaymentSummary'
+export { default as PaymentOptions } from '@/features/payments/components/PaymentOptions'
+export { default as PaymentSummary } from '@/features/payments/components/PaymentSummary'
 
 // Export Hooks
-export * from './hooks/usePayments'
+export * from '@/features/payments/hooks/usePayments'
 
 // Export API
-export * from './api/payments.api'
+export * from '@/features/payments/api/payments.api'
 
 // Export Pages
-export { default as PaymentPage } from './pages/PaymentPage'
+export { default as PaymentPage } from '@/features/payments/pages/PaymentPage'
