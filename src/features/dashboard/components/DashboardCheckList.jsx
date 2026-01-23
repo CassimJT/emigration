@@ -11,7 +11,7 @@ export default function CheckList() {
     
     return (
         <div className="flex flex-col gap-4">
-            <h2 className="font-bold">Checklist</h2>
+            <h2 className="font-bold text-slate-700 ">Checklist</h2>
             <ul>
                 {CHECK_LIST_ITEMS.map(item => (
                     <li key={item.id} className={`flex font-serif items-center gap-2 ${item.completed ? 'line-through text-gray-500' : ''}`}>

@@ -1,7 +1,8 @@
-import React from 'react'
-import StatusCard from './StatusCard'
-import CheckList from './DashboardCheckList'
-import QuickActions from './QuickActions'
+import StatusCard from '@/features/dashboard/components/StatusCard'
+import CheckList from '@/features/dashboard/components/DashboardCheckList'
+import QuickActions from '@/features/dashboard/components/QuickActions'
+import ImportantInfor from '@/features/dashboard/components/ImportantInfor'
+import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
 
 /*
  * Dashboard Overview Layout Component.
@@ -12,17 +13,26 @@ import QuickActions from './QuickActions'
  * Implements a responsive grid layout.
  */
 export default function DashboardOverview() {
+        const {applications: applicationData, summary} = useDashboard();
+
     return (
         <div className="flex flex-col gap-6 w-full">
             <section className="w-full">
+                <ImportantInfor />
+            </section>
+            <section className="w-full">
                 <StatusCard />
             </section>
+            <section className="w-full">
+                    {summary}
+                {applicationData}
+            </section>
             
-            <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 w-full">
-                <div className="xl:col-span-2 w-full">
+            <section className="flex flex-col sm:flex-row gap-10 w-full">
+                <div className="">
                     <CheckList />
                 </div>
-                <div className="xl:col-span-1 w-full">
+                <div className="">
                     <QuickActions />
                 </div>
             </section>

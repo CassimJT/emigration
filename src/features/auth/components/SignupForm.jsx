@@ -1,87 +1,132 @@
+import React from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import LoginAvatar from "@/assets/LoginAvatar.png"
-    
-export default function SignupForm({
-      className,
-      ...props
-    }) {
-      return (
-        <div className={cn("flex flex-col gap-6", className)} {...props}>
-          <Card className="overflow-hidden">
-            <CardContent className="grid p-0 md:grid-cols-2">
-              <form className="p-6 md:p-8 pb-12 bg-gray-300">
-                <div className="flex flex-col gap-6">
-                  <div className="flex flex-col items-center text-center">
-                     <img
-                       src={Logo}
-                       alt="coart of arm logo"
-                       className="opacity-50 w-32 h-40 mx-auto"
-                    />
-    
-                    <h1 className="text-lg font-bold">Create Account</h1>
-                   
-                  </div>
-                  <div className="grid gap-4">
-                    <Label htmlFor="Username" className="font-bold text-lg">Email</Label>
-                    <Input 
-                        className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-lg placeholder:text-gray-500"
-                        id="email" type="email" 
-                        placeholder="Enter username" 
-                        required
-                    />
-                  </div>  
-                  <div className="grid gap-4">
-                    {/* <div className="flex items-center"> */}
-                    <Label htmlFor="password" className="font-bold text-lg">Password</Label>
-                    {/* </div> */}
-                    <Input 
-                      className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-lg placeholder:text-gray-500"
-                      id="password" 
-                      type="password" 
-                      placeholder="Enter password"
-                      required 
-                    />
-                    <Label htmlFor="password" className="font-bold text-base">Confirm password</Label>
-                     <Input 
-                      className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-lg placeholder:text-gray-500"
-                      id="password" 
-                      type="password" 
-                      placeholder="Confirm password"
-                      required 
-                    />
-                  </div>
+import { useNavigate, Link } from "react-router-dom"
+import { Loader2 } from "lucide-react"
+import { useAuth } from "../hooks/useAuth"
 
-                  <div className="flex items-center justify-center gap-8 mt-6 mb-8">
-                    <Button 
-                      type="submit"
-                      className="h-12 w-56 rounded-full bg-orange-400 text-black hover:bg-orange-500 text-lg font-bold" >
-                      Sign Up
-                    </Button>
-                    {/* link to be implemented */}
-                    <a href="#" className="ml-16 text-lg text-blue-500 hover:underline">
-                    
-                    </a>
-                  </div>
-                </div>
-              </form>
-            
-              <div className="md:flex items-center justify-center bg-muted p-8">
-                <img
-                  src={LoginAvatar}
-                  alt="Login avatar"
-                  className="max-w-full max-h-full object-contain" />
-              </div>
-            </CardContent>
-          </Card> 
-        
+export default function SignupForm() {
+  const { signup } = useAuth() ; 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const[password, setPassword] = useState("");
+  const[confirmPassword, setConfirmPassword] = useState(""); 
+  const [emailAddress, setEmailAddress] = useState("");
+
+  const handleSignup = (e) => {
+    e.preventDefault()
+    setLoading(true)
+    signup({ emailAddress, password, confirmPassword })
+      .then((data) => {
+        setLoading(false)
+        if (data.status === "success") {
+          navigate("/dashboard");
+        } else {
+          alert(data.message || "Signup failed. Please try again.")
+        }
+      })
+      .catch((error) => {
+        setLoading(false)
+        alert("An error occurred. Please try again.")
+        console.error("Signup error:", error)
+      }).finally(() => {
+        setLoading(false);
+      });      
+  }
+
+  return (
+    <form 
+      onSubmit={handleSignup}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
+     
+    >
+      <div className="flex flex-col items-center gap-1 text-center">
+        <img
+          src={Logo}
+          alt="Government Logo"
+          className="opacity-50 w-32 h-32 mx-auto"
+        />
+        <h1 className="text-xl font-bold">Create Account</h1>
+        <p className="text-sm text-gray-600">Join us to start your application process</p>
+      </div>
+      
+      <div className="grid gap-3 mt-4">
+        <div className="grid gap-1.5">
+          <Label htmlFor="email" className="font-bold text-base">Email</Label>
+          <Input 
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            onChange={(e) => setEmailAddress(e.target.value)} 
+            id="emailAddress" 
+            name="emailAddress"
+            type="email" 
+            placeholder="Enter your email" 
+            required 
+            disabled={loading}
+          />
         </div>
-      );
-    }
-    
+
+        <div className="grid gap-1.5">
+          <Label htmlFor="password" className="font-bold text-base">Password</Label>
+          <Input 
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            onChange={(e) => setPassword(e.target.value)} 
+            id="password" 
+            name="password"
+            type="password" 
+            placeholder="Create a password" 
+            required 
+            disabled={loading}
+          />
+        </div>
+          
+        <div className="grid gap-1.5">
+          <Label htmlFor="confirmPassword" className="font-bold text-base">Confirm Password</Label>
+          <Input 
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            onChange={(e) => setConfirmPassword(e.target.value)}  
+            id="confirmPassword" 
+            name="confirmPassword"
+            type="password" 
+            placeholder="Confirm your password" 
+            required 
+            disabled={loading}
+          />
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-4 mt-4">
+        <Button 
+          size="lg"
+          type="submit"
+          disabled={loading}
+          className="rounded-full text-base w-full max-w-[240px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold" 
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating Account...
+            </>
+          ) : (
+            "Sign Up"
+          )}
+        </Button>
+
+        <div className="text-sm">
+          <span>Already have an account? </span>
+          <Link 
+            to="/login"
+            className="font-semibold text-blue-600 hover:underline"
+          >
+            Log in
+          </Link>
+        </div>
+      </div> 
+    </form>
+  )
+}
 
   

@@ -4,6 +4,10 @@ import AppLayout from '@/layouts/AppLayout'
 import BareLayout from '@/layouts/BareLayout'
 
 import LandingPage from '@/pages/LandingPage'
+import About from '@/pages/About'
+import Contacts from '@/pages/Contacts'
+import ApplicationDemo from '@/pages/ApplicationDemo'
+import FAQs from '@/pages/FAQs'
 import UnauthorizedPage from '@/pages/UnauthorizedPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 
@@ -12,6 +16,7 @@ import SignupPage from '@/features/auth/pages/SignupPage'
 import OtpVerificationPage from '@/features/auth/pages/OtpVerificationPage'
 
 import DashboardPage from '@/features/dashboard/pages/DashboardPage'
+import DashboardOverview from '@/features/dashboard/components/DashboardOverview'
 import IdentityVerificationPage from '@/features/identity/pages/IdentityVerificationPage'
 import PassportApplicationPage from '@/features/passport/pages/PassportApplicationPage'
 import PaymentPage from '@/features/payments/pages/PaymentPage'
@@ -39,17 +44,14 @@ export const router = createBrowserRouter([
     children: [
       // Public
       { path: '/', element: <LandingPage /> },
+      { path: '/about', element: <About /> },
+      { path: '/contacts', element: <Contacts /> },
+      { path: '/demo', element: <ApplicationDemo /> },
+      { path: '/faqs', element: <FAQs /> },
+      
 
       // Protected routes
-      {
-        element: <PrivateRoute />,
-        children: [
-          { path: '/dashboard', element: <DashboardPage /> },
-          { path: '/dashboard/passport/apply', element: <PassportApplicationPage /> },
-          { path: '/dashboard/payments', element: <PaymentPage /> },
-          { path: '/dashboard/notifications', element: <NotificationsPage /> },
-        ],
-      },
+      // (Moved out to standalone layout)
 
       // Role-based routes
       {
@@ -61,6 +63,23 @@ export const router = createBrowserRouter([
 
       // System
       { path: '*', element: <NotFoundPage /> },
+    ],
+  },
+
+  // Protected Dashboard Routes (Standalone Layout)
+  {
+    element: <PrivateRoute />,
+    children: [
+      { 
+        path: '/dashboard', 
+        element: <DashboardPage />,
+        children: [
+          { index: true, element: <DashboardOverview /> },
+          { path: 'passport/apply', element: <PassportApplicationPage /> },
+          { path: 'payments', element: <PaymentPage /> },
+          { path: 'notifications', element: <NotificationsPage /> },
+        ]
+      },
     ],
   },
 ])

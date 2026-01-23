@@ -1,5 +1,4 @@
-// src/features/payments/hooks/usePayments.js
-import { initiatePayment, verifyPayment, fetchPaymentHistory } from '../api/payments.api'
+import { initiatePayment, verifyPayment, fetchPaymentHistory } from '@/features/payments/api/payments.api'
 
 export function usePayments() {
   // Start a new payment process
@@ -24,6 +23,17 @@ export function usePayments() {
     }
   }
 
+  // Fetch payment history
+  const getPaymentHistory = async () => {
+    try {
+      const response = await fetchPaymentHistory()
+      return response
+    } catch (error) {
+      console.error('Error fetching payment history:', error)
+      throw error
+    }
+  }
+
   // Cancel current payment (reset any local state if needed)
   const cancelPayment = () => {
     // Reset any temporary payment state here
@@ -33,6 +43,7 @@ export function usePayments() {
   return {
     startPayment,
     confirmPayment,
+    getPaymentHistory,
     cancelPayment,
   }
 }

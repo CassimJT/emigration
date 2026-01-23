@@ -1,113 +1,117 @@
-import { Button }from "@/components/ui/button";
+import React from "react"
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
 import {
     InputOTP, 
     InputOTPGroup,
     InputOTPSlot,
-    InputOTPSeparator, 
-} from "@/components/ui/input-otp";
+} from "@/components/ui/input-otp"
 import { cn } from "@/lib/utils"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate } from "react-router-dom"
-import home from "@/assets/home/home.png"
+import {useLocation, useNavigate } from "react-router-dom"
+import { Loader2 } from "lucide-react"
+import { AUTH_FLOW } from "@/utils/constants"
+import { useAuth } from "../hooks/useAuth"
 
 
-export default function LoginForm({
-  className,
-  ...props
-
-}) {
+export default function OtpForm() {
+  const { verifyOtp } = useAuth()
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-  const moveToLoginPage = ()=> {
-    navigate("/login")
-  }  
-  return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="overflow-hidden">
-        <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8 pb-12 bg-gray-300">
-            <div className="flex flex-col gap-6 pb-20">
-              <div className="flex flex-col gap-8 items-center text-center ">
-                 <img
-                   src={Logo}
-                   alt="coart of arm logo"
-                   className="opacity-50 w-32 h-40 mx-auto"
-                />
-                <h1 className="text-lg font-bold">Lets verify who you are</h1>
-                <p>Enter the OTP received via your email</p>
-                <div className="flex items-center">
-               
-                 <InputOTP maxLength={4}>
-                  <InputOTPGroup className="flex gap-4" >
-                    <InputOTPSlot 
-                      index={0} 
-                      style={{ 
-                        borderRadius: '8px',
-                        border: '2px solid black',
-                        height: '64px',
-                        width: '64px',
-                        fontSize: '32px',
-                      }}
-                    />
-                    <InputOTPSlot
-                      index={1} 
-                      style={{ 
-                        borderRadius: '8px',
-                        border: '2px solid black',
-                        height: '64px',
-                        width: '64px',
-                         fontSize: '32px'
-                      }}
-                    />
-                    <InputOTPSlot 
-                      index={2}  
-                      style={{ 
-                        borderRadius: '8px',
-                        border: '2px solid black',
-                        height: '64px',
-                        width: '64px',
-                        fontSize: '32px'
-                      }}
-                    />
-                    <InputOTPSlot 
-                      index={3} 
-                      style={{ 
-                        borderRadius: '8px',
-                        border: '2px solid black',
-                        height: '64px',
-                        width: '64px',
-                        fontSize: '32px'
-                      }}
+  const { state } = useLocation()
+  const [otp, setOtp] = useState("")
 
-                     />
-                  </InputOTPGroup>
-                </InputOTP>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-center gap-8 mt-6 mb-8">
-                <Button 
-                  onClick={moveToLoginPage}
-                  type="submit"
-                  className="h-16 w-64 rounded-full bg-orange-400 text-black hover:bg-orange-500 text-lg font-bold" >
-                  Verify
-                </Button>
-                {/* link to be implemented */}
-               
-              </div>
-            </div>
-          </form>
+  const flowType = state?.flowType
+
+  const handleVerify = (e) => {
+    e.preventDefault()
+    setLoading(true)
+    verifyOtp({ otp })
+      .then((data) => {
+        if (data.status === "success") {
+          if (flowType === AUTH_FLOW.DASHBOARD) {
+            navigate("/dashboard")
+          } else if (flowType === AUTH_FLOW.SIGNUP) {
+            navigate("/signup")
+          } 
+        } else {
+          alert("OTP verification failed. Please try again.")
+        }
+      })
+      .catch((err) => {
+        console.error("OTP verification error:", err)
+        alert("An error occurred during OTP verification. Please try again.")
+      })
+      .finally(() => {
+        setLoading(false)
+      }).finally(() => {
+        setLoading(false)
+      })  
+  }
+
+  function handleOTPResent(e){
+    e.preventDefault()
+    return null;
+  }
+
+  return (
+    <form 
+      onSubmit={handleVerify}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
+    >
+      <div className="flex flex-col items-center gap-1 text-center">
+        <img
+          src={Logo}
+          alt="Government Logo"
+          className="opacity-50 w-40 h-40 mx-auto"
+        />
+        <h1 className="text-xl font-bold">Verify Identity</h1>
+        <p className="text-sm text-gray-600">Enter the OTP sent to your verified email</p>
+      </div>
+      
+      <div className="flex flex-col items-center justify-center gap-6 mt-6">
+        <InputOTP 
+        maxLength={6} 
+        disabled={loading}
+        onChange={(value) => setOtp(value)}
+        >
+          <InputOTPGroup className="flex gap-4">
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+              <InputOTPSlot 
+                key={index}
+                index={index} 
+                className="h-14 w-14 rounded-xl border-2 border-black text-2xl "
+              />
+            ))}
+          </InputOTPGroup>
+        </InputOTP>
         
-          <div className="md:flex items-center justify-center bg-muted p-8">
-            <img
-              src={home}
-              alt="e-passport"
-              className="max-w-full max-h-full object-contain" />
-          </div>
-        </CardContent>
-      </Card> 
-    </div>
+        <button 
+          type="button"
+          disabled={loading}
+          className="text-sm font-semibold text-blue-600 hover:underline disabled:opacity-50"
+          onClick={() => {handleOTPResent}}
+        >
+          Resend OTP
+        </button>
+      </div>
+       
+      <div className="flex items-center justify-center mt-12 mb-8">
+        <Button 
+          type="submit"
+          disabled={loading}
+          className="rounded-full text-base w-full max-w-[240px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold" 
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Verifying...
+            </>
+          ) : (
+            "Verify"
+          )}
+        </Button>
+      </div> 
+    </form>
   )
 }
