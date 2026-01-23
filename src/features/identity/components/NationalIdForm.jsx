@@ -1,5 +1,5 @@
 
-import React from "react"
+import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
@@ -7,33 +7,42 @@ import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
+import { useIdentityVerification } from "../hooks/useIdentityVerification"
 
-export default function NationalIdForm({
-  onSubmit,
-  loading,
-  className,
-  nationalId,
-  onChange,
-  ...props
-}) {
+export default function NationalIdForm() {
   const navigate = useNavigate()
-
+  const [nationalId, setNationalId] = useState("")
+  const [loading , setLoading] = useState(false)
+  const { startVerification } = useIdentityVerification()
+ 
   const handleVerify = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/login")
-    }
+
+    e.preventDefault()
+    setLoading(true)
+    startVerification({ nationalId })
+      .then((data) => {
+        if (data.status === "success") {
+         navigate("/login")
+        } else {
+          alert("Verification failed. Please try again.")
+        }
+  
+    })
+      .catch((err) => {
+      console.error("Verification error:", err)
+      alert("An error occurred during verification. Please try again.")
+    })
+    .finally(() => {
+      setLoading(false)
+    })
   }
 
   return (
 
     <form 
       onSubmit={handleVerify}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
-      {...props}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
+
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -50,6 +59,7 @@ export default function NationalIdForm({
         <Input 
           className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-gray-500 text-lg"
           id="nationalId" 
+          onChange = {(e)=>setNationalId(e.target.value)}
           name="nationalId"
           type="text" 
           placeholder="Enter National ID" 

@@ -1,4 +1,5 @@
 import React from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
     InputOTP, 
@@ -7,25 +8,45 @@ import {
 } from "@/components/ui/input-otp"
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate } from "react-router-dom"
+import {useLocation, useNavigate } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+import { AUTH_FLOW } from "@/utils/constants"
+import { useAuth } from "../hooks/useAuth"
 
-export default function OtpForm({
-  onSubmit,
-  loading,
-  className,
-  ...props
-}) {
+
+export default function OtpForm() {
+  const { verifyOtp } = useAuth()
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const [otp, setOtp] = useState("")
+
+  const flowType = state?.flowType
 
   const handleVerify = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/dashboard")
-    }
+    e.preventDefault()
+    setLoading(true)
+    verifyOtp({ otp })
+      .then((data) => {
+        if (data.status === "success") {
+          if (flowType === AUTH_FLOW.DASHBOARD) {
+            navigate("/dashboard")
+          } else if (flowType === AUTH_FLOW.SIGNUP) {
+            navigate("/signup")
+          } 
+        } else {
+          alert("OTP verification failed. Please try again.")
+        }
+      })
+      .catch((err) => {
+        console.error("OTP verification error:", err)
+        alert("An error occurred during OTP verification. Please try again.")
+      })
+      .finally(() => {
+        setLoading(false)
+      }).finally(() => {
+        setLoading(false)
+      })  
   }
 
   function handleOTPResent(e){
@@ -36,8 +57,7 @@ export default function OtpForm({
   return (
     <form 
       onSubmit={handleVerify}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
-      {...props}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -50,9 +70,13 @@ export default function OtpForm({
       </div>
       
       <div className="flex flex-col items-center justify-center gap-6 mt-6">
-        <InputOTP maxLength={4} disabled={loading}>
+        <InputOTP 
+        maxLength={6} 
+        disabled={loading}
+        onChange={(value) => setOtp(value)}
+        >
           <InputOTPGroup className="flex gap-4">
-            {[0, 1, 2, 3].map((index) => (
+            {[0, 1, 2, 3, 4, 5].map((index) => (
               <InputOTPSlot 
                 key={index}
                 index={index} 

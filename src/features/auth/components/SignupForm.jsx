@@ -1,4 +1,5 @@
 import React from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -6,30 +7,42 @@ import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
 import { useNavigate, Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+import { useAuth } from "../hooks/useAuth"
 
-export default function SignupForm({
-  onSubmit,
-  loading,
-  className,
-  ...props
-}) {
-  const navigate = useNavigate()
+export default function SignupForm() {
+  const { signup } = useAuth() ; 
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const[password, setPassword] = useState("");
+  const[confirmPassword, setConfirmPassword] = useState(""); 
+  const [emailAddress, setEmailAddress] = useState("");
 
   const handleSignup = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/login")
-    }
+    e.preventDefault()
+    setLoading(true)
+    signup({ emailAddress, password, confirmPassword })
+      .then((data) => {
+        setLoading(false)
+        if (data.status === "success") {
+          navigate("/dashboard");
+        } else {
+          alert(data.message || "Signup failed. Please try again.")
+        }
+      })
+      .catch((error) => {
+        setLoading(false)
+        alert("An error occurred. Please try again.")
+        console.error("Signup error:", error)
+      }).finally(() => {
+        setLoading(false);
+      });      
   }
 
   return (
     <form 
       onSubmit={handleSignup}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
-      {...props}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
+     
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -46,8 +59,9 @@ export default function SignupForm({
           <Label htmlFor="email" className="font-bold text-base">Email</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            id="email" 
-            name="email"
+            onChange={(e) => setEmailAddress(e.target.value)} 
+            id="emailAddress" 
+            name="emailAddress"
             type="email" 
             placeholder="Enter your email" 
             required 
@@ -59,6 +73,7 @@ export default function SignupForm({
           <Label htmlFor="password" className="font-bold text-base">Password</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            onChange={(e) => setPassword(e.target.value)} 
             id="password" 
             name="password"
             type="password" 
@@ -72,6 +87,7 @@ export default function SignupForm({
           <Label htmlFor="confirmPassword" className="font-bold text-base">Confirm Password</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            onChange={(e) => setConfirmPassword(e.target.value)}  
             id="confirmPassword" 
             name="confirmPassword"
             type="password" 

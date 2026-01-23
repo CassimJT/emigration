@@ -16,7 +16,7 @@ export function useIdentityVerification() {
     setError(null)
     try {
       const data = await submitNationalId(payload)
-      if (data.status === 200) {
+      if (data.status === "success") {
         setReferenceId(data.referenceId || null) 
       }
       setStatus(data.status)
