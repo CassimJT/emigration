@@ -41,7 +41,8 @@ function IdentityVerificationPage() {
   useEffect(() => {
     if (!status) return
     if (status === 'success') {
-      navigate('/login')
+      console.log("Verification successful")
+      //navigate('/login')
     } else if (status === 'error') {
       console.error("Verification failed")
     }
