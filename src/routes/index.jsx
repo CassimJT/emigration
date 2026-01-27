@@ -22,12 +22,11 @@ import PassportApplicationPage from '@/features/passport/pages/PassportApplicati
 import PaymentPage from '@/features/payments/pages/PaymentPage'
 import NotificationsPage from '@/features/notifications/pages/NotificationsPage'
 
-import { PrivateRoute } from './PrivateRoute'
 import { RoleRoute } from './RoleRoute'
 
 export const router = createBrowserRouter([
 
-  // BARE LAYOUT (NO NAV / NO FOOTER)
+  // BARE LAYOUT (NO HEADER / NO FOOTER)
   {
     element: <BareLayout />,
     children: [
@@ -39,6 +38,7 @@ export const router = createBrowserRouter([
     ],
   },
 
+  // Header & Footer Layout
   {
     element: <AppLayout />,
     children: [
@@ -49,23 +49,12 @@ export const router = createBrowserRouter([
       { path: '/demo', element: <ApplicationDemo /> },
       { path: '/faqs', element: <FAQs /> },
       
-
-      // Protected routes
-      // (Moved out to standalone layout)
-
-      // Role-based routes
-      {
-        element: <RoleRoute allowedRoles={['admin', 'officer']} />,
-        children: [
-          { path: '/admin', element: <DashboardPage /> },
-        ],
-      },
     ],
   },
 
-  // Protected Dashboard Routes (Standalone Layout)
+  // Role-based routes(no header / no footer)
   {
-    element: <PrivateRoute />,
+    element: <RoleRoute allowedRoles={['admin', 'officer','user',]} />,
     children: [
       { 
         path: '/dashboard', 
