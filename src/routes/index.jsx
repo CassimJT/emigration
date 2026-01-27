@@ -49,8 +49,6 @@ export const router = createBrowserRouter([
       { path: '/demo', element: <ApplicationDemo /> },
       { path: '/faqs', element: <FAQs /> },
       
-      // System
-      { path: '*', element: <NotFoundPage /> },
     ],
   },
 
@@ -70,6 +68,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
+   // System
+  { path: '*', element: <NotFoundPage /> }
 ])
 
 export default router
