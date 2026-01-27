@@ -10,16 +10,20 @@ export function useIdentityVerification() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Start a new verification
+  // Start a new verification session
   const startVerification = async (payload) => {
     setLoading(true)
     setError(null)
     try {
       const data = await submitNationalId(payload)
-      if (data.status === 200) {
-        setReferenceId(data.referenceId || null) 
+
+      if (data?.status === 'success') {
+        setReferenceId(data.referenceId)
+        setStatus('PENDING')
+      } else {
+        setStatus('FAILED')
       }
-      setStatus(data.status)
+
       return data
     } catch (err) {
       setError(err)
@@ -29,9 +33,10 @@ export function useIdentityVerification() {
     }
   }
 
-  // Check the current verification status
+  // Poll verification status
   const checkStatus = async () => {
     if (!referenceId) return null
+
     setLoading(true)
     setError(null)
     try {
@@ -46,7 +51,6 @@ export function useIdentityVerification() {
     }
   }
 
-  // Reset the verification state
   const resetVerification = () => {
     setReferenceId(null)
     setStatus(null)
