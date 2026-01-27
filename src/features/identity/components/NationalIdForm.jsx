@@ -8,42 +8,6 @@ import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useIdentityVerification } from "../hooks/useIdentityVerification"
 
-<<<<<<< HEAD
-export default function NationalIdForm() {
-  const navigate = useNavigate()
-  const [nationalId, setNationalId] = useState("")
-  const [loading , setLoading] = useState(false)
-  const { startVerification } = useIdentityVerification()
- 
-  const handleVerify = (e) => {
-
-    e.preventDefault()
-    setLoading(true)
-    startVerification({ nationalId })
-      .then((data) => {
-        if (data.status === "success") {
-         navigate("/login")
-        } else {
-          alert("Verification failed. Please try again.")
-        }
-  
-    })
-      .catch((err) => {
-      console.error("Verification error:", err)
-      alert("An error occurred during verification. Please try again.")
-    })
-    .finally(() => {
-      setLoading(false)
-    })
-  }
-
-  return (
-
-    <form 
-      onSubmit={handleVerify}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
-
-=======
 export default function NationalIdForm({
   onSubmit,
   loading,
@@ -60,7 +24,6 @@ export default function NationalIdForm({
       onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
->>>>>>> 71c731759f5c0028fabea34d45c909317392761f
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
