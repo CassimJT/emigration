@@ -3,7 +3,6 @@ import React from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
@@ -12,26 +11,16 @@ export default function NationalIdForm({
   onSubmit,
   loading,
   className,
+  error,
   nationalId,
   onChange,
   ...props
 }) {
-  const navigate = useNavigate()
-
-  const handleVerify = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/login")
-    }
-  }
-
+  
   return (
 
     <form 
-      onSubmit={handleVerify}
+      onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
     >
@@ -55,7 +44,14 @@ export default function NationalIdForm({
           placeholder="Enter National ID" 
           required 
           disabled={loading}
+          onChange={onChange}
+          value={nationalId}
         />
+        {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center justify-center mt-12 mb-8">

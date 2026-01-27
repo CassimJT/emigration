@@ -1,14 +1,62 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import NationalIdForm from '../components/NationalIdForm'
 import home from "@/assets/home/home.png"
+import { useNavigate } from 'react-router-dom'
+import { useIdentityVerification } from '../hooks/useIdentityVerification'
 
 function IdentityVerificationPage() {
-  return (
+  //form state
+  const [formState, setFormState] = useState({ nationalId: '' })
+  const navigate = useNavigate()
+  //custom hooks
+  const { 
+    verifyIdentity, 
+    loading, 
+    error,
+    checkStatus,
+    startVerification,
+    nationalId,
+    status
+  } = useIdentityVerification()
 
+  //payload reshaping
+  const preparePayload = () => {
+    return {
+      nationalId: formState.nationalId.trim()
+    }
+  }
+  //handle input change
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormState((prev) => ({ ...prev, [name]: value }))
+  }
+  //handle submit
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const payload = preparePayload()
+    //console.log("Submitting National ID:", payload.nationalId)
+    startVerification(payload)
+  }
+  //side effects
+  useEffect(() => {
+    if (!status) return
+    if (status === 'success') {
+      navigate('/success')
+    } else if (status === 'error') {
+      console.error("Verification failed")
+    }
+  }, [status, navigate])
+  return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
         <div className="w-full max-w-xl">
-          <NationalIdForm />
+          <NationalIdForm 
+            nationalId={formState.nationalId}
+            onSubmit={handleSubmit} 
+            loading={loading}
+            onChange={handleChange}
+            error={error}
+          />
         </div>
       </div>
       <div className="hidden lg:flex sticky top-0 h-screen items-center justify-center bg-green-100">

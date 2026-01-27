@@ -3,7 +3,7 @@ import api from '@/lib/axios'
 // Start identity verification
 export async function submitNationalId(payload) {
   try {
-    const { data } = await api.post('/verfy-national-id', payload)
+    const { data } = await api.post('/identity/verify-national-id', payload)
     return data
   } catch (error) {
     return handleError(error)
