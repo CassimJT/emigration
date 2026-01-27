@@ -60,9 +60,6 @@ export const router = createBrowserRouter([
           { path: '/admin', element: <DashboardPage /> },
         ],
       },
-
-      // System
-      { path: '*', element: <NotFoundPage /> },
     ],
   },
 
@@ -82,6 +79,8 @@ export const router = createBrowserRouter([
       },
     ],
   },
+   // System
+  { path: '*', element: <NotFoundPage /> }
 ])
 
 export default router
