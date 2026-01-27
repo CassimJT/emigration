@@ -1,8 +1,7 @@
 import StatusCard from '@/features/dashboard/components/StatusCard'
 import CheckList from '@/features/dashboard/components/DashboardCheckList'
 import QuickActions from '@/features/dashboard/components/QuickActions'
-import ImportantInfor from '@/features/dashboard/components/ImportantInfor'
-import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
+import ImportantInformation from '@/features/dashboard/components/ImportantInfor';
 
 /*
  * Dashboard Overview Layout Component.
@@ -13,19 +12,17 @@ import { useDashboard } from '@/features/dashboard/hooks/useDashboard';
  * Implements a responsive grid layout.
  */
 export default function DashboardOverview() {
-        const {applications: applicationData, summary} = useDashboard();
-
+       
     return (
         <div className="flex flex-col gap-6 w-full">
             <section className="w-full">
-                <ImportantInfor />
+                <ImportantInformation />
             </section>
             <section className="w-full">
                 <StatusCard />
             </section>
             <section className="w-full">
-                    {summary}
-                {applicationData}
+                
             </section>
             
             <section className="flex flex-col sm:flex-row gap-10 w-full">

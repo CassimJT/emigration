@@ -41,7 +41,6 @@ const QUICK_LINKS = [
   { label: "How to Apply", icon: HelpCircle, path: '/demo' },
   { label: "FAQs", icon: MessageCircle, path: '/faqs' },
   { label: "Contact Support", icon: Phone, path: '/contacts' },
-  { label: "Payment History", icon: History, path: '/dashboard/history' },
 ];
 
 /*
