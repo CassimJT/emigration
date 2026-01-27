@@ -16,7 +16,9 @@ function IdentityVerificationPage() {
     checkStatus,
     startVerification,
     nationalId,
-    status
+    status,
+    resetVerification
+    
   } = useIdentityVerification()
 
   //payload reshaping
@@ -42,11 +44,13 @@ function IdentityVerificationPage() {
     if (!status) return
     if (status === 'success') {
       console.log("Verification successful")
-      //navigate('/login')
-    } else if (status === 'error') {
-      console.error("Verification failed")
+      navigate('/login')
+    } else if (status === 'expired') {
+      //on expired
+      console.error("Verification expired")
+      resetVerification
     }
-  }, [status, navigate])
+  }, [status])
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">

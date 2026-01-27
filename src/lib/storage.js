@@ -26,3 +26,18 @@ export function getStoredUser() {
   const user = localStorage.getItem(USER_KEY)
   return user ? JSON.parse(user) : null
 }
+
+const TEMP_KEY = 'auth:temp'
+
+export function setTempSession(data) {
+  sessionStorage.setItem(TEMP_KEY, JSON.stringify(data))
+}
+
+export function getTempSession() {
+  const raw = sessionStorage.getItem(TEMP_KEY)
+  return raw ? JSON.parse(raw) : null
+}
+
+export function clearTempSession() {
+  sessionStorage.removeItem(TEMP_KEY)
+}

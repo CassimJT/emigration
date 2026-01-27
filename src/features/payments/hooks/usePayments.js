@@ -34,7 +34,7 @@ export function usePayments() {
     }
   }
 
-  // Cancel current payment (reset any local state if needed)
+  // Cancel current payment 
   const cancelPayment = () => {
     // Reset any temporary payment state here
     console.log('Payment canceled')
