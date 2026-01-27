@@ -3,12 +3,12 @@ import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate } from "react-router-dom"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
 import { useIdentityVerification } from "../hooks/useIdentityVerification"
 
+<<<<<<< HEAD
 export default function NationalIdForm() {
   const navigate = useNavigate()
   const [nationalId, setNationalId] = useState("")
@@ -43,6 +43,24 @@ export default function NationalIdForm() {
       onSubmit={handleVerify}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
 
+=======
+export default function NationalIdForm({
+  onSubmit,
+  loading,
+  className,
+  error,
+  nationalId,
+  onChange,
+  ...props
+}) {
+  
+  return (
+
+    <form 
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+      {...props}
+>>>>>>> 71c731759f5c0028fabea34d45c909317392761f
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -65,7 +83,14 @@ export default function NationalIdForm() {
           placeholder="Enter National ID" 
           required 
           disabled={loading}
+          onChange={onChange}
+          value={nationalId}
         />
+        {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center justify-center mt-12 mb-8">

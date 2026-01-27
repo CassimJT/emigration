@@ -10,43 +10,42 @@ export function useIdentityVerification() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  // Start a new verification
   const startVerification = async (payload) => {
     setLoading(true)
     setError(null)
-    try {
-      const data = await submitNationalId(payload)
-      if (data.status === "success") {
-        setReferenceId(data.referenceId || null) 
-      }
-      setStatus(data.status)
-      return data
-    } catch (err) {
-      setError(err)
-      return err
-    } finally {
-      setLoading(false)
+
+    const data = await submitNationalId(payload)
+    console.log("startVerification response:", data)
+
+    if (data?.status === 'success') {
+      setReferenceId(data.referenceId)
+      setStatus('PENDING')
+    } else {
+      setStatus('FAILED')
+      setError(data?.message || 'Verification failed')
     }
+
+    setLoading(false)
+    return data
   }
 
-  // Check the current verification status
   const checkStatus = async () => {
     if (!referenceId) return null
+
     setLoading(true)
     setError(null)
-    try {
-      const data = await fetchVerificationStatus(referenceId)
-      setStatus(data.status)
-      return data
-    } catch (err) {
-      setError(err)
-      return err
-    } finally {
-      setLoading(false)
+
+    const data = await fetchVerificationStatus(referenceId)
+
+    if (data?.status !== 'success') {
+      setError(data?.message || 'Failed to fetch status')
     }
+
+    setStatus(data?.status || null)
+    setLoading(false)
+    return data
   }
 
-  // Reset the verification state
   const resetVerification = () => {
     setReferenceId(null)
     setStatus(null)
