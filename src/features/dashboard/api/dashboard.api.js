@@ -7,7 +7,7 @@ import api from '@/lib/axios'
  */
 
 // Fetch overall dashboard summary (user-specific) <<exported>>
-async function fetchDashboardSummary() {
+ export async function fetchDashboardSummary() {
   try {
     const { data } = await api.get('/users') 
     return data
@@ -17,7 +17,7 @@ async function fetchDashboardSummary() {
 }
 
 // Fetch passport/application status for dashboard display <<exported>>
-async function fetchApplicationStatus() {
+export async function fetchApplicationStatus() {
   try {
     const { data } = await api.get('/applications/status') 
     return data
@@ -27,7 +27,7 @@ async function fetchApplicationStatus() {
 }
 
 // Fetch payment status for dashboard display <<exported>>
-async function fetchPaymentStatus() {
+export async function fetchPaymentStatus() {
   try {
     const { data } = await api.get('/payments/status') 
     return data
@@ -47,8 +47,3 @@ function handleError(error) {
   }
 }
 
-export{
-  fetchDashboardSummary,
-  fetchApplicationStatus,
-  fetchPaymentStatus,
-}

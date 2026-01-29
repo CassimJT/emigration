@@ -13,21 +13,11 @@ import { Loader2 } from "lucide-react"
 export default function OtpForm({
   onSubmit,
   loading,
+  error,
   className,
   ...props
 }) {
-  const navigate = useNavigate()
-
-  const handleVerify = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/dashboard")
-    }
-  }
-
+  
   function handleOTPResent(e){
     e.preventDefault()
     return null;
@@ -35,7 +25,7 @@ export default function OtpForm({
 
   return (
     <form 
-      onSubmit={handleVerify}
+      onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
     >
@@ -48,7 +38,12 @@ export default function OtpForm({
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">Enter the OTP sent to your verified email</p>
       </div>
-      
+       {/* error message display */}
+         {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       <div className="flex flex-col items-center justify-center gap-6 mt-6">
         <InputOTP maxLength={4} disabled={loading}>
           <InputOTPGroup className="flex gap-4">
