@@ -3,9 +3,15 @@ import {
   submitNationalId,
   fetchVerificationStatus,
 } from '../api/identity.api'
+import { useAuthContext } from '@/providers/AuthProvider'
 
 export function useIdentityVerification() {
-  const [referenceId, setReferenceId] = useState(null)
+  const { 
+    verificationSessionId, 
+    startIdentitySession, 
+    clearIdentitySession 
+  } = useAuthContext()
+
   const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -15,10 +21,10 @@ export function useIdentityVerification() {
     setError(null)
 
     const data = await submitNationalId(payload)
-    console.log("startVerification response:", data)
+    console.log('startVerification response:', data)
 
     if (data?.status === 'success') {
-      setReferenceId(data.referenceId)
+      startIdentitySession(data.referenceId) 
       setStatus('PENDING')
     } else {
       setStatus('FAILED')
@@ -30,12 +36,12 @@ export function useIdentityVerification() {
   }
 
   const checkStatus = async () => {
-    if (!referenceId) return null
+    if (!verificationSessionId) return null
 
     setLoading(true)
     setError(null)
 
-    const data = await fetchVerificationStatus(referenceId)
+    const data = await fetchVerificationStatus(verificationSessionId)
 
     if (data?.status !== 'success') {
       setError(data?.message || 'Failed to fetch status')
@@ -47,14 +53,14 @@ export function useIdentityVerification() {
   }
 
   const resetVerification = () => {
-    setReferenceId(null)
+    clearIdentitySession()
     setStatus(null)
     setError(null)
     setLoading(false)
   }
 
   return {
-    referenceId,
+    verificationSessionId,
     status,
     loading,
     error,

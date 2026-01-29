@@ -93,10 +93,8 @@ export async function verifyNationalId(payload) {
 // ERROR HANDLER
 function handleError(error) {
   if (error.response) {
-    // API returned a response (400/404/500)
     return error.response.data
   } else if (error.request) {
-    // Request made but no response
     return { 
        status: 500, 
        statusText: 'Failed',
