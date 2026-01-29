@@ -9,6 +9,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 import { useAuth } from "../hooks/useAuth"
 
+<<<<<<< HEAD
 export default function SignupForm() {
   const { signup } = useAuth() ; 
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,22 @@ export default function SignupForm() {
       onSubmit={handleSignup}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
      
+=======
+export default function SignupForm({
+  onSubmit,
+  loading,
+  className,
+  onChange,
+  error,
+  ...props
+}) {
+
+  return (
+    <form 
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+      {...props}
+>>>>>>> ed3612eff1e47890ca40ffb7cce284e924e0fcc8
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -53,7 +70,12 @@ export default function SignupForm() {
         <h1 className="text-xl font-bold">Create Account</h1>
         <p className="text-sm text-gray-600">Join us to start your application process</p>
       </div>
-      
+       {/* error message display */}
+         {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       <div className="grid gap-3 mt-4">
         <div className="grid gap-1.5">
           <Label htmlFor="email" className="font-bold text-base">Email</Label>
@@ -66,6 +88,7 @@ export default function SignupForm() {
             placeholder="Enter your email" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
 
@@ -80,6 +103,7 @@ export default function SignupForm() {
             placeholder="Create a password" 
             required 
             disabled={loading}
+            onChange
           />
         </div>
           
@@ -94,6 +118,7 @@ export default function SignupForm() {
             placeholder="Confirm your password" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
       </div>
