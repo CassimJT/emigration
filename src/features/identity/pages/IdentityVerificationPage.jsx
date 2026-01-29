@@ -36,7 +36,7 @@ function IdentityVerificationPage() {
   const handleSubmit = (e) => {
     e.preventDefault()
     const payload = preparePayload()
-    //console.log("Submitting National ID:", payload.nationalId)
+    console.log("Submitting National ID:", payload.nationalId)
     startVerification(payload)
   }
   //side effects
