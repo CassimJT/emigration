@@ -48,9 +48,9 @@ function IdentityVerificationPage() {
     } else if (status === 'expired') {
       //on expired
       console.error("Verification expired")
-      resetVerification
+      resetVerification()
     }
-  }, [status])
+  }, [status, navigate])
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
