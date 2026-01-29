@@ -129,7 +129,13 @@ export function useAuth() {
     setStatus(null)
 
     try {
-      const data = await apiSignup(payload)
+      const dataPayload = {
+        emailAddress: payload.emailAddress,
+        password: payload.password,
+        confirmPassword: payload.confirmPassword,
+        verificationSessionId: verificationSessionId
+      }
+      const data = await apiSignup(dataPayload)
 
       if (!data || data.status !== 'success') {
         setStatus(data?.status || 'failed')
