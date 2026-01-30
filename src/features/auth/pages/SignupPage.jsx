@@ -10,6 +10,7 @@ function SignupPage() {
     password: '',
     confirmPassword: '',
   })
+  const [passwordMatchError, setPasswordMatchError] = React.useState(null);
   const navigate = useNavigate();
 
   const {
@@ -36,9 +37,20 @@ function SignupPage() {
     }))
   }
 
+  const checkPasswordMatch = () => {
+    if (formState.password !== formState.confirmPassword) {
+      setPasswordMatchError("Passwords do not match");
+      return false;
+    }
+    setPasswordMatchError(null);
+    return true;
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await signup({ credentials: preparePayload() })
+    if (checkPasswordMatch()) {
+      await signup(preparePayload())
+    }
   } 
 
   React.useEffect(() => {
@@ -57,7 +69,7 @@ function SignupPage() {
             onChange={handleChange}
             onSubmit={handleSubmit}
             loading={loading}
-            error={error}
+            error={passwordMatchError ? passwordMatchError : error}
           />
         </div>
       </div>
