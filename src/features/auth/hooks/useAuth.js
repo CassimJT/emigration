@@ -133,8 +133,9 @@ export function useAuth() {
         emailAddress: payload.emailAddress,
         password: payload.password,
         confirmPassword: payload.confirmPassword,
-        verificationSessionId: verificationSessionId
+        verificationSessionId,
       }
+
       const data = await apiSignup(dataPayload)
 
       if (!data || data.status !== 'success') {
