@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react"
-import React from "react"
-//import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   InputOTP,
@@ -9,10 +7,7 @@ import {
 } from "@/components/ui/input-otp"
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
-//import {useLocation, useNavigate } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-//import { AUTH_FLOW } from "@/utils/constants"
-//import { useAuth } from "../hooks/useAuth"
 
 export default function OtpForm({
   onSubmit,
