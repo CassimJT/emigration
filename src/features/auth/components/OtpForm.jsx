@@ -1,5 +1,5 @@
 import React from "react"
-import { useState } from "react"
+//import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
     InputOTP, 
@@ -8,49 +8,11 @@ import {
 } from "@/components/ui/input-otp"
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
-import {useLocation, useNavigate } from "react-router-dom"
+//import {useLocation, useNavigate } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-import { AUTH_FLOW } from "@/utils/constants"
-import { useAuth } from "../hooks/useAuth"
+//import { AUTH_FLOW } from "@/utils/constants"
+//import { useAuth } from "../hooks/useAuth"
 
-<<<<<<< HEAD
-
-export default function OtpForm() {
-  const { verifyOtp } = useAuth()
-  const [loading, setLoading] = useState(false)
-  const navigate = useNavigate()
-  const { state } = useLocation()
-  const [otp, setOtp] = useState("")
-
-  const flowType = state?.flowType
-
-  const handleVerify = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    verifyOtp({ otp })
-      .then((data) => {
-        if (data.status === "success") {
-          if (flowType === AUTH_FLOW.DASHBOARD) {
-            navigate("/dashboard")
-          } else if (flowType === AUTH_FLOW.SIGNUP) {
-            navigate("/signup")
-          } 
-        } else {
-          alert("OTP verification failed. Please try again.")
-        }
-      })
-      .catch((err) => {
-        console.error("OTP verification error:", err)
-        alert("An error occurred during OTP verification. Please try again.")
-      })
-      .finally(() => {
-        setLoading(false)
-      }).finally(() => {
-        setLoading(false)
-      })  
-  }
-
-=======
 export default function OtpForm({
   onSubmit,
   loading,
@@ -59,7 +21,6 @@ export default function OtpForm({
   ...props
 }) {
   
->>>>>>> ed3612eff1e47890ca40ffb7cce284e924e0fcc8
   function handleOTPResent(e){
     e.preventDefault()
     return null;
@@ -67,14 +28,9 @@ export default function OtpForm({
 
   return (
     <form 
-<<<<<<< HEAD
-      onSubmit={handleVerify}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
-=======
       onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
->>>>>>> ed3612eff1e47890ca40ffb7cce284e924e0fcc8
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
