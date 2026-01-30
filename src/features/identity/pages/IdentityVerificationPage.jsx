@@ -1,63 +1,56 @@
 import React, { useEffect, useState } from 'react'
 import NationalIdForm from '../components/NationalIdForm'
-import home from "@/assets/home/home.png"
+import home from '@/assets/home/home.png'
 import { useNavigate } from 'react-router-dom'
 import { useIdentityVerification } from '../hooks/useIdentityVerification'
 
 function IdentityVerificationPage() {
-  //form state
   const [formState, setFormState] = useState({ nationalId: '' })
   const navigate = useNavigate()
-  //custom hooks
-  const { 
-    verifyIdentity, 
-    loading, 
-    error,
-    checkStatus,
+
+  const {
     startVerification,
-    nationalId,
+    loading,
+    error,
     status,
-    resetVerification
-    
+    clearStatus,
+    resetVerification,
   } = useIdentityVerification()
 
-  //payload reshaping
-  const preparePayload = () => {
-    return {
-      nationalId: formState.nationalId.trim()
-    }
-  }
-  //handle input change
+  const preparePayload = () => ({
+    nationalId: formState.nationalId.trim(),
+  })
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
   }
-  //handle submit
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const payload = preparePayload()
-    console.log("Submitting National ID:", payload)
-    startVerification(payload)
+    await startVerification(preparePayload())
   }
-  //side effects
+
   useEffect(() => {
     if (!status) return
+
     if (status === 'success') {
-      console.log("Verification successful")
+      clearStatus()
       navigate('/login')
-    } else if (status === 'expired') {
-      //on expired
-      console.error("Verification expired")
-      resetVerification()
     }
-  }, [status, navigate])
+
+    if (status === 'failed') {
+      // stay on page, error already shown
+    }
+  }, [status, navigate, clearStatus])
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
         <div className="w-full max-w-xl">
-          <NationalIdForm 
+          <NationalIdForm
             nationalId={formState.nationalId}
-            onSubmit={handleSubmit} 
+            onSubmit={handleSubmit}
             loading={loading}
             onChange={handleChange}
             error={error}
@@ -72,7 +65,6 @@ function IdentityVerificationPage() {
         />
       </div>
     </div>
-
   )
 }
 
