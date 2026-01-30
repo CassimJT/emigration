@@ -32,17 +32,10 @@ function IdentityVerificationPage() {
   }
 
   useEffect(() => {
-  console.log('STATUS CHANGED:', status)
-  if (!status) return
-
   if (status === 'success') {
-    console.log('NAVIGATING TO /login')
-    clearStatus()
     navigate('/login')
-  }
-
-  if (status === 'failed') {
-    console.log('Verification failed')
+    // clearStatus AFTER navigation
+    setTimeout(() => clearStatus(), 0)
   }
 }, [status, navigate, clearStatus])
 
