@@ -32,17 +32,20 @@ function IdentityVerificationPage() {
   }
 
   useEffect(() => {
-    if (!status) return
+  console.log('STATUS CHANGED:', status)
+  if (!status) return
 
-    if (status === 'success') {
-      clearStatus()
-      navigate('login')
-    }
+  if (status === 'success') {
+    console.log('NAVIGATING TO /login')
+    clearStatus()
+    navigate('/login')
+  }
 
-    if (status === 'failed') {
-      // stay on page, error already shown
-    }
-  }, [status, navigate, clearStatus])
+  if (status === 'failed') {
+    console.log('Verification failed')
+  }
+}, [status, navigate, clearStatus])
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
