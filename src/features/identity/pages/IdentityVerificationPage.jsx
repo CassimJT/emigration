@@ -27,18 +27,15 @@ function IdentityVerificationPage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    await startVerification(preparePayload())
+     e.preventDefault()
+    const payload = preparePayload()
+    const data = await startVerification(payload)
+  
+    if (data?.status === 'success') {
+      clearStatus()
+      navigate('/login')
+    }
   }
-
-  useEffect(() => {
-  if (status === 'success') {
-    navigate('/login')
-    // clearStatus AFTER navigation
-    setTimeout(() => clearStatus(), 0)
-  }
-}, [status, navigate, clearStatus])
-
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
