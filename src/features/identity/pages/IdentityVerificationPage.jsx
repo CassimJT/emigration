@@ -36,7 +36,7 @@ function IdentityVerificationPage() {
 
     if (status === 'success') {
       clearStatus()
-      navigate('/login')
+      navigate('login')
     }
 
     if (status === 'failed') {
