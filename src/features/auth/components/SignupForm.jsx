@@ -9,42 +9,6 @@ import { useNavigate, Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 import { useAuth } from "../hooks/useAuth"
 
-<<<<<<< HEAD
-export default function SignupForm() {
-  const { signup } = useAuth() ; 
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const[password, setPassword] = useState("");
-  const[confirmPassword, setConfirmPassword] = useState(""); 
-  const [emailAddress, setEmailAddress] = useState("");
-
-  const handleSignup = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    signup({ emailAddress, password, confirmPassword })
-      .then((data) => {
-        setLoading(false)
-        if (data.status === "success") {
-          navigate("/dashboard");
-        } else {
-          alert(data.message || "Signup failed. Please try again.")
-        }
-      })
-      .catch((error) => {
-        setLoading(false)
-        alert("An error occurred. Please try again.")
-        console.error("Signup error:", error)
-      }).finally(() => {
-        setLoading(false);
-      });      
-  }
-
-  return (
-    <form 
-      onSubmit={handleSignup}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
-     
-=======
 export default function SignupForm({
   onSubmit,
   loading,
@@ -59,7 +23,6 @@ export default function SignupForm({
       onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
->>>>>>> ed3612eff1e47890ca40ffb7cce284e924e0fcc8
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
