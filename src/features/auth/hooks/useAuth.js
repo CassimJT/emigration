@@ -135,6 +135,7 @@ export function useAuth() {
         confirmPassword: payload.confirmPassword,
         verificationSessionId,
       }
+      console.log('Signup payload:', dataPayload)
 
       const data = await apiSignup(dataPayload)
 
