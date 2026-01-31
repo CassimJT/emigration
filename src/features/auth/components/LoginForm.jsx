@@ -5,8 +5,6 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-import { AUTH_FLOW } from "@/utils/constants"
-import { useAuth } from "../hooks/useAuth"
 
 export default function LoginForm({
   values,

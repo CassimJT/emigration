@@ -24,15 +24,18 @@ export function usePassportApplication() {
 
   // Save data for a specific step
   const saveStepData = (step, data) => {
+    console.log('Saving data for step', step, data) 
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
+    console.log('Updated stepsData:', {...stepsData, [step]: data})
   }
 
   // Submit the full application
   const submitApplication = async () => {
     try {
+      console.log('Submitting application with data:', stepsData)
       let response
       if (!applicationId) {
         // Create new application

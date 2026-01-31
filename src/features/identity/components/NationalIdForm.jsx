@@ -1,12 +1,10 @@
 
-import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import { Loader2 } from "lucide-react"
-import { useIdentityVerification } from "../hooks/useIdentityVerification"
 
 export default function NationalIdForm({
   onSubmit,
@@ -40,7 +38,6 @@ export default function NationalIdForm({
         <Input 
           className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-gray-500 text-lg"
           id="nationalId" 
-          onChange = {(e)=>setNationalId(e.target.value)}
           name="nationalId"
           type="text" 
           placeholder="Enter National ID" 

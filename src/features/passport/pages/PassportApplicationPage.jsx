@@ -4,22 +4,84 @@ import React from "react";
  import PassportTypeStep from '../components/PassportTypeStep';
  import PersonalInfoStep from '../components/PersonalInfoStep';
  import ReviewStep from '../components/ReviewStep';
+ import { usePassportApplication } from '../hooks/usePassportApplication';
+ import { useNavigate } from "react-router-dom";
 
 
 function PassportApplicationPage() {
+  const navigate = useNavigate();
+   const [passportTypeData, setPassportTypeData] = useState({
+        passportType: 'Ordinary',
+        serviceType: 'Normal',
+        bookletType: '36 Pages',
+   });
 
-   const [step, setStep] = useState(1);
-   const [formData, setFormData] = useState({});
-  //const step = 1;
+   const [personalInfoStepData,setPersonalInfoStepData] = useState({
+        name: '',
+        surname: '',
+        email: '',
+        residentialStatus: 'Ordinary',
+        occupation: 'Ordinary',
+   })
 
-  const handleNext = (data) => {
-    setFormData((prev) => ({ ...prev, ...data }));
-    if (step < 3) setStep(step + 1);
-  };
+   const { 
+    currentStep,
+    nextStep,
+    previousStep,
+    saveStepData,
+    stepsData,
+    submitApplication } = usePassportApplication();
 
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
+    const preparePayload = () => {
+
+      if (currentStep === 0) {
+        return {
+          passportType: passportTypeData.passportType.trim(),
+          serviceType: passportTypeData.serviceType.trim(),
+          bookletType: passportTypeData.bookletType.trim()
+        }
+      }
+
+      else if (currentStep === 1) {
+        return {
+          name: personalInfoStepData.name.trim(),
+          surname: personalInfoStepData.surname.trim(),
+          email: personalInfoStepData.email.trim(),
+          residentialStatus: personalInfoStepData.residentialStatus.trim() || 'Ordinary',
+          occupation: personalInfoStepData.occupation.trim() || 'Ordinary',
+        }
+      }
+
+      return {};
+    }
+    const handleChange = (e) => {
+      const { id, value } = e.target;
+
+      if (currentStep === 0) {
+        setPassportTypeData((prev) => ({ ...prev, [id]: value }));
+      } else if (currentStep === 1) {
+        setPersonalInfoStepData((prev) => ({ ...prev, [id]: value }));
+      }
+    };
+
+    const handleNext = (e) => {
+      e.preventDefault();
+      if(currentStep === 2){
+        submitApplication();
+        navigate('/passport/status');
+        return; 
+      }
+      const payload = preparePayload();
+      saveStepData(currentStep + 1, payload);
+      nextStep();
+    };
+
+    const formData = {
+      ...stepsData[1],
+      ...stepsData[2],
+    };      
+
+  
   
 
   return(
@@ -31,28 +93,38 @@ function PassportApplicationPage() {
         </h1>
 
         {/* Progress */}
-        <ProgressIndicator currentStep={step} />
+        <ProgressIndicator currentStep={currentStep} />
 
         {/* Form Card */}
         <div className="mt-8 rounded-xl bg-white p-8 shadow-sm">
-          {step === 1 && (
-            <PassportTypeStep 
-              onNext={handleNext} 
+          {currentStep === 0 && (
+            <PassportTypeStep
+              passportType={passportTypeData.passportType}
+              serviceType={passportTypeData.serviceType}
+              bookletType={passportTypeData.bookletType}
+              onChange={handleChange} 
+              onSubmit={handleNext} 
               initialData={formData} 
             />
           )}
-          {step === 2 && (
-            <PersonalInfoStep 
-              onNext={handleNext} 
-              onBack={handleBack} 
+          {currentStep === 1 && (
+            <PersonalInfoStep
+              name={personalInfoStepData.name}
+              surname={personalInfoStepData.surname}
+              email={personalInfoStepData.email}
+              residentialStatus={personalInfoStepData.residentialStatus}
+              occupation={personalInfoStepData.occupation}
+              onBack={previousStep}
+              onChange={handleChange}
+              onSubmit={handleNext} 
               initialData={formData} 
             />
           )}
-          {step === 3 && (
+          {currentStep === 2 && (
             <ReviewStep 
               data={formData} 
-              onBack={handleBack} 
-              // onSubmit={() => console.log('Submit:', formData)}
+              onBack={previousStep} 
+              onClick={handleNext}
             />
           )}
         </div>

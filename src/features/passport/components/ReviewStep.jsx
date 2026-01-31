@@ -1,7 +1,17 @@
 // passport/components/ReviewStep.jsx
-export default function ReviewStep({ data, onBack }) {
+import React from "react";
+import { cn } from "@/lib/utils";
+export default function ReviewStep({
+   data,
+   className,
+   onClick, 
+   onBack,
+   ...props
+  }) {
+
+
   return (
-    <div className="space-y-8">
+    <div className={cn("space-y-8",className)} {...props}>
       <h2 className="text-2xl font-bold text-gray-800 text-center">
         Review Your Application
       </h2>
@@ -65,7 +75,7 @@ export default function ReviewStep({ data, onBack }) {
 
         <button
           type="button"
-          // onClick={() => handleFinalSubmit(data)} ← you can add later
+          onClick={onClick}
           className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         >
           Submit Application
