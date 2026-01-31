@@ -21,10 +21,12 @@ export function usePassportApplication() {
   // Data Management
 
   const saveStepData = (step, data) => {
+    console.log('Saving data for step', step, data) 
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
+    console.log('Updated stepsData:', {...stepsData, [step]: data})
   }
 
   const resetApplication = () => {

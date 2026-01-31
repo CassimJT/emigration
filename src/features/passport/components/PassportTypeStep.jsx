@@ -1,20 +1,21 @@
 // passport/components/PassportTypeStep.jsx
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
-export default function PassportTypeStep({ onNext, initialData }) {
-  const [form, setForm] = useState({
-    passportType: initialData.passportType || 'Ordinary',
-    serviceType: initialData.serviceType || 'Normal',
-    bookletType: initialData.bookletType || '36 Pages',
-  });
+export default function PassportTypeStep({ 
+  onChange,
+  onSubmit,
+  className,
+  loading,
+  passportType,
+  serviceType,
+  bookletType,
+  ...props
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onNext(form);
-  };
+}) {
+  
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className={cn("space-y-6", className)} {...props}>
       <h2 className="text-xl font-semibold text-gray-800">Passport Details</h2>
 
       <div className="space-y-4">
@@ -23,8 +24,9 @@ export default function PassportTypeStep({ onNext, initialData }) {
             Passport Type
           </label>
           <select
-            value={form.passportType}
-            onChange={(e) => setForm({ ...form, passportType: e.target.value })}
+            id='passportType'
+            value={passportType}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option>Ordinary</option>
@@ -38,8 +40,9 @@ export default function PassportTypeStep({ onNext, initialData }) {
             Service Type
           </label>
           <select
-            value={form.serviceType}
-            onChange={(e) => setForm({ ...form, serviceType: e.target.value })}
+            id='serviceType'
+            value={serviceType}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option>Normal</option>
@@ -52,8 +55,9 @@ export default function PassportTypeStep({ onNext, initialData }) {
             Booklet Type
           </label>
           <select
-            value={form.bookletType}
-            onChange={(e) => setForm({ ...form, bookletType: e.target.value })}
+            id='bookletType'
+            value={bookletType}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option>36 Pages</option>
@@ -65,9 +69,17 @@ export default function PassportTypeStep({ onNext, initialData }) {
       <div className="flex justify-end pt-4">
         <button
           type="submit"
+          disabled={loading}
           className="rounded-full bg-orange-500 px-8 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
         >
-          Next →
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Loading...
+            </>
+          ) : (
+            "Next"
+          )}
         </button>
       </div>
     </form>
