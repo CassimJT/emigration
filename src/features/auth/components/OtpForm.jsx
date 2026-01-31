@@ -65,15 +65,14 @@ export default function OtpForm({
       )}
 
       <div className="flex flex-col items-center justify-center gap-6 mt-6">
-        <InputOTP
-          maxLength={4}
-          value={otp}
-          onChange={setOtp}
-          disabled={loading}
+        <InputOTP 
+        maxLength={6} 
+        disabled={loading}
+        onChange={(value) => setOtp(value)}
         >
           <InputOTPGroup className="flex gap-4">
-            {[0, 1, 2, 3].map((index) => (
-              <InputOTPSlot
+            {[0, 1, 2, 3, 4, 5].map((index) => (
+              <InputOTPSlot 
                 key={index}
                 index={index}
                 className="h-14 w-14 rounded-xl border-2 border-black text-2xl"
