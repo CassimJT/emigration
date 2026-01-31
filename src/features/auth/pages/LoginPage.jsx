@@ -28,15 +28,12 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await login({ credentials: preparePayload() }) 
-  }
-
-  useEffect(() => {
-    if (status === 'success') {
-      navigate('/OTP')
+    const data = await login({ credentials: preparePayload() }) 
+    if (data?.status === 'success') {
       clearStatus()
+      navigate('/otp')
     }
-  }, [status, navigate, clearStatus])
+  }
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
