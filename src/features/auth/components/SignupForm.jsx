@@ -11,23 +11,14 @@ export default function SignupForm({
   onSubmit,
   loading,
   className,
+  onChange,
+  error,
   ...props
 }) {
-  const navigate = useNavigate()
-
-  const handleSignup = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev
-      navigate("/login")
-    }
-  }
 
   return (
     <form 
-      onSubmit={handleSignup}
+      onSubmit={onSubmit}
       className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
       {...props}
     >
@@ -40,7 +31,12 @@ export default function SignupForm({
         <h1 className="text-xl font-bold">Create Account</h1>
         <p className="text-sm text-gray-600">Join us to start your application process</p>
       </div>
-      
+       {/* error message display */}
+         {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       <div className="grid gap-3 mt-4">
         <div className="grid gap-1.5">
           <Label htmlFor="email" className="font-bold text-base">Email</Label>
@@ -52,6 +48,7 @@ export default function SignupForm({
             placeholder="Enter your email" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
 
@@ -65,6 +62,7 @@ export default function SignupForm({
             placeholder="Create a password" 
             required 
             disabled={loading}
+            onChange
           />
         </div>
           
@@ -78,6 +76,7 @@ export default function SignupForm({
             placeholder="Confirm your password" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
       </div>

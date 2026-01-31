@@ -1,29 +1,27 @@
-import React from "react"
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 
-export default function LoginForm({ phoneNumber, onChange, onSubmit, loading, className, ...props }) {
-  const navigate = useNavigate()
-
-  const handleLogin = (e) => {
-    if (onSubmit) {
-      onSubmit(e)
-    } else {
-      e.preventDefault()
-      // Fallback for demo/dev if onSubmit prop isn't provided
-      navigate("/otp")
-    }
-  }
-
+export default function LoginForm({
+  values,
+  onChange,
+  onSubmit,
+  error,
+  loading,
+  className,
+  ...props
+}) {
   return (
-    <form 
-      onSubmit={handleLogin}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+    <form
+      onSubmit={onSubmit}
+      className={cn(
+        "flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl",
+        className
+      )}
       {...props}
     >
       <div className="flex flex-col items-center gap-1 text-center">
@@ -33,43 +31,59 @@ export default function LoginForm({ phoneNumber, onChange, onSubmit, loading, cl
           className="opacity-50 w-32 h-32 mx-auto"
         />
         <h1 className="text-xl font-bold">Log In</h1>
-        <p className="text-sm text-gray-600">Enter your credentials to access your account</p>
+        <p className="text-sm text-gray-600">
+          Enter your credentials to access your account
+        </p>
       </div>
-      
+
       <div className="grid gap-3 mt-4">
+        {error && (
+          <p className="text-sm text-red-600 mt-1 text-center">{error}</p>
+        )}
+
         <div className="grid gap-1.5">
-          <Label htmlFor="username" className="font-bold text-base">Username</Label>
-          <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            id="username" 
-            name="username"
-            type="text" 
-            placeholder="Enter username" 
-            required 
+          <Label htmlFor="email" className="font-bold text-base">
+            Email
+          </Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Enter email"
+            autoComplete="email"
+            required
             disabled={loading}
+            value={values.email}
+            onChange={onChange}
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
           />
         </div>
 
         <div className="grid gap-1.5">
-          <Label htmlFor="password" className="font-bold text-base">Password</Label>
-          <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            id="password" 
+          <Label htmlFor="password" className="font-bold text-base">
+            Password
+          </Label>
+          <Input
+            id="password"
             name="password"
-            type="password" 
-            placeholder="Enter password" 
-            required 
+            type="password"
+            placeholder="Enter password"
+            autoComplete="current-password"
+            required
             disabled={loading}
+            value={values.password}
+            onChange={onChange}
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
           />
         </div>
       </div>
 
       <div className="flex flex-col items-center gap-4 mt-4">
-        <Button 
+        <Button
           size="lg"
           type="submit"
           disabled={loading}
-          className="rounded-full text-base w-full max-w-[200px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold" 
+          className="rounded-full text-base w-full max-w-[200px] h-12 bg-orange-500 hover:bg-orange-400 font-semibold"
         >
           {loading ? (
             <>
@@ -80,17 +94,17 @@ export default function LoginForm({ phoneNumber, onChange, onSubmit, loading, cl
             "Log in"
           )}
         </Button>
-        
+
         <div className="text-sm">
           <span>Don't have an account? </span>
-          <Link 
+          <Link
             to="/signup"
             className="font-semibold text-blue-600 hover:underline"
           >
             Create account
           </Link>
         </div>
-      </div> 
+      </div>
     </form>
   )
 }

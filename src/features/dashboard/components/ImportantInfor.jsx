@@ -7,7 +7,7 @@ import passport from "@/assets/dashboard/overview/passport.png"
 import { Button } from '@/components/ui/button'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 
-export default function ImportantInfor() {
+export default function ImportantInformation() {
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -79,11 +79,11 @@ export default function ImportantInfor() {
         <Card className="w-full border-l-4 border-l-amber-500 shadow-sm overflow-hidden transition-all duration-300">
             <button 
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-4 bg-amber-50/50 hover:bg-amber-50 transition-colors text-left"
+                className="w-full flex items-center gap-4 p-4 bg-amber-50/50 hover:bg-amber-50 transition-colors text-left"
             >
                 <div className="flex items-center gap-2">
                     <Info className="h-5 w-5 text-amber-600" />
-                    <h3 className="font-semibold text-gray-900">Important Information</h3>
+                    <h3 className="font-semibold text-gray-900">Click here for more Information</h3>
                 </div>
                 {isOpen ? (
                     <ChevronUp className="h-5 w-5 text-gray-500" />
@@ -113,28 +113,32 @@ export default function ImportantInfor() {
                         </ul>
                     </div>
 
-                    <div className="p-4 pt-0 space-y-3 bg-amber-50/30">
+                    
+                </div>
+            </div>
+
+            <div className="p-4 pt-0 space-y-3 bg-amber-50/30">
                         <Separator className="bg-amber-200/50 mb-3" />
                         <h3 className="text-lg font-semibold mb-4 text-slate-600">
                             Passport Types
                         </h3>
                     <div className='flex flex-col sm:flex-row gap-y-4 items-center sm:justify-between'>
-                        <ScrollArea className="w-full whitespace-nowrap rounded-md pb-4">
-                            <div className="flex w-full space-x-2 py-4">
-                                {passportTypes.map((type) => (
-                                    <div key={type.id} className="flex-shrink-0 flex gap-2 flex-col items-center text-sm text-gray-700 leading-relaxed min-w-[150px]">
-                                        <span className="flex h-5 w-auto justify-center rounded-full text-xs font-black text-slate-500 mt-0.5">
-                                        {type.name}
-                                        </span>
-                                        <img src={passport} 
-                                            alt="passport" 
-                                            className="w-18 h-18 object-cover rounded-md shadow-sm" />
-                                        <span className='font-bold bg-slate-200 px-3 py-1 rounded-full border border-amber-500 text-slate-500'>
-                                            MK {type.price.toLocaleString()}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
+                    <ScrollArea className="w-full whitespace-nowrap rounded-md pb-4">
+                    <div className="flex w-full space-x-2 py-4">
+                    {passportTypes.map((type) => (
+                    <div key={type.id} className="flex-shrink-0 flex gap-2 flex-col items-center text-sm text-gray-700 leading-relaxed min-w-[150px]">
+                        <span className="flex h-5 w-auto justify-center rounded-full text-xs font-black text-slate-500 mt-0.5">
+                            {type.name}
+                        </span>
+                        <img src={passport} 
+                            alt="passport" 
+                            className="w-18 h-18 object-cover rounded-md shadow-sm" />
+                        <span className='font-bold bg-slate-200 px-3 py-1 rounded-full border border-amber-500 text-slate-500'>
+                            MK {type.price.toLocaleString()}
+                        </span>
+                        </div>
+                    ))}
+                    </div>
                             <ScrollBar orientation="horizontal" />
                         </ScrollArea>
                         <Button
@@ -146,8 +150,6 @@ export default function ImportantInfor() {
                         </Button>
                     </div>
                 </div>
-                </div>
-            </div>
         </Card>
     );
 }
