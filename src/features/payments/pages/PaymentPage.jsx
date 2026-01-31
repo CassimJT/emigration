@@ -17,7 +17,7 @@ function PaymentPage() {
   //prepare payment payload
   const preparePayload = () => {
     return {
-      passportFees: paymentState.amount,
+      passportFee: paymentState.amount,
       passportID: paymentState.passportID,
     }
   } 
@@ -44,7 +44,17 @@ function PaymentPage() {
 
   //set payment state on component mount
   React.useEffect(() => {
-    const passportFee = import.meta.env.VITE_PASSPORT_FEES.standard
+    let passportFee = 50000
+    try {
+      const feesStr = import.meta.env.VITE_PASSPORT_FEES
+      if (feesStr) {
+        // If it's a string (expected), parse it. If somehow already an object, use it.
+        const fees = typeof feesStr === 'string' ? JSON.parse(feesStr) : feesStr
+        passportFee = parseInt(fees.standard) 
+      }
+    } catch (e) {
+      console.warn("Failed to parse passport fees from env:", e)
+    }
     setPaymentState({ amount: passportFee, passportID: 'dev_002' })
   }, [])
   
@@ -69,7 +79,7 @@ function PaymentPage() {
             
             <div className="flex flex-col items-center justify-center mt-8 pt-6 border-t border-slate-100">
               <Button 
-                disabled={isLoading || paymentState.amount}
+                disabled={isLoading || !paymentState.amount}
                 className="w-[61%] rounded-full max-h-[40px] h-auto text-xs sm:text-lg 
                           font-bold shadow-lg bg-[rgb(22,168,179)] hover:bg-[rgb(82,217,226)] text-white transition-all 
                           transform hover:-translate-y-0.5 active:scale-[0.98] flex flex-row items-center justify-center gap-2"
