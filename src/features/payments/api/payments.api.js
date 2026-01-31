@@ -6,7 +6,7 @@ export async function initiatePayment(payload) {
     const { data } = await api.post('/payments/init', payload)
     return data
   } catch (error) {
-    return handleError(error)
+    throw handleError(error)
   }
 }
 
@@ -16,7 +16,7 @@ export async function verifyPayment(reference) {
     const { data } = await api.get(`/payments/verify/${reference}`)
     return data
   } catch (error) {
-    return handleError(error)
+    throw handleError(error)
   }
 }
 
@@ -26,7 +26,7 @@ export async function fetchPaymentHistory() {
     const { data } = await api.get('/payments/history')
     return data
   } catch (error) {
-    return handleError(error)
+    throw handleError(error)
   }
 }
 

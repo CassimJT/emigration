@@ -30,9 +30,11 @@ export function usePayments() {
       }
 
       return { success: true, redirectUrl }
-
     } catch (err) {
-      const errorMessage = err.message || "Unexpected error occurred."
+      // If error is due to auth (redirecting), we might not want to show an error message
+      // But typically, the redirect happens, so this might not even be seen.
+      // We should extract the message properly.
+      const errorMessage = err.message || err.error || "Unexpected error occurred."
       setError(errorMessage)
       console.error('Error starting payment:', err)
       throw err 
