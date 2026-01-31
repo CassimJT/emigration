@@ -4,11 +4,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+
 
 export default function SignupForm({
   onSubmit,
+  values,
   loading,
   className,
   onChange,
@@ -44,7 +46,8 @@ export default function SignupForm({
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
             id="email" 
             name="email"
-            type="email" 
+            type="email"
+            value={values.email}
             placeholder="Enter your email" 
             required 
             disabled={loading}
@@ -55,14 +58,15 @@ export default function SignupForm({
         <div className="grid gap-1.5">
           <Label htmlFor="password" className="font-bold text-base">Password</Label>
           <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg" 
             id="password" 
             name="password"
             type="password" 
+            value={values.password}
             placeholder="Create a password" 
             required 
             disabled={loading}
-            onChange
+            onChange={onChange}
           />
         </div>
           
@@ -73,6 +77,7 @@ export default function SignupForm({
             id="confirmPassword" 
             name="confirmPassword"
             type="password" 
+            value={values.confirmPassword}
             placeholder="Confirm your password" 
             required 
             disabled={loading}
