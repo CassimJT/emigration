@@ -1,48 +1,27 @@
 import React from "react"
-import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
-import { useNavigate, Link } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
-import { useAuth } from "../hooks/useAuth"
 
-export default function SignupForm() {
-  const { signup } = useAuth() ; 
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const[password, setPassword] = useState("");
-  const[confirmPassword, setConfirmPassword] = useState(""); 
-  const [emailAddress, setEmailAddress] = useState("");
-
-  const handleSignup = (e) => {
-    e.preventDefault()
-    setLoading(true)
-    signup({ emailAddress, password, confirmPassword })
-      .then((data) => {
-        setLoading(false)
-        if (data.status === "success") {
-          navigate("/dashboard");
-        } else {
-          alert(data.message || "Signup failed. Please try again.")
-        }
-      })
-      .catch((error) => {
-        setLoading(false)
-        alert("An error occurred. Please try again.")
-        console.error("Signup error:", error)
-      }).finally(() => {
-        setLoading(false);
-      });      
-  }
+export default function SignupForm({
+  onSubmit,
+  values,
+  loading,
+  className,
+  onChange,
+  error,
+  ...props
+}) {
 
   return (
     <form 
-      onSubmit={handleSignup}
-      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl")} 
-     
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6 p-6 md:p-8 pb-12 bg-gray-200 rounded-xl", className)} 
+      {...props}
     >
       <div className="flex flex-col items-center gap-1 text-center">
         <img
@@ -53,19 +32,25 @@ export default function SignupForm() {
         <h1 className="text-xl font-bold">Create Account</h1>
         <p className="text-sm text-gray-600">Join us to start your application process</p>
       </div>
-      
+       {/* error message display */}
+         {error && (
+          <p className="text-sm text-red-600 mt-1">
+            {error}
+          </p>
+        )}
       <div className="grid gap-3 mt-4">
         <div className="grid gap-1.5">
           <Label htmlFor="email" className="font-bold text-base">Email</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            onChange={(e) => setEmailAddress(e.target.value)} 
-            id="emailAddress" 
-            name="emailAddress"
-            type="email" 
+            id="email" 
+            name="email"
+            type="email"
+            value={values.email}
             placeholder="Enter your email" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
 
@@ -73,13 +58,14 @@ export default function SignupForm() {
           <Label htmlFor="password" className="font-bold text-base">Password</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            onChange={(e) => setPassword(e.target.value)} 
             id="password" 
             name="password"
             type="password" 
+            value={values.password}
             placeholder="Create a password" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
           
@@ -87,13 +73,14 @@ export default function SignupForm() {
           <Label htmlFor="confirmPassword" className="font-bold text-base">Confirm Password</Label>
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-            onChange={(e) => setConfirmPassword(e.target.value)}  
             id="confirmPassword" 
             name="confirmPassword"
             type="password" 
+            value={values.confirmPassword}
             placeholder="Confirm your password" 
             required 
             disabled={loading}
+            onChange={onChange}
           />
         </div>
       </div>

@@ -46,8 +46,16 @@ function handleError(error) {
   if (error.response) {
     return error.response.data
   } else if (error.request) {
-    return { status: 500, statusText: 'Failed', message: 'No response from server' }
+    return { 
+      status: 500, 
+      statusText: 'Failed', 
+      message: 'No response from server' 
+    }
   } else {
-    return { status: 500, statusText: 'Failed', message: error.message }
+    return { 
+      status: 500, 
+      statusText: 'Failed', 
+      message: error.message 
+    }
   }
 }
