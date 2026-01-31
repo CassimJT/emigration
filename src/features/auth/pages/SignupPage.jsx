@@ -1,76 +1,59 @@
-import React from 'react'
+import React, { use, useEffect } from 'react'
 import SignupForm from '../components/SignupForm'
 import LoginAvatar from "@/assets/LoginAvatar.png"
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 
 function SignupPage() {
-  const [formState, setFormState] = React.useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-  })
-  const [passwordMatchError, setPasswordMatchError] = React.useState(null);
-  const navigate = useNavigate();
+  //form state
+  const [formState, setFormState] = React.useState({ email: '', password: '', confirmPassword: '' })
+  const navigate = useNavigate()
+  
+  const { 
+    signup,
+    error,  
+    loading,
+    status
+  } = useAuth()
 
-  const {
-        signup,
-        loading,
-        status,
-        error,
-        clearStatus
-    } = useAuth();
-
-  const preparePayload = () => {
+  //prepare signup payload
+  const preparePayload = () => {  
     return {
       emailAddress: formState.email.trim(),
-      password: formState.password.trim(),
-      confirmPassword: formState.confirmPassword.trim(),
+      password: formState.password,
+      confirmPassword: formState.confirmPassword,
     }
   }
-
+  //handling signup form field changes
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormState((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }))
+    setFormState((prev) => ({ ...prev, [name]: value }))
   }
-
-  const checkPasswordMatch = () => {
-    if (formState.password !== formState.confirmPassword) {
-      setPasswordMatchError("Passwords do not match");
-      return false;
-    }
-    setPasswordMatchError(null);
-    return true;
-  }
-
+  //handling signup form submission
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (checkPasswordMatch()) {
-      await signup(preparePayload())
-    }
-  } 
-
-  React.useEffect(() => {
+    const payload = preparePayload()
+    await signup(payload)
+    
+  }
+  useEffect(() => {   
+    if (!status) return
     if (status === 'success') {
-      navigate('/dashboard');
-      clearStatus();
+      navigate('/login', {replace: true})
     }
-  }, [status, navigate, clearStatus]);
+  }, [status,navigate])
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
         <div className="w-full max-w-xl">
-          <SignupForm 
-            values={formState}
-            onChange={handleChange}
-            onSubmit={handleSubmit}
-            loading={loading}
-            error={passwordMatchError ? passwordMatchError : error}
-          />
+          <SignupForm />
+          values={formState}
+          onChange={handleChange}
+          onSubmit={handleSubmit}
+          loading={loading}
+          error={error}
+         status={status}
         </div>
       </div>
       <div className="hidden lg:flex sticky top-0 h-screen items-center justify-center bg-green-100">
