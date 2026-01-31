@@ -29,6 +29,7 @@ export function usePassportApplication() {
     console.log('Updated stepsData:', {...stepsData, [step]: data})
   }
 
+  //resetApplication
   const resetApplication = () => {
     setCurrentStep(0)
     setStepsData({})
@@ -40,6 +41,7 @@ export function usePassportApplication() {
 
   // API Operations
 
+  //loadApplication
   const loadApplication = async (id) => {
     if (!id) return
     setLoading(true)
@@ -65,7 +67,7 @@ export function usePassportApplication() {
       setLoading(false)
     }
   }
-
+  //  createNewApplication
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
@@ -89,7 +91,7 @@ export function usePassportApplication() {
       setLoading(false)
     }
   }
-
+//updateExistingApplication
   const updateExistingApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
@@ -116,7 +118,7 @@ export function usePassportApplication() {
       setLoading(false)
     }
   }
-
+//submitFinalApplication
   const submitFinalApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
