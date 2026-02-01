@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
@@ -6,7 +6,6 @@ import { useAuth } from "../hooks/useAuth"
 
 function OtpVerificationPage() {
   const navigate = useNavigate()
-
   const {
     verifyOtp,
     loading,
@@ -15,37 +14,34 @@ function OtpVerificationPage() {
     loginSessionId,
     clearStatus,
     isAuthReady,
-    isAuthenticated,
   } = useAuth()
 
-  /* ---------------- Guard ---------------- */
+  // Guard: no active OTP session → redirect to login
   useEffect(() => {
-    if (!isAuthReady) return
-
-    if (!loginSessionId && !isAuthenticated) {
+    if (isAuthReady && !loginSessionId) {
       navigate("/login", { replace: true })
     }
-  }, [isAuthReady, loginSessionId, isAuthenticated, navigate])
+  }, [isAuthReady, loginSessionId, navigate])
 
-  /* ---------------- Success ---------------- */
+  // Side effects based on backend status
   useEffect(() => {
-    if (!isAuthReady) return
-
     if (status === "success") {
       navigate("/dashboard", { replace: true })
       clearStatus()
     }
-  }, [status, isAuthReady, navigate, clearStatus])
+  }, [status, navigate, clearStatus])
 
   const handleSubmit = async ({ otp }) => {
-    await verifyOtp({ otp })
+    try {
+      await verifyOtp({ otp })
+    } catch {
+      // errors handled by useAuth
+    }
   }
 
   const handleResend = async () => {
     console.log("Resend OTP requested")
   }
-
-  if (!isAuthReady) return null
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
