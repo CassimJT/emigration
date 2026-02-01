@@ -57,7 +57,7 @@ export function useAuth() {
       }
 
       const data = await apiLogin(payload)
-
+      console.log('LOGIN RESPONSE:', data)
       if (!data || data.status !== 'success' || !data.loginSessionId) {
         setStatus(data?.status || 'failed')
         throw new Error(data?.message || 'Login failed')

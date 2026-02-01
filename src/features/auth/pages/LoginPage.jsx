@@ -27,13 +27,18 @@ function LoginPage() {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    const data = await login({ credentials: preparePayload() }) 
-    if (data?.status === 'success') {
-      clearStatus()
-      navigate('/otp')
+  e.preventDefault()
+    try {
+      const data = await login({ credentials: preparePayload() })
+      if (data?.status === 'success') {
+        clearStatus()
+        navigate('/otp')
+      }
+    } catch (err) {
+      // error already set by hook
     }
   }
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
