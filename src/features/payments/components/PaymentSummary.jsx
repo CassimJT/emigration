@@ -2,8 +2,8 @@ import React from 'react'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
-function PaymentSummary({ passportType = 'Official Passport', amount = 0, serviceFee = 0 }) {
-  const total = amount + serviceFee
+function PaymentSummary({ passportType = 'Official Passport', amount = 0 }) {
+  const total = amount 
 
   return (
     <Card className="h-fit sticky top-6 shadow-md border-slate-200 overflow-hidden">
@@ -14,7 +14,6 @@ function PaymentSummary({ passportType = 'Official Passport', amount = 0, servic
         {[
           { label: 'Passport type :', value: passportType },
           { label: 'Application Fee :', value: `MK ${amount.toLocaleString()}` },
-          { label: 'Service Charge :', value: `MK ${serviceFee.toLocaleString()}` }
         ].map((item, index) => (
           <div key={index} className="flex justify-between group">
             <span className="text-slate-500 group-hover:text-slate-700 transition-colors">
