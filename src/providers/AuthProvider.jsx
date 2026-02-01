@@ -11,58 +11,56 @@ import {
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
+  const isDev = import.meta.env.DEV
+
   const [isAuthReady, setIsAuthReady] = useState(false)
 
   const [user, setUser] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
 
-  // Hydrate from storage ONCE
+  /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-    const storedUser = getStoredUser()
+    const storedUser = isDev
+      ? { id: 'dev-123', name: 'Dev User', role: 'admin' }
+      : getStoredUser()
+
     const storedTemp = getTempSession()
 
-    setUser(storedUser || null)
-    setVerificationSessionId(storedTemp?.verificationSessionId || null)
-    setLoginSessionId(storedTemp?.loginSessionId || null)
+    if (storedUser) setUser(storedUser)
+    if (storedTemp?.verificationSessionId)
+      setVerificationSessionId(storedTemp.verificationSessionId)
+    if (storedTemp?.loginSessionId)
+      setLoginSessionId(storedTemp.loginSessionId)
 
     setIsAuthReady(true)
-  }, [])
+  }, [isDev])
 
   /* ---------------- Identity phase ---------------- */
 
   const startIdentitySession = (sessionId) => {
     setVerificationSessionId(sessionId)
-    setTempSession((prev) => ({
-      ...prev,
-      verificationSessionId: sessionId,
-    }))
+    setTempSession({ verificationSessionId: sessionId })
   }
 
   const clearIdentitySession = () => {
     setVerificationSessionId(null)
-    setTempSession((prev) => ({
-      ...prev,
-      verificationSessionId: null,
-    }))
+    setTempSession({})
   }
 
   /* ---------------- Login / OTP phase ---------------- */
 
   const startLoginSession = (sessionId) => {
     setLoginSessionId(sessionId)
-    setTempSession((prev) => ({
-      ...prev,
+    setTempSession({
+      verificationSessionId,
       loginSessionId: sessionId,
-    }))
+    })
   }
 
   const clearLoginSession = () => {
     setLoginSessionId(null)
-    setTempSession((prev) => ({
-      ...prev,
-      loginSessionId: null,
-    }))
+    setTempSession({ verificationSessionId })
   }
 
   /* ---------------- Authenticated phase ---------------- */
@@ -88,24 +86,18 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        // Readiness
-        isAuthReady,
-
-        // Authenticated state
         user,
         isAuthenticated: Boolean(user),
+        isAuthReady,
 
-        // Identity flow
         verificationSessionId,
         startIdentitySession,
         clearIdentitySession,
 
-        // Login/OTP flow
         loginSessionId,
         startLoginSession,
         clearLoginSession,
 
-        // Final auth
         login,
         logout,
       }}

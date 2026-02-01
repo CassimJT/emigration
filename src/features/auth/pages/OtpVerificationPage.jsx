@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from "../hooks/useAuth"
 
 function OtpVerificationPage() {
   const navigate = useNavigate()
@@ -18,8 +18,7 @@ function OtpVerificationPage() {
     isAuthenticated,
   } = useAuth()
 
-  // Success → dashboard
-  // Guard: wait for auth hydration before redirecting
+  /* ---------------- Guard ---------------- */
   useEffect(() => {
     if (!isAuthReady) return
 
@@ -28,7 +27,7 @@ function OtpVerificationPage() {
     }
   }, [isAuthReady, loginSessionId, isAuthenticated, navigate])
 
-
+  /* ---------------- Success ---------------- */
   useEffect(() => {
     if (!isAuthReady) return
 
@@ -39,18 +38,13 @@ function OtpVerificationPage() {
   }, [status, isAuthReady, navigate, clearStatus])
 
   const handleSubmit = async ({ otp }) => {
-    try {
-      await verifyOtp({ otp })
-    } catch {
-      // handled by hook state
-    }
+    await verifyOtp({ otp })
   }
 
   const handleResend = async () => {
     console.log("Resend OTP requested")
   }
 
-  // Prevent UI flash while auth state hydrates
   if (!isAuthReady) return null
 
   return (
