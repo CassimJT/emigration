@@ -19,7 +19,8 @@ export default function OtpForm({
 }) {
   const [otp, setOtp] = useState("")
 
-  const isComplete = otp.length === 4 && !otp.includes("")
+  const otpLength = 6
+  const isComplete = otp.length === otpLength
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -33,7 +34,6 @@ export default function OtpForm({
     onResend?.()
   }
 
-  // Optional UX: clear OTP when backend error changes
   useEffect(() => {
     if (error) setOtp("")
   }, [error])
@@ -66,12 +66,12 @@ export default function OtpForm({
 
       <div className="flex flex-col items-center justify-center gap-6 mt-6">
         <InputOTP 
-        maxLength={6} 
-        disabled={loading}
-        onChange={(value) => setOtp(value)}
+          maxLength={otpLength} 
+          disabled={loading}
+          onChange={(value) => setOtp(value)}
         >
           <InputOTPGroup className="flex gap-4">
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {Array.from({ length: otpLength }).map((_, index) => (
               <InputOTPSlot 
                 key={index}
                 index={index}
