@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth"
 
 function OtpVerificationPage() {
   const navigate = useNavigate()
+
   const {
     verifyOtp,
     loading,
@@ -13,35 +14,44 @@ function OtpVerificationPage() {
     status,
     loginSessionId,
     clearStatus,
+    isAuthReady,
+    isAuthenticated,
   } = useAuth()
 
-  // Guard: no active OTP session → redirect to login
+  // Success → dashboard
+  // Guard: wait for auth hydration before redirecting
   useEffect(() => {
-    if (!loginSessionId) {
+    if (!isAuthReady) return
+
+    if (!loginSessionId && !isAuthenticated) {
       navigate("/login", { replace: true })
     }
-  }, [loginSessionId, navigate])
+  }, [isAuthReady, loginSessionId, isAuthenticated, navigate])
 
-  // Side effects based on backend status
+
   useEffect(() => {
+    if (!isAuthReady) return
+
     if (status === "success") {
       navigate("/dashboard", { replace: true })
       clearStatus()
     }
-  }, [status, navigate, clearStatus])
+  }, [status, isAuthReady, navigate, clearStatus])
 
   const handleSubmit = async ({ otp }) => {
     try {
       await verifyOtp({ otp })
     } catch {
-      //...
+      // handled by hook state
     }
   }
 
   const handleResend = async () => {
-    //..
     console.log("Resend OTP requested")
   }
+
+  // Prevent UI flash while auth state hydrates
+  if (!isAuthReady) return null
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">

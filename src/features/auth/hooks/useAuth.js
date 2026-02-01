@@ -289,6 +289,7 @@ export function useAuth() {
   return {
     user,
     isAuthenticated,
+    isAuthReady,
     verificationSessionId,
     loginSessionId,
 
