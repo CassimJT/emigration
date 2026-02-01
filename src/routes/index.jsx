@@ -21,7 +21,8 @@ import IdentityVerificationPage from '@/features/identity/pages/IdentityVerifica
 import PassportApplicationPage from '@/features/passport/pages/PassportApplicationPage'
 import PaymentPage from '@/features/payments/pages/PaymentPage'
 import NotificationsPage from '@/features/notifications/pages/NotificationsPage'
-
+import PaymentSuccessPage from '@/features/payments/pages/PaymentSuccessPage'
+import PaymentFailedPage from '@/features/payments/pages/PaymentFailedPage'
 import { RoleRoute } from './RoleRoute'
 
 export const router = createBrowserRouter([
@@ -35,6 +36,8 @@ export const router = createBrowserRouter([
       { path: '/otp', element: <OtpVerificationPage /> },
       { path: '/unauthorized', element: <UnauthorizedPage /> },
       { path: '/identity/verify', element: <IdentityVerificationPage /> },
+      { path: '/payment/success', element: <PaymentSuccessPage /> },
+      { path: '/payment/failed', element: <PaymentFailedPage /> },
     ],
   },
 
@@ -63,6 +66,8 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardOverview /> },
           { path: 'passport/apply', element: <PassportApplicationPage /> },
           { path: 'payments', element: <PaymentPage /> },
+          { path: 'payment/success', element: <PaymentSuccessPage /> },
+          { path: 'payment/failed', element: <PaymentFailedPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
         ]
       },
