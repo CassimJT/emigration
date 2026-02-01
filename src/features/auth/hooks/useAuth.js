@@ -82,7 +82,6 @@ export function useAuth() {
   }
 }
 
-
   /* ---------------- VERIFY OTP (loginSessionId + otp → tokens) ---------------- */
 
   const verifyOtp = async ({ otp }) => {

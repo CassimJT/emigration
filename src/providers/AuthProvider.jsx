@@ -8,6 +8,8 @@ import {
   clearTempSession,
 } from '@/lib/storage'
 
+const AuthContext = createContext(null)
+
 export function AuthProvider({ children }) {
   const storedTemp = getTempSession()
 
@@ -90,4 +92,9 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+
+export function useAuthContext() {
+  return useContext(AuthContext)
 }
