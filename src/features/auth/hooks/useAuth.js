@@ -38,42 +38,50 @@ export function useAuth() {
   /* ---------------- LOGIN (credentials + verificationSessionId → OTP) ---------------- */
 
   const login = async ({ credentials }) => {
-    if (loading) return
-    if (!verificationSessionId) {
-      setStatus('failed')
-      setError('Identity verification required before login')
-      return
-    }
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const payload = {
-        emailAddress: credentials.emailAddress,
-        password: credentials.password,
-        verificationSessionId,
-      }
-
-      const data = await apiLogin(payload)
-      console.log('LOGIN RESPONSE:', data)
-      if (!data || data.status !== 'success' || !data.loginSessionId) {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Login failed')
-      }
-
-      startLoginSession(data.loginSessionId)
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Login failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
+  if (loading) return
+  if (!verificationSessionId) {
+    setStatus('failed')
+    setError('Identity verification required before login')
+    return Promise.reject(new Error('Missing verification session'))
   }
+
+  setLoading(true)
+  setError(null)
+  setStatus(null)
+
+  try {
+    const payload = {
+      emailAddress: credentials.emailAddress,
+      password: credentials.password,
+      verificationSessionId,
+    }
+
+    const data = await apiLogin(payload)
+
+    // Defensive: handle both thrown and returned errors
+    if (!data || data.status !== 'success' || !data.loginSessionId) {
+      const msg = data?.message || 'Login failed'
+      throw new Error(msg)
+    }
+
+    startLoginSession(data.loginSessionId)
+    setStatus('success')
+    return data
+  } catch (err) {
+    const message =
+      err?.message ||
+      err?.response?.data?.message ||
+      err?.message ||
+      'Login failed'
+
+    setStatus('failed')
+    setError(message)
+    throw err
+  } finally {
+    setLoading(false)
+  }
+}
+
 
   /* ---------------- VERIFY OTP (loginSessionId + otp → tokens) ---------------- */
 

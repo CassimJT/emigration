@@ -25,19 +25,17 @@ function LoginPage() {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
   }
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault()
-    try {
-      const data = await login({ credentials: preparePayload() })
-      if (data?.status === 'success') {
-        clearStatus()
-        navigate('/otp')
-      }
-    } catch (err) {
-      // error already set by hook
-    }
+  try {
+    const data = await login({ credentials: preparePayload() })
+    console.log('LOGIN PAGE RECEIVED:', data)
+    navigate('/otp')
+  } catch (err) {
+    console.error('LOGIN PAGE ERROR:', err)
   }
+}
+
 
 
   return (
