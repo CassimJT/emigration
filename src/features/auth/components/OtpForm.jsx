@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/input-otp"
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
-import { Loader2 } from "lucide-react"
+import { Loader2, MailSearch } from "lucide-react"
 
 export default function OtpForm({
   onSubmit,
@@ -15,12 +15,15 @@ export default function OtpForm({
   loading,
   error,
   className,
+  email,
   ...props
 }) {
   const [otp, setOtp] = useState("")
 
   const otpLength = 6
   const isComplete = otp.length === otpLength
+//ufunction for using masked email
+  const maskedEmailAddress = maskedEmail(email)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -37,6 +40,32 @@ export default function OtpForm({
   useEffect(() => {
     if (error) setOtp("")
   }, [error])
+
+  //Masking email when sending OTP
+  const maskedEmail = (emailString)=> {
+    if(!emailString || !emailString.includes("@")) 
+      return emailString
+
+    //Spliitting email into username and domain
+    const [local, domain] = emailString.split("@")
+    //splitting domain into name and extension
+    const [domainFirstPart, extension] = domain.split(".")
+    
+    let maskedLocal= local
+    if (local.length >= 4) {
+      maskedLocal = local.slice(0,2) + "*".repeat(local.length - 4) + local.slice(-2)
+    }
+    else if (local.length > 1) {
+      maskedLocal = local[0] + "*".repeat(local.length - 1)
+    }
+
+    let maskedDomain = domain
+    if(domain.length > 3){
+      maskedDomain = domain.slice[0,1] + "*".repeat(domain.length - 3) + domain.slice(-1)
+    }
+    //cocnatenating masked local and domain parts
+    return `${maskedLocal}@${maskedDomain}.${extension}`
+  }
 
   return (
     <form
@@ -55,7 +84,7 @@ export default function OtpForm({
         />
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">
-          Enter the OTP sent to your verified email
+          Enter the OTP sent to your {maskedEmailAddress}
         </p>
       </div>
 
