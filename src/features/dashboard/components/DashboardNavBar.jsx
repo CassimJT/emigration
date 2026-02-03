@@ -5,7 +5,6 @@ import {
   CreditCard, 
   FileText, 
   HelpCircle,
-  History,
   LayoutDashboard, 
   LogOut, 
   MessageCircle,
@@ -43,12 +42,7 @@ const QUICK_LINKS = [
   { label: "Contact Support", icon: Phone, path: '/contacts' },
 ];
 
-/*
- * Side Navigation Bar Component.
- * Renders the main navigation menu, quick action links, and user profile section.
- * Designed to be responsive (used request sidebar on desktop and drawer content on mobile).
- * Accepts 'user' prop to display user details and handles 'onSignOut' for logging out.
- */
+
 
 function NavItem({ item, isActive, onClick }) {
   const Icon = item.icon;
@@ -180,4 +174,8 @@ export default function DashboardNavBar({
       />
     </aside>
   );
+}
+
+export{
+  DashboardNavBar,
 }
