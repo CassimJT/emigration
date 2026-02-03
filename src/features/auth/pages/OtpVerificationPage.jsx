@@ -10,7 +10,7 @@ function OtpVerificationPage() {
   const navigate = useNavigate()
   const {
     verifyOtp,
-    message,
+    user,
     loading,
     error,
     status,
@@ -19,8 +19,6 @@ function OtpVerificationPage() {
     isAuthenticated,
     clearStatus,
     isAuthReady,
-    
-    
   } = useAuth()
 
   /* -------- ROUTE GUARD -------- */
@@ -72,7 +70,7 @@ function OtpVerificationPage() {
             onResend={handleResend}
             loading={loading}
             error={error}
-            message={message}
+            user={user}
           />
         </div>
       </div>

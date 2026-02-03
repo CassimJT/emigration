@@ -17,7 +17,6 @@ export default function OtpForm({
   error,
   className,
   user,
-  message,
   ...props
 
   
@@ -65,10 +64,7 @@ export default function OtpForm({
         />
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">
-          Enter the OTP to verify your identity.
-        </p>
-        <p className="text-sm text-gray-600">
-         {message?? "OTP"} 
+          Enter the { user.message == null ?  "OTP sent to your email" : user.message } to verify your identity. 
         </p>
       </div>
 
