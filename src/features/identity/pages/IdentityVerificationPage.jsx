@@ -3,6 +3,7 @@ import NationalIdForm from '../components/NationalIdForm'
 import home from '@/assets/home/home.png'
 import { useNavigate } from 'react-router-dom'
 import { useIdentityVerification } from '../hooks/useIdentityVerification'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 
 function IdentityVerificationPage() {
   const [formState, setFormState] = useState({ nationalId: '' })
@@ -15,7 +16,11 @@ function IdentityVerificationPage() {
     status,
     clearStatus,
     resetVerification,
+    verificationSessionId,
+    isReady,
   } = useIdentityVerification()
+
+  const { isAuthenticated } = useAuth()
 
   const preparePayload = () => ({
     nationalId: formState.nationalId.trim(),
@@ -27,15 +32,40 @@ function IdentityVerificationPage() {
   }
 
   const handleSubmit = async (e) => {
-     e.preventDefault()
-    const payload = preparePayload()
-    const data = await startVerification(payload)
-  
-    if (data?.status === 'success') {
-      clearStatus()
-      navigate('/login')
+    e.preventDefault()
+    try {
+      await startVerification(preparePayload())
+    } catch {
+      // handled in hook
     }
   }
+
+  /* -------- ROUTE GUARD -------- */
+  useEffect(() => {
+    if (!isReady) return
+
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true })
+    } else if (verificationSessionId) {
+      navigate('/login', { replace: true })
+    } else {
+      resetVerification()
+    }
+  }, [
+    isReady,
+    isAuthenticated,
+    verificationSessionId,
+    resetVerification,
+    navigate,
+  ])
+
+  /* -------- STATUS SIDE EFFECT -------- */
+  useEffect(() => {
+    if (status === 'success') {
+      clearStatus()
+      navigate('/login', { replace: true })
+    }
+  }, [status, clearStatus, navigate])
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
