@@ -1,7 +1,8 @@
-import StatusCard from '@/features/dashboard/components/StatusCard'
-import CheckList from '@/features/dashboard/components/DashboardCheckList'
-import QuickActions from '@/features/dashboard/components/QuickActions'
-import ImportantInformation, { PassportTypes } from '@/features/dashboard/components/ImportantInfor';
+import StatusCard from '@/features/dashboard/components/StatusCard';
+import CheckList from '@/features/dashboard/components/DashboardCheckList';
+import QuickActions from '@/features/dashboard/components/QuickActions';
+import ImportantInformation from '@/features/dashboard/components/ImportantInfor';
+import PassportTypes from '@/features/dashboard/components/PassportTypes';
 
 /*
  * Dashboard Overview Layout Component.
@@ -21,9 +22,6 @@ export default function DashboardOverview() {
             </section>
             <section className="w-full">
                 <StatusCard />
-            </section>
-            <section className="w-full">
-                
             </section>
             
             <section className="flex flex-col sm:flex-row gap-10 w-full">

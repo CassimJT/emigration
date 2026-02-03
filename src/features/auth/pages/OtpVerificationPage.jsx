@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
 import { useAuth } from "../hooks/useAuth"
+//import { useAuth } from '@/features/auth/hooks/useAuth'
+
 
 function OtpVerificationPage() {
   const navigate = useNavigate()
   const {
     verifyOtp,
+    message,
     loading,
     error,
     status,
@@ -16,6 +19,8 @@ function OtpVerificationPage() {
     isAuthenticated,
     clearStatus,
     isAuthReady,
+    
+    
   } = useAuth()
 
   /* -------- ROUTE GUARD -------- */
@@ -57,6 +62,7 @@ function OtpVerificationPage() {
     console.log("Resend OTP requested")
   }
 
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
@@ -66,6 +72,7 @@ function OtpVerificationPage() {
             onResend={handleResend}
             loading={loading}
             error={error}
+            message={message}
           />
         </div>
       </div>

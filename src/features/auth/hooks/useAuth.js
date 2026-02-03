@@ -32,6 +32,7 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isAuthReady, setIsAuthReady] = useState(false)
+  const [message, setMessage] = useState(null)
 
   // Mark auth as ready after initial render
   useEffect(() => {
@@ -65,6 +66,8 @@ export function useAuth() {
       if (!data || data.status !== 'success' || !data.loginSessionId) {
         throw new Error(data?.message || 'Login failed')
       }
+      //setting the message
+      setMessage(data?.message )
 
       startLoginSession(data.loginSessionId)
       setStatus('success')
@@ -98,7 +101,7 @@ export function useAuth() {
       if (!data || data.status !== 'success' || !data.accessToken) {
         throw new Error(data?.message || 'OTP verification failed')
       }
-
+      
       finalizeLogin(data.user ?? user, {
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
@@ -128,6 +131,7 @@ export function useAuth() {
     isAuthReady,
     verificationSessionId,
     loginSessionId,
+    message,
 
     loading,
     error,
