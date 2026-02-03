@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { initiatePayment, verifyPayment, fetchPaymentHistory } from '@/features/payments/api/payments.api'
+import { useAuth } from '@/features/auth/hooks/useAuth'
 
 
 export function usePayments() {
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   
@@ -15,25 +17,23 @@ export function usePayments() {
     try {
       const response = await initiatePayment(payload)
       
-      // Extract redirect URL
-      let redirectUrl = null
-      if (response?.data?.checkout_url) {
-        redirectUrl = response.data.checkout_url
-      } else if (response?.checkout_url) {
-        redirectUrl = response.checkout_url
-      } else if (response?.url) {
-        redirectUrl = response.url
-      }
+      // Backend returns: 
+      // return res.status(200).json({
+      //   success: true,
+      //   message: "Checkout session created",
+      //   checkout_url: checkoutUrl,
+      //   tx_ref,
+      //   paymentId: newPayment._id 
+      // });
 
+      let redirectUrl = response?.checkout_url
+      
       if (!redirectUrl) {
-         throw new Error("Unexpected error occurred.")
+         throw new Error("Failed to get checkout URL from payment gateway.")
       }
 
-      return { success: true, redirectUrl }
+      return { success: true, redirectUrl, tx_ref: response.tx_ref }
     } catch (err) {
-      // If error is due to auth (redirecting), we might not want to show an error message
-      // But typically, the redirect happens, so this might not even be seen.
-      // We should extract the message properly.
       const errorMessage = err.message || err.error || "Unexpected error occurred."
       setError(errorMessage)
       console.error('Error starting payment:', err)
@@ -45,23 +45,37 @@ export function usePayments() {
 
   // Confirm or verify payment by reference
   const confirmPayment = async (reference) => {
+    setIsLoading(true)
+    setError(null)
     try {
       const response = await verifyPayment(reference)
       return response
-    } catch (error) {
-        console.error('Error confirming payment:', error)
-      throw error
+    } catch (err) {
+      const errorMessage = err.message || err.error || "Verification failed."
+      setError(errorMessage)
+      console.error('Error confirming payment:', err)
+      throw err
+    } finally {
+      setIsLoading(false)
     }
   }
 
   // Fetch payment history
   const getPaymentHistory = async () => {
+    if (!user?._id) return { success: false, message: 'User not authenticated' }
+    
+    setIsLoading(true)
+    setError(null)
     try {
-      const response = await fetchPaymentHistory()
+      const response = await fetchPaymentHistory(user._id)
       return response
-    } catch (error) {
-      console.error('Error fetching payment history:', error)
-      throw error
+    } catch (err) {
+      const errorMessage = err.message || err.error || "Failed to fetch history."
+      setError(errorMessage)
+      console.error('Error fetching payment history:', err)
+      throw err
+    } finally {
+      setIsLoading(false)
     }
   }
 
