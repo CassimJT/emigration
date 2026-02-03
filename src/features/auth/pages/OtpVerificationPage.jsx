@@ -10,15 +10,13 @@ function OtpVerificationPage() {
   const navigate = useNavigate()
   const {
     verifyOtp,
-    message,
+    user,
     loading,
     error,
     status,
     loginSessionId,
     clearStatus,
     isAuthReady,
-    
-    
   } = useAuth()
 
   // Guard: no active OTP session → redirect to login
@@ -58,7 +56,7 @@ function OtpVerificationPage() {
             onResend={handleResend}
             loading={loading}
             error={error}
-            message={message}
+            user={user}
           />
         </div>
       </div>
