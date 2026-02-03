@@ -1,60 +1,52 @@
 import { useState } from 'react'
 import {
   submitNationalId,
-  fetchVerificationStatus,
 } from '../api/identity.api'
 import { useAuthContext } from '@/providers/AuthProvider'
 
 export function useIdentityVerification() {
-  const { 
-    verificationSessionId, 
-    startIdentitySession, 
-    clearIdentitySession 
+  const {
+    verificationSessionId,
+    startIdentitySession,
+    clearIdentitySession,
   } = useAuthContext()
 
-  const [status, setStatus] = useState(null)
+  const [status, setStatus] = useState(null) 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  const clearStatus = () => setStatus(null)
+
   const startVerification = async (payload) => {
+    if (loading) return
     setLoading(true)
     setError(null)
+    setStatus(null)
 
-    const data = await submitNationalId(payload)
-    console.log('startVerification response:', data)
+    try {
+      const data = await submitNationalId(payload)
+      console.log('startVerification response:', data)
 
-    if (data?.status === 'success') {
-      startIdentitySession(data.referenceId) 
-      setStatus('PENDING')
-    } else {
-      setStatus('FAILED')
-      setError(data?.message || 'Verification failed')
+      if (!data || data.status !== 'success' || !data.referenceId) {
+        setStatus('failed')
+        throw new Error(data?.message || 'Verification failed')
+      }
+
+      startIdentitySession(data.referenceId)
+      setStatus('success') 
+      return data
+    } catch (err) {
+      setStatus('failed')
+      setError(err?.response?.data?.message || err.message || 'Verification failed')
+      throw err
+    } finally {
+      setLoading(false)
     }
-
-    setLoading(false)
-    return data
-  }
-
-  const checkStatus = async () => {
-    if (!verificationSessionId) return null
-
-    setLoading(true)
-    setError(null)
-
-    const data = await fetchVerificationStatus(verificationSessionId)
-
-    if (data?.status !== 'success') {
-      setError(data?.message || 'Failed to fetch status')
-    }
-
-    setStatus(data?.status || null)
-    setLoading(false)
-    return data
   }
 
   const resetVerification = () => {
     clearIdentitySession()
-    setStatus(null)
+    clearStatus()
     setError(null)
     setLoading(false)
   }
@@ -64,8 +56,8 @@ export function useIdentityVerification() {
     status,
     loading,
     error,
+    clearStatus,
     startVerification,
-    checkStatus,
     resetVerification,
   }
 }

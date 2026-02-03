@@ -1,47 +1,42 @@
-
 import LoginForm from '@/features/auth/components/LoginForm'
 import LoginAvatar from '@/assets/LoginAvatar.png'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
-
 function LoginPage() {
-  //form state
   const [formState, setFormState] = useState({ email: '', password: '' })
   const navigate = useNavigate()
 
-  const { 
-    login, 
-    error, 
-    loading, 
-    status 
+  const {
+    login,
+    error,
+    loading,
+    status,
+    clearStatus
   } = useAuth()
-//prepare login payload
-  const preparePayload = () => {
-    return {
-      emailAddress: formState.email.trim(),
-      password: formState.password,
-    }
-  }
-  //handle form field changes
+
+  const preparePayload = () => ({
+    emailAddress: formState.email.trim(),
+    password: formState.password,
+  })
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormState((prev) => ({ ...prev, [name]: value }))
   }
-  //handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const payload = preparePayload()
-    await login(payload)
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  try {
+    const data = await login({ credentials: preparePayload() })
+    console.log('LOGIN PAGE RECEIVED:', data)
+    navigate('/otp')
+  } catch (err) {
+    console.error('LOGIN PAGE ERROR:', err)
   }
+}
 
-  useEffect(() => {
-    if (!status) return
-    if (status === 'success') {
-      navigate('/OTP')
-    }
-  }, [status,navigate])
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -68,4 +63,3 @@ function LoginPage() {
 }
 
 export default LoginPage
-

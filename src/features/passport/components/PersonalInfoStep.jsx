@@ -1,31 +1,32 @@
 // passport/components/PersonalInfoStep.jsx
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
-export default function PersonalInfoStep({ onNext, onBack, initialData = {} }) {
-  const [form, setForm] = useState({
-    name: initialData.name || '',
-    surname: initialData.surname || '',
-    email: initialData.email || '',
-    residentialStatus: initialData.residentialStatus || 'Ordinary',
-    occupation: initialData.occupation || 'Ordinary',
-  });
+export default function PersonalInfoStep({  
+  onBack,
+  onSubmit,
+  onChange,
+  className,
+  name,
+  surname,
+  email,
+  residentialStatus,
+  occupation,
+  ...props   
+}) {
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onNext(form);
-  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={onSubmit} className={cn("space-y-6", className)} {...props}>
       <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">Name</label>
           <input
+            id='name'
             type="text"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={name}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
             placeholder="Name"
             required
@@ -35,9 +36,10 @@ export default function PersonalInfoStep({ onNext, onBack, initialData = {} }) {
         <div>
           <label className="block text-sm font-medium text-gray-700">Surname</label>
           <input
+          id='surname'
             type="text"
-            value={form.surname}
-            onChange={(e) => setForm({ ...form, surname: e.target.value })}
+            value={surname}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
             placeholder="Surname"
             required
@@ -48,9 +50,10 @@ export default function PersonalInfoStep({ onNext, onBack, initialData = {} }) {
       <div>
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
+          id='email'
           type="email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          value={email}
+          onChange={onChange}
           className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           placeholder="your.email@example.com"
           required
@@ -61,8 +64,9 @@ export default function PersonalInfoStep({ onNext, onBack, initialData = {} }) {
         <div>
           <label className="block text-sm font-medium text-gray-700">Current Residential Status</label>
           <select
-            value={form.residentialStatus}
-            onChange={(e) => setForm({ ...form, residentialStatus: e.target.value })}
+            id='residentialStatus'
+            value={residentialStatus}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option>Ordinary</option>
@@ -75,9 +79,10 @@ export default function PersonalInfoStep({ onNext, onBack, initialData = {} }) {
         <div>
           <label className="block text-sm font-medium text-gray-700">Occupation</label>
           <input
+            id='occupation'
             type="text"
-            value={form.occupation}
-            onChange={(e) => setForm({ ...form, occupation: e.target.value })}
+            value={occupation}
+            onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
             placeholder="Occupation"
           />

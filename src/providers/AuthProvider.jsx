@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import {
   setAuthSession,
   clearAuthSession,
@@ -13,19 +13,28 @@ const AuthContext = createContext(null)
 export function AuthProvider({ children }) {
   const isDev = import.meta.env.DEV
 
-  const storedTemp = getTempSession()
+  const [isAuthReady, setIsAuthReady] = useState(false)
 
-  const [user, setUser] = useState(
-    isDev ? { id: 'dev-123', name: 'Dev User', role: 'admin' } : getStoredUser()
-  )
+  const [user, setUser] = useState(null)
+  const [verificationSessionId, setVerificationSessionId] = useState(null)
+  const [loginSessionId, setLoginSessionId] = useState(null)
 
-  const [verificationSessionId, setVerificationSessionId] = useState(
-    storedTemp?.verificationSessionId || null
-  )
+  /* ---------------- Hydrate auth state ---------------- */
+  useEffect(() => {
+    const storedUser = isDev
+      ? { id: 'dev-123', name: 'Dev User', role: 'admin' }
+      : getStoredUser()
 
-  const [loginSessionId, setLoginSessionId] = useState(
-    storedTemp?.loginSessionId || null
-  )
+    const storedTemp = getTempSession()
+
+    if (storedUser) setUser(storedUser)
+    if (storedTemp?.verificationSessionId)
+      setVerificationSessionId(storedTemp.verificationSessionId)
+    if (storedTemp?.loginSessionId)
+      setLoginSessionId(storedTemp.loginSessionId)
+
+    setIsAuthReady(true)
+  }, [isDev])
 
   /* ---------------- Identity phase ---------------- */
 
@@ -77,21 +86,18 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        // Authenticated state
         user,
         isAuthenticated: Boolean(user),
+        isAuthReady,
 
-        // Identity flow
         verificationSessionId,
         startIdentitySession,
         clearIdentitySession,
 
-        // Login/OTP flow
         loginSessionId,
         startLoginSession,
         clearLoginSession,
 
-        // Final auth
         login,
         logout,
       }}
