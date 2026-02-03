@@ -25,8 +25,6 @@ function PaymentPage() {
     }
   }
 
-  // Set initial state from env and user context
-  
   // Handle payment initiation
   const handlePayment = async (e) => {
     e.preventDefault() 
@@ -64,9 +62,9 @@ function PaymentPage() {
     }
     return {
       amount: passportFees,
-      passportID: user?.activePassportID || '',
+      passportID: user?.nationalId || '',
     };
-  }, [user?.activePassportID]);
+  }, [user?.nationalId]);
 
   useEffect(() => {
     setPaymentState(initialPaymentState);

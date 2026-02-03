@@ -80,7 +80,7 @@ function UserProfile({ user, onSignOut }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-            {user.name}
+            {user.emailAddress || user.name}
           </p>
           <p className="text-xs text-gray-500 truncate">
             {user.role}
