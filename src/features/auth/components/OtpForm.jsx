@@ -8,7 +8,7 @@ import {
 import { cn } from "@/lib/utils"
 import Logo from "@/assets/Logo.svg"
 import { Loader2, MailSearch } from "lucide-react"
-import { useAuth } from '@/features/auth/hooks/useAuth'
+
 
 export default function OtpForm({
   onSubmit,
@@ -17,7 +17,7 @@ export default function OtpForm({
   error,
   className,
   user,
-  email,
+  message,
   ...props
 
   
@@ -27,7 +27,7 @@ export default function OtpForm({
   const otpLength = 6
   const isComplete = otp.length === otpLength
 //including user to get masked email
-  user = {user}
+
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -65,7 +65,10 @@ export default function OtpForm({
         />
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">
-          Enter the OTP sent to your `{user.emailAddress}` to verify your identity
+          Enter the OTP to verify your identity.
+        </p>
+        <p className="text-sm text-gray-600">
+         {message?? "OTP"} 
         </p>
       </div>
 
