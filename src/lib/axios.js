@@ -1,9 +1,10 @@
 import axios from 'axios'
-import { getToken, getRefreshToken, setAuthSession, clearAuthSession } from './storage'
+import { getToken, setAuthSession, clearAuthSession } from './storage'
 import { refreshToken as refreshTokenApi } from '@/features/auth/api/auth.api'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  withCredentials: true, 
 })
 
 // Attach access token
@@ -15,33 +16,58 @@ api.interceptors.request.use(config => {
   return config
 })
 
+let isRefreshing = false
+let refreshQueue = []
+
+const processQueue = (error, token = null) => {
+  refreshQueue.forEach(promise => {
+    if (error) promise.reject(error)
+    else promise.resolve(token)
+  })
+  refreshQueue = []
+}
+
 // Handle expired access token
 api.interceptors.response.use(
-  response => response,
+  res => res,
   async error => {
     const originalRequest = error.config
 
-    // Access token expired
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          refreshQueue.push({
+            resolve: token => {
+              originalRequest.headers.Authorization = `Bearer ${token}`
+              resolve(api(originalRequest))
+            },
+            reject,
+          })
+        })
+      }
+
       originalRequest._retry = true
+      isRefreshing = true
 
       try {
-        const refreshToken = getRefreshToken()
-        if (!refreshToken) throw new Error('No refresh token')
+        const data = await refreshTokenApi() // cookie-based
+        const { accessToken, refreshToken } = data
 
-        const data = await refreshTokenApi({ token: refreshToken })
+        setAuthSession({ accessToken, refreshToken })
+        processQueue(null, accessToken)
 
-        setAuthSession({
-          accessToken: data.accessToken,
-          refreshToken: data.refreshToken,
-        })
-
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`
+        originalRequest.headers.Authorization = `Bearer ${accessToken}`
         return api(originalRequest)
-      } catch (refreshError) {
+      } catch (err) {
+        processQueue(err, null)
         clearAuthSession()
         window.location.href = '/login'
-        return Promise.reject(refreshError)
+        return Promise.reject(err)
+      } finally {
+        isRefreshing = false
       }
     }
 

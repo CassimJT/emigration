@@ -15,24 +15,38 @@ function OtpVerificationPage() {
     error,
     status,
     loginSessionId,
+    verificationSessionId,
+    isAuthenticated,
     clearStatus,
     isAuthReady,
     
     
   } = useAuth()
 
-  // Guard: no active OTP session → redirect to login
+  /* -------- ROUTE GUARD -------- */
   useEffect(() => {
-    if (isAuthReady && !loginSessionId) {
-     // navigate("/login", { replace: true })
-    }
-  }, [isAuthReady, loginSessionId, navigate])
+    if (!isAuthReady) return
 
-  // Side effects based on backend status
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true })
+    } else if (!verificationSessionId) {
+      navigate("/identity", { replace: true })
+    } else if (!loginSessionId) {
+      navigate("/login", { replace: true })
+    }
+  }, [
+    isAuthReady,
+    isAuthenticated,
+    verificationSessionId,
+    loginSessionId,
+    navigate,
+  ])
+
+  /* -------- STATUS SIDE EFFECT -------- */
   useEffect(() => {
     if (status === "success") {
-      navigate("/dashboard", { replace: true })
       clearStatus()
+      navigate("/dashboard", { replace: true })
     }
   }, [status, navigate, clearStatus])
 
@@ -40,7 +54,7 @@ function OtpVerificationPage() {
     try {
       await verifyOtp({ otp })
     } catch {
-      // errors handled by useAuth
+      // handled by hook
     }
   }
 
