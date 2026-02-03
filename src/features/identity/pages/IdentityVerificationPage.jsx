@@ -41,31 +41,26 @@ function IdentityVerificationPage() {
   }
 
   /* -------- ROUTE GUARD -------- */
-  useEffect(() => {
-    if (!isReady) return
+useEffect(() => {
+  if (!isReady) return
 
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true })
-    } else if (verificationSessionId) {
-      navigate('/login', { replace: true })
-    } else {
-      resetVerification()
-    }
-  }, [
-    isReady,
-    isAuthenticated,
-    verificationSessionId,
-    resetVerification,
-    navigate,
-  ])
+  if (isAuthenticated) {
+    navigate('/dashboard', { replace: true })
+  } else if (!verificationSessionId) {
+    resetVerification()
+    navigate('/login', { replace: true })
+  }
+
+}, [isReady, isAuthenticated, verificationSessionId, resetVerification, navigate])
 
   /* -------- STATUS SIDE EFFECT -------- */
-  useEffect(() => {
-    if (status === 'success') {
-      clearStatus()
-      navigate('/login', { replace: true })
-    }
-  }, [status, clearStatus, navigate])
+ useEffect(() => {
+  if (status === 'success' && !isAuthenticated) {
+    clearStatus()
+    navigate('/login', { replace: true })
+  }
+}, [status, clearStatus, isAuthenticated, navigate])
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
