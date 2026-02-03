@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 function NotFoundPage() {
+  
+  
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
       <h1 className="text-6xl font-bold text-gray-900">404</h1>
@@ -17,6 +19,7 @@ function NotFoundPage() {
 
       <div className="mt-8">
         <Button asChild>
+
           <Link to="/">Go Back Home</Link>
         </Button>
       </div>
