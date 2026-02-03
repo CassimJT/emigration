@@ -18,47 +18,30 @@ function PaymentPage() {
     error: paymentError
   } = usePayments()
 
-  // Set initial state from env and user context
-  useEffect(() => {
-    let passportFee = 50000
-    try {
-      const feesStr = import.meta.env.VITE_PASSPORT_FEES
-      if (feesStr) {
-        const fees = typeof feesStr === 'string' ? JSON.parse(feesStr) : feesStr
-        passportFee = parseInt(fees.standard || 50000)
-      }
-    } catch (e) {
-      console.warn("Failed to parse passport fees from env:", e)
+    const preparePaymentPayload = () => {
+    return {
+      passportFee: paymentState.amount,
+      passportID: paymentState.passportID,
     }
+  }
 
-    // MVP: In a real scenario, we'd fetch the user's latest passport application ID
-    // For now, we use a placeholder or check if user has an application
-    const mockPassportID = '679ce614e511c58f96be4b01' // Placeholder ID for MVP testing
-    
-    setPaymentState({ 
-      amount: passportFee, 
-      passportID: mockPassportID 
-    })
-  }, [])
-
+  // Set initial state from env and user context
+  
   // Handle payment initiation
   const handlePayment = async (e) => {
     e.preventDefault() 
     setErrorMsg('')
-
+    
     if (!paymentState.passportID) {
       setErrorMsg("No active passport application found. Please apply first.")
       return
     }
-
+    
     try {
-      const payload = {
-        passportFee: paymentState.amount,
-        passportID: paymentState.passportID,
-      }
+      const payload = preparePaymentPayload()
       
       const result = await startPayment(payload)
-
+      
       if (result && result.redirectUrl) {
         // Redirect to PayChangu
         window.location.href = result.redirectUrl
@@ -68,6 +51,26 @@ function PaymentPage() {
       console.error("Payment initiation error:", error)
     }
   }
+  const initialPaymentState = React.useMemo(() => {
+    let passportFees = 50000;
+    try {
+      const feesStr = import.meta.env.VITE_PASSPORT_FEES;
+      if (feesStr) {
+        const fees = typeof feesStr === 'string' ? JSON.parse(feesStr) : feesStr;
+        passportFees = parseInt(fees.standard || 50000);
+      }
+    } catch (e) {
+      console.warn("Failed to parse passport fees from env:", e);
+    }
+    return {
+      amount: passportFees,
+      passportID: user?.activePassportID || '',
+    };
+  }, [user?.activePassportID]);
+
+  useEffect(() => {
+    setPaymentState(initialPaymentState);
+  }, [initialPaymentState]);
 
   return (
     <div className="container mx-auto p-2 sm:p-6 max-w-5xl">
@@ -90,7 +93,7 @@ function PaymentPage() {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white p-4 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
             <h3 className="text-sm sm:text-lg font-bold mb-6 text-slate-800 border-b border-slate-100 pb-4">
-              Choose Payment Method
+                Payment Method supported by PayChangu
             </h3>
             <PaymentOptions />
             
