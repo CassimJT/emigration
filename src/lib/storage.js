@@ -1,6 +1,11 @@
+// src/lib/storage.js
+
 const ACCESS_TOKEN_KEY = 'access_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'
 const USER_KEY = 'auth_user'
+const TEMP_KEY = 'auth:temp'
+
+/* ---------------- Persistent Auth Session ---------------- */
 
 export function setAuthSession({ accessToken, refreshToken, user }) {
   if (accessToken) localStorage.setItem(ACCESS_TOKEN_KEY, accessToken)
@@ -23,19 +28,37 @@ export function getRefreshToken() {
 }
 
 export function getStoredUser() {
-  const user = localStorage.getItem(USER_KEY)
-  return user ? JSON.parse(user) : null
+  try {
+    const user = localStorage.getItem(USER_KEY)
+    return user ? JSON.parse(user) : null
+  } catch {
+    return null
+  }
 }
 
-const TEMP_KEY = 'auth:temp'
+/* Optional helper to get full auth session */
+export function getAuthSession() {
+  return {
+    accessToken: getToken(),
+    refreshToken: getRefreshToken(),
+    user: getStoredUser(),
+  }
+}
 
-export function setTempSession(data) {
-  sessionStorage.setItem(TEMP_KEY, JSON.stringify(data))
+/* ---------------- Temporary Session (Identity / OTP flows) ---------------- */
+
+export function setTempSession(updates) {
+  const existing = getTempSession() || {}
+  sessionStorage.setItem(TEMP_KEY, JSON.stringify({ ...existing, ...updates }))
 }
 
 export function getTempSession() {
-  const raw = sessionStorage.getItem(TEMP_KEY)
-  return raw ? JSON.parse(raw) : null
+  try {
+    const raw = sessionStorage.getItem(TEMP_KEY)
+    return raw ? JSON.parse(raw) : null
+  } catch {
+    return null
+  }
 }
 
 export function clearTempSession() {

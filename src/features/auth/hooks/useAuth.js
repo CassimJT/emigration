@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthContext } from '@/providers/AuthProvider'
 import {
   login as apiLogin,
@@ -28,21 +28,27 @@ export function useAuth() {
     logout: finalizeLogout,
   } = useAuthContext()
 
-  const [status, setStatus] = useState(null) // null | 'success' | 'failed'
+  const [status, setStatus] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [isAuthReady, setIsAuthReady] = useState(false)
+  const [message, setMessage] = useState(null)
+
+  // Mark auth as ready after initial render
+  useEffect(() => {
+    setIsAuthReady(true)
+  }, [])
 
   const clearError = () => setError(null)
   const clearStatus = () => setStatus(null)
 
-  /* ---------------- LOGIN (credentials + verificationSessionId → OTP) ---------------- */
-
+  /* ---------------- LOGIN ---------------- */
   const login = async ({ credentials }) => {
     if (loading) return
     if (!verificationSessionId) {
       setStatus('failed')
       setError('Identity verification required before login')
-      return
+      return Promise.reject(new Error('Missing verification session'))
     }
 
     setLoading(true)
@@ -57,26 +63,25 @@ export function useAuth() {
       }
 
       const data = await apiLogin(payload)
-
       if (!data || data.status !== 'success' || !data.loginSessionId) {
-        setStatus(data?.status || 'failed')
         throw new Error(data?.message || 'Login failed')
       }
+      //setting the message
+      setMessage(data?.message )
 
       startLoginSession(data.loginSessionId)
       setStatus('success')
       return data
     } catch (err) {
       setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Login failed')
+      setError(err?.message || 'Login failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
 
-  /* ---------------- VERIFY OTP (loginSessionId + otp → tokens) ---------------- */
-
+  /* ---------------- VERIFY OTP ---------------- */
   const verifyOtp = async ({ otp }) => {
     if (loading) return
     if (!loginSessionId) {
@@ -90,18 +95,13 @@ export function useAuth() {
     setStatus(null)
 
     try {
-      const payload = {
-        loginSessionId,
-        otp,
-      }
-
+      const payload = { loginSessionId, otp }
       const data = await apiVerifyOtp(payload)
 
       if (!data || data.status !== 'success' || !data.accessToken) {
-        setStatus(data?.status || 'failed')
         throw new Error(data?.message || 'OTP verification failed')
       }
-
+      
       finalizeLogin(data.user ?? user, {
         accessToken: data.accessToken,
         refreshToken: data.refreshToken,
@@ -112,158 +112,7 @@ export function useAuth() {
       return data
     } catch (err) {
       setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'OTP verification failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ---------------- REGISTER ---------------- */
-
-  const signup = async (payload) => {
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const dataPayload = {
-        emailAddress: payload.emailAddress,
-        password: payload.password,
-        confirmPassword: payload.confirmPassword,
-        verificationSessionId: verificationSessionId
-      }
-      const data = await apiSignup(dataPayload)
-
-      if (!data || data.status !== 'success') {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Signup failed')
-      }
-
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Signup failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ---------------- FORGOT PASSWORD ---------------- */
-
-  const forgotPassword = async (payload) => {
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const data = await apiForgotPassword(payload)
-
-      if (!data || data.status !== 'success') {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Request failed')
-      }
-
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Request failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ---------------- RESET PASSWORD ---------------- */
-
-  const resetPassword = async (payload) => {
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const data = await apiResetPassword(payload)
-
-      if (!data || data.status !== 'success') {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Reset failed')
-      }
-
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Reset failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ---------------- CHANGE PASSWORD ---------------- */
-
-  const changePassword = async (payload) => {
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const data = await apiChangePassword(payload)
-
-      if (!data || data.status !== 'success') {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Change failed')
-      }
-
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Change failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  /* ---------------- REFRESH TOKEN ---------------- */
-
-  const refreshToken = async (payload) => {
-    if (loading) return
-
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-
-    try {
-      const data = await apiRefreshToken(payload)
-
-      if (!data || data.status !== 'success' || !data.accessToken) {
-        setStatus(data?.status || 'failed')
-        throw new Error(data?.message || 'Token refresh failed')
-      }
-
-      finalizeLogin(data.user ?? user, {
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
-      })
-
-      setStatus('success')
-      return data
-    } catch (err) {
-      setStatus('failed')
-      setError(err?.response?.data?.message || err.message || 'Token refresh failed')
+      setError(err?.message || 'OTP verification failed')
       throw err
     } finally {
       setLoading(false)
@@ -271,17 +120,18 @@ export function useAuth() {
   }
 
   /* ---------------- LOGOUT ---------------- */
-
   const logout = () => {
-    finalizeLogout()
+    finalizeLogout() // call AuthProvider logout
     setStatus('success')
   }
 
   return {
     user,
     isAuthenticated,
+    isAuthReady,
     verificationSessionId,
     loginSessionId,
+    message,
 
     loading,
     error,
@@ -291,11 +141,11 @@ export function useAuth() {
 
     login,
     verifyOtp,
-    signup,
-    forgotPassword,
-    resetPassword,
-    changePassword,
-    refreshToken,
-    logout,
+    signup: apiSignup,
+    forgotPassword: apiForgotPassword,
+    resetPassword: apiResetPassword,
+    changePassword: apiChangePassword,
+    refreshToken: apiRefreshToken,
+    logout, 
   }
 }

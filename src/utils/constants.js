@@ -32,5 +32,11 @@ export const APP_USER = {
   role: USER_ROLES.CITIZEN,
   avatarUrl: null,
 };
+export const AUTH_FLOW = {
+  LOGIN: "login",
+  SIGNUP: "signup",
+  DASHBOARD: "dashboard",
+}
+
 
 

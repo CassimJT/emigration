@@ -7,6 +7,7 @@ import Logo from "@/assets/Logo.svg"
 import { Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
 
+
 export default function SignupForm({
   onSubmit,
   values,
@@ -57,7 +58,7 @@ export default function SignupForm({
         <div className="grid gap-1.5">
           <Label htmlFor="password" className="font-bold text-base">Password</Label>
           <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg" 
             id="password" 
             name="password"
             type="password" 

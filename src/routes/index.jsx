@@ -57,7 +57,7 @@ export const router = createBrowserRouter([
 
   // Role-based routes(no header / no footer)
   {
-    element: <RoleRoute allowedRoles={['admin', 'officer','user',]} />,
+    element: <RoleRoute allowedRoles={['admin', 'officer','client',]} />,
     children: [
       { 
         path: '/dashboard', 
