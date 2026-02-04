@@ -13,11 +13,11 @@ export default function PassportTypes() {
             id: 1,
             name: "Ordinary Passport",
             price: 25000,
+            serviceType: "Basic processing",
             description: "Standard passport for regular travel purposes.",
             features: [
                 "Valid for 5 years",
                 "32 pages",
-                "Basic processing",
                 "No expedited service",
             ],
             isPopular: false
@@ -26,11 +26,11 @@ export default function PassportTypes() {
             id: 2,
             name: "Official Passport",
             price: 50000,
+            serviceType: "Priority processing",
             description: "Issued for government officials or official travel.",
             features: [
                 "Valid for 5 years",
                 "48 pages",
-                "Priority processing",
                 "Includes official designation",
             ],
             isPopular: true
@@ -39,11 +39,11 @@ export default function PassportTypes() {
             id: 3,
             name: "Diplomatic Passport",
             price: 100000,
+            serviceType: "Expedited processing",
             description: "Issued for diplomats and international representatives.",
             features: [
                 "Valid for 5 years",
                 "64 pages",
-                "Expedited processing",
                 "Diplomatic privileges included",
             ],
             isPopular: false
@@ -69,13 +69,13 @@ export default function PassportTypes() {
                     >
                         {type.isPopular && (
                             <div className="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">
-                                Recommended
+                            Recommended
                             </div>
                         )}
                         <div className="h-2 w-full bg-amber-500/10" />
                         <div className="p-6 flex flex-col h-full">
                             <h4 className="text-xl font-bold text-slate-800 mb-1">
-                                {type.name}
+                            {type.name}
                             </h4>
                             <div className="flex items-baseline gap-1 mb-4">
                                 <span className="text-xs font-semibold text-slate-400">MWK</span>
@@ -85,7 +85,7 @@ export default function PassportTypes() {
                             </div>
                             
                             <p className="text-sm text-slate-600 mb-6 line-clamp-2">
-                                {type.description}
+                            {type.description}
                             </p>
 
                             <Separator className="mb-6 opacity-50" />
@@ -96,7 +96,7 @@ export default function PassportTypes() {
                                         <div className="mt-1 h-4 w-4 flex-shrink-0 rounded-full bg-emerald-100 flex items-center justify-center">
                                             <div className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                                         </div>
-                                        <span>{feature}</span>
+                                            <span>{feature}</span>
                                     </li>
                                 ))}
                             </ul>
@@ -114,14 +114,14 @@ export default function PassportTypes() {
                                         state: { 
                                             selectedType: {
                                                 type: type.name.split(' ')[0],
-                                                price: type.price,
+                                                serviceType: type.serviceType,
                                                 pages: pagesFeature
                                             } 
                                         } 
                                     });
                                 }}
                             >
-                                Apply for {type.name.split(' ')[0]}
+                            Apply for {type.name.split(' ')[0]}
                             </Button>
                         </div>
                     </Card>

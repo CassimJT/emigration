@@ -21,15 +21,6 @@ export async function fetchApplicationStatus() {
   }
 }
 
-// Fetch payment status for dashboard display <<exported>>
-export async function fetchPaymentStatus() {
-  try {
-    const { data } = await api.get('/payments/status') 
-    return data
-  } catch (error) {
-    return handleError(error)
-  }
-}
 
 // Consistent error handling function
 function handleError(error) {
