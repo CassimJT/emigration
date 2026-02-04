@@ -12,7 +12,7 @@ import {
   User 
 } from "lucide-react";
 
-const NAV_ITEMS = [
+const CLIENT_NAV_ITEMS = [
   { 
     label: 'Overview', 
     icon: LayoutDashboard, 
@@ -36,6 +36,31 @@ const NAV_ITEMS = [
   },
 ];
 
+const OFFICER_NAV_ITEMS = [
+  { 
+    label: 'Overview', 
+    icon: LayoutDashboard, 
+    path: '/dashboard' 
+  },
+  { 
+    label: 'Pending Reviews', 
+    icon: FileText, 
+    path: '/dashboard/reviews',
+    badge: '12'
+  },
+  { 
+    label: 'Statistics', 
+    icon: CreditCard, 
+    path: '/dashboard/stats'
+  },
+  { 
+    label: 'Notifications', 
+    icon: Bell, 
+    badge: '5', 
+    path: '/dashboard/notifications'
+  },
+];
+
 const QUICK_LINKS = [
   { label: "How to Apply", icon: HelpCircle, path: '/demo' },
   { label: "FAQs", icon: MessageCircle, path: '/faqs' },
@@ -43,6 +68,7 @@ const QUICK_LINKS = [
 ];
 
 
+/////////////////////////NAVITEM COMPONENT/////////////////////////
 
 function NavItem({ item, isActive, onClick }) {
   const Icon = item.icon;
@@ -70,6 +96,8 @@ function NavItem({ item, isActive, onClick }) {
     </button>
   );
 }
+
+/////////////////////////PROFILE COMPONENT/////////////////////////
 
 function UserProfile({ user, onSignOut }) {
   return (
@@ -100,7 +128,7 @@ function UserProfile({ user, onSignOut }) {
   );
 }
 
-// DashboardNavBar - Main navigation sidebar component
+/////////////////////////DASHBOARDNAVBAR COMPONENT/////////////////////////
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -126,6 +154,9 @@ export default function DashboardNavBar({
     return location.pathname.startsWith(path);
   }
 
+  const role = user?.role?.toLowerCase() || 'client';
+  const navItems = (role === 'officer' || role === 'admin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
+
   return (
     <aside 
       className={`flex flex-col bg-gray-50 w-64 border-r border-gray-200 
@@ -139,7 +170,7 @@ export default function DashboardNavBar({
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <div className="space-y-1">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavItem
               key={item.label}
               item={item}
@@ -169,7 +200,7 @@ export default function DashboardNavBar({
 
       {/* User Profile Section */}
       <UserProfile 
-        user={user || { name: 'Guest', role: 'Visitor' }} 
+        user={user || { name: 'Dev user', role: 'client' }} 
         onSignOut={onSignOut} 
       />
     </aside>
