@@ -48,7 +48,7 @@ function LoginPage() {
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true })
     } else if (!verificationSessionId) {
-      navigate("/identity", { replace: true })
+      navigate("/identity/verify", { replace: true })
     } else if (loginSessionId) {
       navigate("/otp", { replace: true })
     }
