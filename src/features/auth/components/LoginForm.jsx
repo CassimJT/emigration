@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
-import { Loader2 } from "lucide-react"
+import { Loader2, Eye, EyeOff} from "lucide-react"
+import { useState } from "react"
 import { AUTH_FLOW } from "@/utils/constants"
 import { useAuth } from "../hooks/useAuth"
 
@@ -17,6 +18,14 @@ export default function LoginForm({
   className,
   ...props
 }) {
+
+  //state for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <form
       onSubmit={onSubmit}
@@ -26,6 +35,8 @@ export default function LoginForm({
       )}
       {...props}
     >
+      
+    
       <div className="flex flex-col items-center gap-1 text-center">
         <img
           src={Logo}
@@ -65,21 +76,34 @@ export default function LoginForm({
           <Label htmlFor="password" className="font-bold text-base">
             Password
           </Label>
-          <Input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter password"
-            autoComplete="current-password"
-            required
-            disabled={loading}
-            value={values.password}
-            onChange={onChange}
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
-          />
+
+          
+          <div className="relative">
+            <Input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter password"
+              autoComplete="current-password"
+              required
+              disabled={loading}
+              value={values.password}
+              onChange={onChange}
+              className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            />
+            <button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
         </div>
       </div>
-
+     
       <div className="flex flex-col items-center gap-4 mt-4">
         <Button
           size="lg"
