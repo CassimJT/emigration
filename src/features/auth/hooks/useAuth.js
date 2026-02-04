@@ -18,10 +18,11 @@ export function useAuth() {
     // Identity phase
     verificationSessionId,
 
-    // Login / OTP phase
     loginSessionId,
     startLoginSession,
     clearLoginSession,
+
+    message,
 
     // Final auth
     login: finalizeLogin,
@@ -32,7 +33,6 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isAuthReady, setIsAuthReady] = useState(false)
-  const [message, setMessage] = useState(null)
 
   // Mark auth as ready after initial render
   useEffect(() => {
@@ -66,10 +66,8 @@ export function useAuth() {
       if (!data || data.status !== 'success' || !data.loginSessionId) {
         throw new Error(data?.message || 'Login failed')
       }
-      //setting the message
-      setMessage(data?.message )
-
-      startLoginSession(data.loginSessionId)
+      //setting the message and session
+      startLoginSession(data.loginSessionId, data.message)
       setStatus('success')
       return data
     } catch (err) {
