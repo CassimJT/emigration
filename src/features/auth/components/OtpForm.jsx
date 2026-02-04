@@ -17,9 +17,8 @@ export default function OtpForm({
   error,
   className,
   user,
+  message,
   ...props
-
-  
 }) {
   const [otp, setOtp] = useState("")
 
@@ -64,9 +63,9 @@ export default function OtpForm({
         />
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">
-          Enter the { user.message == null ?  "OTP sent to your email" : user.message } to verify your identity. 
+          {"Enter the " + (message || "OTP sent to your email") + " to verify your identity."}
         </p>
-      </div>
+      </div>  
 
       {/* Error */}
       {error && (

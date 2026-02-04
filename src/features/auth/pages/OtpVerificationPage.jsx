@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
-import { useAuth } from "../hooks/useAuth"
+import { useAuth } from '@/features/auth/hooks/useAuth'
 //import { useAuth } from '@/features/auth/hooks/useAuth'
 
 
@@ -13,6 +13,7 @@ function OtpVerificationPage() {
     user,
     loading,
     error,
+    message,
     status,
     loginSessionId,
     verificationSessionId,
@@ -71,6 +72,7 @@ function OtpVerificationPage() {
             loading={loading}
             error={error}
             user={user}
+            message={message}
           />
         </div>
       </div>
