@@ -14,7 +14,7 @@ function DashboardPage() {
   
   const handleSignOut = () => {
     logout()
-    navigate('/login')
+    navigate('/')
   }
 
   // Mobile nav selection now just closes the sheet
