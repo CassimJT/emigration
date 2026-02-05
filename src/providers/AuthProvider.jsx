@@ -11,20 +11,18 @@ import {
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const isDev = import.meta.env.DEV
+  const isDev = import.meta.env.VITE_DEV
 
   const [isAuthReady, setIsAuthReady] = useState(false)
-
   const [user, setUser] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-    const storedUser = isDev
-      ? { id: 'dev-123', name: 'Dev User', role: 'admin' }
+  
+    const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
       : getStoredUser()
-
     const storedTemp = getTempSession()
 
     if (storedUser) setUser(storedUser)
