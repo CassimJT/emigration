@@ -11,10 +11,9 @@ import {
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const isDev = import.meta.env.DEV
+  const isDev = import.meta.env.VITE_DEV
 
   const [isAuthReady, setIsAuthReady] = useState(false)
-
   const [user, setUser] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
