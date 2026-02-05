@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import {
   setAuthSession,
   clearAuthSession,
@@ -11,21 +11,31 @@ import {
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const isDev = import.meta.env.DEV
+  const isDev = import.meta.env.VITE_DEV
 
-  const storedTemp = getTempSession()
+  const [isAuthReady, setIsAuthReady] = useState(false)
+  const [user, setUser] = useState(null)
+  const [verificationSessionId, setVerificationSessionId] = useState(null)
+  const [loginSessionId, setLoginSessionId] = useState(null)
+  const [message, setMessage] = useState(null)
 
-  const [user, setUser] = useState(
-    isDev ? { id: 'dev-123', name: 'Dev User', role: 'admin' } : getStoredUser()
-  )
+  /* ---------------- Hydrate auth state ---------------- */
+  useEffect(() => {
+  
+    const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
+      : getStoredUser()
+    const storedTemp = getTempSession()
 
-  const [verificationSessionId, setVerificationSessionId] = useState(
-    storedTemp?.verificationSessionId || null
-  )
+    if (storedUser) setUser(storedUser)
+    if (storedTemp?.verificationSessionId)
+      setVerificationSessionId(storedTemp.verificationSessionId)
+    if (storedTemp?.loginSessionId)
+      setLoginSessionId(storedTemp.loginSessionId)
+    if (storedTemp?.message)
+      setMessage(storedTemp.message)
 
-  const [loginSessionId, setLoginSessionId] = useState(
-    storedTemp?.loginSessionId || null
-  )
+    setIsAuthReady(true)
+  }, [isDev])
 
   /* ---------------- Identity phase ---------------- */
 
@@ -41,16 +51,19 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Login / OTP phase ---------------- */
 
-  const startLoginSession = (sessionId) => {
+  const startLoginSession = (sessionId, msg) => {
     setLoginSessionId(sessionId)
+    setMessage(msg)
     setTempSession({
       verificationSessionId,
       loginSessionId: sessionId,
+      message: msg
     })
   }
 
   const clearLoginSession = () => {
     setLoginSessionId(null)
+    setMessage(null)
     setTempSession({ verificationSessionId })
   }
 
@@ -77,21 +90,20 @@ export function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
-        // Authenticated state
         user,
         isAuthenticated: Boolean(user),
+        isAuthReady,
 
-        // Identity flow
         verificationSessionId,
         startIdentitySession,
         clearIdentitySession,
 
-        // Login/OTP flow
         loginSessionId,
         startLoginSession,
         clearLoginSession,
 
-        // Final auth
+        message,
+
         login,
         logout,
       }}

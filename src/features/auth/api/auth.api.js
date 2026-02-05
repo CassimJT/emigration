@@ -93,19 +93,17 @@ export async function verifyNationalId(payload) {
 // ERROR HANDLER
 function handleError(error) {
   if (error.response) {
-    return error.response.data
+    throw error.response.data
   } else if (error.request) {
-    return { 
-       status: 500, 
-       statusText: 'Failed',
-       message: 'No response from server'
+    throw {
+      status: 500,
+      message: 'No response from server',
     }
   } else {
-    // Other error
-    return { 
-      status: 500, 
-      statusText: 'Failed',
-      message: error.message
+    throw {
+      status: 500,
+      message: error.message,
     }
   }
 }
+

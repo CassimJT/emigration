@@ -4,14 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { APP_STATUS_ARRAY, IS_PAID} from "@/utils/constants";
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
 
-/*
- * Application Status Widget.
- * Displays the current status of the user's passport application, including:
- * - Badge for application state (e.g., approved/pending)
- * - Progress bar showing completion percentage
- * - Payment status indicator
- * Consumes data from 'useDashboard' hook.
- */
+
 export default function StatusCard({ className = "" }) {
         const { progress, mainStage, pgarry } = useDashboard();
 

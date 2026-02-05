@@ -1,43 +1,45 @@
-// src/features/payments/api/payments.api.js
 import api from '@/lib/axios'
 
 // Initiate a new payment
 export async function initiatePayment(payload) {
   try {
-    // Attempt with plural 'payments' first
     const { data } = await api.post('/payments/init', payload)
     return data
   } catch (error) {
-    // If plural fails with 404, we could try singular, but let's stick to plurals for consistency unless error is 404
-    if (error.response?.status === 404) {
-        try {
-          const { data } = await api.post('/payment/init', payload)
-          return data
-        } catch (innerError) {
-          return handleError(innerError)
-        }
-    }
-    return handleError(error)
+    throw handleError(error)
   }
 }
 
 // Verify payment status by reference
 export async function verifyPayment(reference) {
   try {
-    const { data } = await api.get(`/payments/verify/${reference}`)
+    // Backend expects tx_ref in query: router.get("/verify", verify);
+    const { data } = await api.get(`/payments/verify?tx_ref=${reference}`)
     return data
   } catch (error) {
-    return handleError(error)
+    throw handleError(error)
   }
 }
 
-// Fetch payment history for the current user
-export async function fetchPaymentHistory() {
+// Fetch payment history for a user
+export async function fetchPaymentHistory(userId) {
   try {
-    const { data } = await api.get('/payments/history')
+    // Backend: router.get('/user/:userId', ...)
+    const { data } = await api.get(`/payments/user/${userId}`)
     return data
   } catch (error) {
-    return handleError(error)
+    throw handleError(error)
+  }
+}
+
+// Cancel payment (Note: backend seems to have a bug here, but adding for completeness)
+// Backend: router.post("/cancel",cancelPayment) but controller expects req.params.paymentId
+export async function cancelPayment(paymentId) {
+  try {
+    const { data } = await api.post(`/payments/cancel/${paymentId}`)
+    return data
+  } catch (error) {
+    throw handleError(error)
   }
 }
 

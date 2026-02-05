@@ -5,7 +5,6 @@ import {
   CreditCard, 
   FileText, 
   HelpCircle,
-  History,
   LayoutDashboard, 
   LogOut, 
   MessageCircle,
@@ -13,7 +12,7 @@ import {
   User 
 } from "lucide-react";
 
-const NAV_ITEMS = [
+const CLIENT_NAV_ITEMS = [
   { 
     label: 'Overview', 
     icon: LayoutDashboard, 
@@ -37,18 +36,39 @@ const NAV_ITEMS = [
   },
 ];
 
+const OFFICER_NAV_ITEMS = [
+  { 
+    label: 'Overview', 
+    icon: LayoutDashboard, 
+    path: '/dashboard' 
+  },
+  { 
+    label: 'Pending Reviews', 
+    icon: FileText, 
+    path: '/dashboard/reviews',
+    badge: '12'
+  },
+  { 
+    label: 'Statistics', 
+    icon: CreditCard, 
+    path: '/dashboard/stats'
+  },
+  { 
+    label: 'Notifications', 
+    icon: Bell, 
+    badge: '5', 
+    path: '/dashboard/notifications'
+  },
+];
+
 const QUICK_LINKS = [
   { label: "How to Apply", icon: HelpCircle, path: '/demo' },
   { label: "FAQs", icon: MessageCircle, path: '/faqs' },
   { label: "Contact Support", icon: Phone, path: '/contacts' },
 ];
 
-/*
- * Side Navigation Bar Component.
- * Renders the main navigation menu, quick action links, and user profile section.
- * Designed to be responsive (used request sidebar on desktop and drawer content on mobile).
- * Accepts 'user' prop to display user details and handles 'onSignOut' for logging out.
- */
+
+/////////////////////////NAVITEM COMPONENT/////////////////////////
 
 function NavItem({ item, isActive, onClick }) {
   const Icon = item.icon;
@@ -77,6 +97,8 @@ function NavItem({ item, isActive, onClick }) {
   );
 }
 
+/////////////////////////PROFILE COMPONENT/////////////////////////
+
 function UserProfile({ user, onSignOut }) {
   return (
     <div className="mt-auto border-t border-gray-200 p-4 space-y-3">
@@ -86,7 +108,7 @@ function UserProfile({ user, onSignOut }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-            {user.name}
+            {user.emailAddress || user.name}
           </p>
           <p className="text-xs text-gray-500 truncate">
             {user.role}
@@ -106,7 +128,7 @@ function UserProfile({ user, onSignOut }) {
   );
 }
 
-// DashboardNavBar - Main navigation sidebar component
+/////////////////////////DASHBOARDNAVBAR COMPONENT/////////////////////////
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -132,6 +154,9 @@ export default function DashboardNavBar({
     return location.pathname.startsWith(path);
   }
 
+  const role = user?.role?.toLowerCase() || 'client';
+  const navItems = (role === 'officer' || role === 'admin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
+
   return (
     <aside 
       className={`flex flex-col bg-gray-50 w-64 border-r border-gray-200 
@@ -145,7 +170,7 @@ export default function DashboardNavBar({
       {/* Main Navigation */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
         <div className="space-y-1">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavItem
               key={item.label}
               item={item}
@@ -175,9 +200,13 @@ export default function DashboardNavBar({
 
       {/* User Profile Section */}
       <UserProfile 
-        user={user || { name: 'Guest', role: 'Visitor' }} 
+        user={user || { name: 'Dev user', role: 'client' }} 
         onSignOut={onSignOut} 
       />
     </aside>
   );
+}
+
+export{
+  DashboardNavBar,
 }

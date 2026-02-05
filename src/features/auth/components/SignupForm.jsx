@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import Logo from "@/assets/Logo.svg"
 import { Link } from "react-router-dom"
-import { Loader2 } from "lucide-react"
+import { useState } from "react"
+import { Loader2, Eye, EyeOff } from "lucide-react"
 
 
 export default function SignupForm({
@@ -17,6 +18,18 @@ export default function SignupForm({
   error,
   ...props
 }) {
+
+  //state for password visibility
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword((prev) => !prev);
+  };
 
   return (
     <form 
@@ -57,32 +70,55 @@ export default function SignupForm({
 
         <div className="grid gap-1.5">
           <Label htmlFor="password" className="font-bold text-base">Password</Label>
-          <Input 
+
+          <div className="relative">
+           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg" 
             id="password" 
             name="password"
-            type="password" 
+            type={showPassword ? "text" : "password"} 
             value={values.password}
             placeholder="Create a password" 
             required 
             disabled={loading}
             onChange={onChange}
           />
+          <button
+              type="button"
+              variant="ghost"
+              onClick={togglePasswordVisibility}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+        
         </div>
           
         <div className="grid gap-1.5">
           <Label htmlFor="confirmPassword" className="font-bold text-base">Confirm Password</Label>
+          <div className="relative"> 
           <Input 
             className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
             id="confirmPassword" 
             name="confirmPassword"
-            type="password" 
+            type={showConfirmPassword ? "text" : "password"} 
             value={values.confirmPassword}
             placeholder="Confirm your password" 
             required 
             disabled={loading}
             onChange={onChange}
           />
+          <button
+              type="button"
+              variant="ghost"
+              onClick={toggleConfirmPasswordVisibility}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 "
+            >
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+         
         </div>
       </div>
 

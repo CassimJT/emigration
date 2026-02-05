@@ -13,7 +13,11 @@ function LoginPage() {
     error,
     loading,
     status,
-    clearStatus
+    clearStatus,
+    verificationSessionId,
+    loginSessionId,
+    isAuthenticated,
+    isAuthReady,
   } = useAuth()
 
   const preparePayload = () => ({
@@ -28,15 +32,39 @@ function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await login({ credentials: preparePayload() }) 
+    try {
+      const data = await login({ credentials: preparePayload() })
+      console.log('LOGIN PAGE RECEIVED:', data)
+      navigate('/otp')
+    } catch (err) {
+      console.error('LOGIN PAGE ERROR:', err)
+    }
   }
 
+  /* -------- ROUTE GUARD -------- */
   useEffect(() => {
-    if (status === 'success') {
-      navigate('/OTP')
+    if (!isAuthReady) return
+
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true })
+    } else if (!verificationSessionId) {
+      navigate("/identity/verify", { replace: true })
+    } else if (loginSessionId) {
+      navigate("/otp", { replace: true })
+    }
+  }, [
+    isAuthReady,
+    isAuthenticated,
+    verificationSessionId,
+    loginSessionId,
+    navigate,
+  ])
+
+  useEffect(() => {
+    if (status === "success") {
       clearStatus()
     }
-  }, [status, navigate, clearStatus])
+  }, [status, clearStatus])
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">

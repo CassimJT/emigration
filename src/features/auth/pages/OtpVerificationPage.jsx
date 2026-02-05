@@ -2,31 +2,50 @@ import React, { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
-import { useAuth } from "@/hooks/useAuth"
+import { useAuth } from '@/features/auth/hooks/useAuth'
+//import { useAuth } from '@/features/auth/hooks/useAuth'
+
 
 function OtpVerificationPage() {
   const navigate = useNavigate()
   const {
     verifyOtp,
+    user,
     loading,
     error,
+    message,
     status,
     loginSessionId,
+    verificationSessionId,
+    isAuthenticated,
     clearStatus,
+    isAuthReady,
   } = useAuth()
 
-  // Guard: no active OTP session → redirect to login
+  /* -------- ROUTE GUARD -------- */
   useEffect(() => {
-    if (!loginSessionId) {
+    if (!isAuthReady) return
+
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true })
+    } else if (!verificationSessionId) {
+      navigate("/identity", { replace: true })
+    } else if (!loginSessionId) {
       navigate("/login", { replace: true })
     }
-  }, [loginSessionId, navigate])
+  }, [
+    isAuthReady,
+    isAuthenticated,
+    verificationSessionId,
+    loginSessionId,
+    navigate,
+  ])
 
-  // Side effects based on backend status
+  /* -------- STATUS SIDE EFFECT -------- */
   useEffect(() => {
     if (status === "success") {
-      navigate("/dashboard", { replace: true })
       clearStatus()
+      navigate("/dashboard", { replace: true })
     }
   }, [status, navigate, clearStatus])
 
@@ -34,14 +53,14 @@ function OtpVerificationPage() {
     try {
       await verifyOtp({ otp })
     } catch {
-      //...
+      // handled by hook
     }
   }
 
   const handleResend = async () => {
-    //..
     console.log("Resend OTP requested")
   }
+
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
@@ -52,6 +71,8 @@ function OtpVerificationPage() {
             onResend={handleResend}
             loading={loading}
             error={error}
+            user={user}
+            message={message}
           />
         </div>
       </div>

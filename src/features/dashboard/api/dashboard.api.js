@@ -1,10 +1,5 @@
 import api from '@/lib/axios'
 
-/*
- * API Mock/Service layer for Dashboard data.
- * Provides functions to fetch dashboard summaries, application statuses,
- * and payment details. Currently uses mock/placeholder endpoints.
- */
 
 // Fetch overall dashboard summary (user-specific) <<exported>>
  export async function fetchDashboardSummary() {
@@ -26,15 +21,6 @@ export async function fetchApplicationStatus() {
   }
 }
 
-// Fetch payment status for dashboard display <<exported>>
-export async function fetchPaymentStatus() {
-  try {
-    const { data } = await api.get('/payments/status') 
-    return data
-  } catch (error) {
-    return handleError(error)
-  }
-}
 
 // Consistent error handling function
 function handleError(error) {
