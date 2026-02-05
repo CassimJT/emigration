@@ -41,18 +41,18 @@ export default function ReviewStep({
           Personal Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div>
+          {/* <div>
             <span className="font-medium text-gray-600">Name:</span>
             <p>{data.name || '—'}</p>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <span className="font-medium text-gray-600">Surname:</span>
             <p>{data.surname || '—'}</p>
-          </div>
-          <div className="col-span-2">
+          </div> */}
+          {/* <div className="col-span-2">
             <span className="font-medium text-gray-600">Email:</span>
             <p>{data.email || '—'}</p>
-          </div>
+          </div> */}
           <div>
             <span className="font-medium text-gray-600">Residential Status:</span>
             <p>{data.residentialStatus || '—'}</p>

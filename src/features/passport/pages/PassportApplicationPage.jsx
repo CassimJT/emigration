@@ -30,6 +30,7 @@ function PassportApplicationPage() {
     previousStep,
     saveStepData,
     stepsData,
+    createNewApplication,
     submitApplication } = usePassportApplication();
 
     const preparePayload = () => {
@@ -66,13 +67,19 @@ function PassportApplicationPage() {
 
     const handleNext = (e) => {
       e.preventDefault();
-      if(currentStep === 2){
+      const payload = preparePayload();
+      saveStepData(currentStep + 1, payload);
+
+      if(currentStep === 1){
+        createNewApplication();
+        nextStep();
+        return; 
+      }
+      else if(currentStep === 2){
         submitApplication();
         navigate('/passport/status');
         return; 
       }
-      const payload = preparePayload();
-      saveStepData(currentStep + 1, payload);
       nextStep();
     };
 
@@ -109,9 +116,9 @@ function PassportApplicationPage() {
           )}
           {currentStep === 1 && (
             <PersonalInfoStep
-              name={personalInfoStepData.name}
-              surname={personalInfoStepData.surname}
-              email={personalInfoStepData.email}
+              // name={personalInfoStepData.name}
+              // surname={personalInfoStepData.surname}
+              // email={personalInfoStepData.email}
               residentialStatus={personalInfoStepData.residentialStatus}
               occupation={personalInfoStepData.occupation}
               onBack={previousStep}
