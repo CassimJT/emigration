@@ -18,12 +18,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
-  const [message, setMessage] = useState(null)
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-    const storedUser = !isDev
-      ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
+    const storedUser = isDev
+      ? { id: 'dev-123', name: 'Dev User', role: 'admin' }
       : getStoredUser()
 
     const storedTemp = getTempSession()
@@ -33,8 +32,6 @@ export function AuthProvider({ children }) {
       setVerificationSessionId(storedTemp.verificationSessionId)
     if (storedTemp?.loginSessionId)
       setLoginSessionId(storedTemp.loginSessionId)
-    if (storedTemp?.message)
-      setMessage(storedTemp.message)
 
     setIsAuthReady(true)
   }, [isDev])
@@ -53,19 +50,16 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Login / OTP phase ---------------- */
 
-  const startLoginSession = (sessionId, msg) => {
+  const startLoginSession = (sessionId) => {
     setLoginSessionId(sessionId)
-    setMessage(msg)
     setTempSession({
       verificationSessionId,
       loginSessionId: sessionId,
-      message: msg
     })
   }
 
   const clearLoginSession = () => {
     setLoginSessionId(null)
-    setMessage(null)
     setTempSession({ verificationSessionId })
   }
 
@@ -103,8 +97,6 @@ export function AuthProvider({ children }) {
         loginSessionId,
         startLoginSession,
         clearLoginSession,
-
-        message,
 
         login,
         logout,
