@@ -21,10 +21,9 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-    const storedUser = isDev
-      ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
+  
+    const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
       : getStoredUser()
-
     const storedTemp = getTempSession()
 
     if (storedUser) setUser(storedUser)
