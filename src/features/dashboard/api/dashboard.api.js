@@ -1,35 +1,35 @@
 import api from '@/lib/axios'
 
 
-// Fetch overall dashboard summary (user-specific) <<exported>>
- export async function fetchDashboardSummary() {
+// Fetch overall dashboard summary (user-specific)
+export async function userProfile() {
   try {
-    const { data } = await api.get('/users') 
-    return data
+    const { data } = await api.get('/users/me/profile')
+    return data.message
   } catch (error) {
     return handleError(error)
   }
 }
 
-// Fetch passport/application status for dashboard display <<exported>>
+// Fetch passport/application status for dashboard display
 export async function fetchApplicationStatus() {
-  try {
-    const { data } = await api.get('/applications/status') 
-    return data
-  } catch (error) {
-    return handleError(error)
-  }
+    return [] 
 }
 
 
 // Consistent error handling function
 function handleError(error) {
   if (error.response) {
-    return error.response.data
+    return { 
+      status: error.response.status, 
+      statusText: 'Failed', 
+      message: error.response.data?.message || 'Server error' 
+    }
   } else if (error.request) {
     return { status: 500, statusText: 'Failed', message: 'No response from server' }
   } else {
     return { status: 500, statusText: 'Failed', message: error.message }
   }
 }
+
 

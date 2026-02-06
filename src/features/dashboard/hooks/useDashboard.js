@@ -1,16 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { PGARRY } from '@/utils/constants'
-import { fetchDashboardSummary, fetchApplicationStatus } from '@/features/dashboard/api/dashboard.api'
+import { fetchApplicationStatus, userProfile } from '@/features/dashboard/api/dashboard.api'
 
-/*
- * Custom hook to manage the core Dashboard state and logic.
- * Responsibilities include:
- * - Managing active view state for navigation
- * - Tracking passport application progress
- * - Fetching and storing dashboard summary data (applications, payments) from the API
- */
+
 export function useDashboard() {
-  const [summary, setSummary] = useState(null)
+  const [profile, setProfile] = useState(null)
   const [applications, setApplications] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -50,22 +44,29 @@ export function useDashboard() {
     setError(null)
 
     try {
-      const summaryData = await fetchDashboardSummary()
+      const userProfileData = await userProfile()
       const applicationData = await fetchApplicationStatus()
 
-      setSummary(summaryData)
+      setProfile(userProfileData)
       setApplications(applicationData)
     } catch (err) {
+      console.error('Dashboard load error:', err)
       setError(err?.message || 'Failed to load dashboard')
     } finally {
       setLoading(false)
     }
   }
 
+  // Load dashboard data on mount
+  useEffect(() => {
+    loadDashboard()
+  }, [])
+
+
   return {
     activeView,
     setActiveView,
-    summary,
+    profile,
     applications,
     loading,
     error,

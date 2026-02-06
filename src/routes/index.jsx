@@ -23,6 +23,8 @@ import PaymentPage from '@/features/payments/pages/PaymentPage'
 import NotificationsPage from '@/features/notifications/pages/NotificationsPage'
 import PaymentSuccessPage from '@/features/payments/pages/PaymentSuccessPage'
 import PaymentFailedPage from '@/features/payments/pages/PaymentFailedPage'
+import PendingReviewsPage from '@/features/dashboard/pages/PendingReviewsPage'
+import StatisticsPage from '@/features/dashboard/pages/StatisticsPage'
 import { RoleRoute } from './RoleRoute'
 
 export const router = createBrowserRouter([
@@ -69,6 +71,8 @@ export const router = createBrowserRouter([
           { path: 'payment/success', element: <PaymentSuccessPage /> },
           { path: 'payment/failed', element: <PaymentFailedPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
+          { path: 'reviews', element: <PendingReviewsPage /> },
+          { path: 'stats', element: <StatisticsPage /> },
         ]
       },
     ],
