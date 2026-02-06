@@ -100,7 +100,8 @@ function NavItem({ item, isActive, onClick }) {
 
 /////////////////////////PROFILE COMPONENT/////////////////////////
 
-function UserProfile({ user, onSignOut, currentRole, onRoleToggle }) {
+function UserProfile({ user, onSignOut, currentRole, onRoleToggle,userProfile }) {
+
   // //temp: Simplified profile component to focus on temporary role switching
   return (
     <div className="mt-auto border-t border-gray-200 p-4 space-y-3">
@@ -110,8 +111,7 @@ function UserProfile({ user, onSignOut, currentRole, onRoleToggle }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-              <span>{user.firstName}</span>
-              <span>{user.emailAddress}</span>
+              {userProfile?.firstName && userProfile.firstName !== "null" ? userProfile.firstName : (user?.emailAddress?.split('@')[0] || "User")}
           </p>
           <div className="flex justify-between items-center text-xs text-gray-500 truncate mt-1">
             <span className="capitalize">{currentRole}</span> 
@@ -152,6 +152,7 @@ export default function DashboardNavBar({
   user,
   currentRole, //temp: Received from DashboardPage
   onRoleToggle, //temp: Received from DashboardPage
+  userProfile,
   className = "" 
 }) {
   const navigate = useNavigate();
@@ -221,6 +222,7 @@ export default function DashboardNavBar({
         onSignOut={onSignOut}
         currentRole={currentRole} //temp
         onRoleToggle={onRoleToggle} //temp
+        userProfile={userProfile}
       />
     </aside>
   );

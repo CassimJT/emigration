@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import DashboardNavBar from '../components/DashboardNavBar'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useDashboard } from '../hooks/useDashboard'
 
 
 function DashboardPage() {
   const { user, logout } = useAuth()
+  const {profile} = useDashboard();
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   
   // //temp: Initialize with actual user role but allow frontend-only override
@@ -41,6 +43,7 @@ function DashboardPage() {
         user={user}
         currentRole={tempRole} //temp
         onRoleToggle={handleRoleToggle} //temp
+        userProfile={profile} 
       />
 
       {/* Main Layout */}
@@ -65,6 +68,7 @@ function DashboardPage() {
                   user={user}
                   currentRole={tempRole} //temp
                   onRoleToggle={handleRoleToggle} //temp
+                  userProfile={profile}
                 />
               </SheetContent>
             </Sheet>
@@ -74,8 +78,8 @@ function DashboardPage() {
 
         {/*Dashboard Content Area */}
         <main className="flex-1 overflow-auto p-4 md:p-8 w-full max-w-7xl mx-auto">
-          {/* //temp: Pass currentRole via Outlet context to child components */}
-          <Outlet context={{ currentRole: tempRole }} /> 
+          {/* //temp: Pass currentRole and profile via Outlet context to child components */}
+          <Outlet context={{ currentRole: tempRole, profile }} /> 
         </main>
       </div> 
     </div>
