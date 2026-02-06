@@ -17,6 +17,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
+  const [message, setMessage] = useState(null)
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
@@ -87,6 +88,9 @@ export function AuthProvider({ children }) {
         user,
         isAuthenticated: Boolean(user),
         isAuthReady,
+
+        message,
+        setMessage, 
 
         verificationSessionId,
         startIdentitySession,
