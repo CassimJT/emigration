@@ -42,11 +42,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { Navigate, useOutletContext } from "react-router-dom";
 
 const userRoles = ["client", "officer", "admin"];
 
 export default function ManageUsersPage() {
   const { users, deleteUser } = useDashboard();
+  const { user } = useAuth();
+
+  const { currentRole } = useOutletContext();
+  const role = (currentRole || user?.role || 'client').toLowerCase();
 
   // Track displayed role for each user (controlled value)
   const [displayedRoles, setDisplayedRoles] = useState(
@@ -112,6 +118,12 @@ export default function ManageUsersPage() {
       console.error("Failed to delete user:", error);
     }
   };
+
+  if (role !== 'admin' && role !== 'superadmin') {
+    return (
+      <Navigate to="*" replace />
+    );
+  }
 
   // Optional: loading / empty state
   if (!users || users.length === 0) {
