@@ -5,7 +5,9 @@ import {
   getRecentActivities, 
   getNotifications, 
   getApplicationStatus,
-  getAllUsers
+  getAllUsers,
+  updateUser as updateUserAPI,
+  deleteUser as deleteUserAPI,
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
@@ -51,7 +53,7 @@ export function useDashboard() {
     setError(null)
 
     try {
-      const allUsersData = await getAllUsers() // For admin user management page
+      const allUsersData = await getAllUsers() 
       const userProfileData = await userProfile()
       const applicationData = await getApplicationStatus()
       const activitiesData = await getRecentActivities()
@@ -75,19 +77,44 @@ export function useDashboard() {
     loadDashboard()
   }, [])
 
+  const updateUser = async (userId, userData) => {
+    try {
+      await updateUserAPI(userId, userData)
+      await loadDashboard() 
+    } catch (err) {
+      console.error('Update user error:', err)
+      setError(err?.message || 'Failed to update user')
+    }
+  }
+
+  const deleteUser = async (userId) => {
+    try {
+      await deleteUserAPI(userId)
+      await loadDashboard() 
+    } catch (err) {
+      console.error('Delete user error:', err)
+      setError(err?.message || 'Failed to delete user')
+    }
+  }
+
   return {
     users,
+    profile,
+    updateUser,
+    deleteUser,
+
     activeView,
     setActiveView,
-    profile,
+
     applications,
     recentActivities,
     notifications,
+    
     loading,
     error,
-    loadDashboard,
     progress,
     mainStage,
     pgarry,
+    
   }
 }

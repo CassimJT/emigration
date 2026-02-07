@@ -157,12 +157,13 @@ export default function ManageUsersPage() {
   const {
     users,
     loading,
+    deleteUser
   } = useDashboard();
 
 
-  const handleDeleteUser = async () => {
-    // Implement delete logic here
-  };
+  const handleDeleteUser = async (userId) => {
+    await deleteUser(userId)
+  }; 
 
   return (
     <div className="container mx-auto py-8 px-4 md:px-6">
