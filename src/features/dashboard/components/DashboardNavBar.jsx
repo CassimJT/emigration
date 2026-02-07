@@ -9,7 +9,8 @@ import {
   LogOut, 
   MessageCircle,
   Phone,
-  User 
+  User, 
+  User2
 } from "lucide-react";
 import React from "react";
 
@@ -59,6 +60,12 @@ const OFFICER_NAV_ITEMS = [
     icon: Bell, 
     badge: '5', 
     path: '/dashboard/notifications'
+  },
+  { 
+    label: 'Users', 
+    icon: User2, 
+    badge: '5', 
+    path: '/dashboard/admin/users'
   },
 ];
 
