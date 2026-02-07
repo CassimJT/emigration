@@ -13,15 +13,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MetricCard } from '../components/MetricCard';
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useOutletContext } from 'react-router-dom';
-import { useState } from 'react';
+import { Navigate, useOutletContext } from 'react-router-dom';
 
 export default function StatisticsPage() {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const { currentRole, profile } = useOutletContext();
   
   const role = (currentRole || user?.role || 'officer').toLowerCase();
   const displayName = profile?.firstName && profile.firstName !== "null" ? profile.firstName : (user?.emailAddress?.split('@')[0] || "User");
+  
+  if (role !== 'officer' && role !== 'admin' && role !== 'superadmin') {
+    return (
+      <Navigate to="*" replace />
+    );
+  }
+
 
   return (
     <div className="space-y-6 animate-in slide-in-from-bottom-2 duration-500">

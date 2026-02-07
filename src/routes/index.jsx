@@ -60,18 +60,18 @@ export const router = createBrowserRouter([
 
   // Role-based routes(no header / no footer)
   {
-    element: <RoleRoute allowedRoles={['superadmin', 'admin', 'officer','client',]} />,
+    element: <RoleRoute allowedRoles={['superadmin', 'admin', 'officer','client']} />,
     children: [
       { 
         path: '/dashboard', 
         element: <DashboardPage />,
         children: [
-          { index: true, element: <DashboardOverview /> },
-          { path: 'passport/apply', element: <PassportApplicationPage /> },
-          { path: 'payments', element: <PaymentPage /> },
-          { path: 'payment/success', element: <PaymentSuccessPage /> },
-          { path: 'payment/failed', element: <PaymentFailedPage /> },
-          { path: 'notifications', element: <NotificationsPage /> },
+          { index: true, element: <DashboardOverview />, allowedRoles: ['client','officer', 'admin','superadmin'] },
+          { path: 'passport/apply', element: <PassportApplicationPage />, allowedRoles: ['client'] },
+          { path: 'payments', element: <PaymentPage />, allowedRoles: ['client'] },
+          { path: 'payment/success', element: <PaymentSuccessPage />, allowedRoles: ['client'] },
+          { path: 'payment/failed', element: <PaymentFailedPage />, allowedRoles: ['client'] },
+          { path: 'notifications', element: <NotificationsPage />, allowedRoles: ['officer','client', 'admin', 'superadmin']},
           { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']}

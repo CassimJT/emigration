@@ -6,6 +6,7 @@ import PaymentSummary from '@/features/payments/components/PaymentSummary'
 import PayChangu from '@/assets/dashboard/payment/PayChangu.png'
 import { usePayments } from '../hooks/usePayments'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { Navigate } from 'react-router-dom'
 
 function PaymentPage() {
   const { user } = useAuth()
@@ -69,6 +70,14 @@ function PaymentPage() {
   useEffect(() => {
     setPaymentState(initialPaymentState);
   }, [initialPaymentState]);
+
+  const role = user?.role || ''
+
+  if (role !== 'client') {
+    return (
+      <Navigate to="*" replace />
+    );
+  }
 
   return (
     <div className="container mx-auto p-2 sm:p-6 max-w-5xl">
