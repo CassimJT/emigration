@@ -1,11 +1,17 @@
 import { useState, useEffect, useMemo } from 'react'
 import { PGARRY } from '@/utils/constants'
-import { fetchApplicationStatus, userProfile } from '@/features/dashboard/api/dashboard.api'
-
+import { 
+  userProfile, 
+  getRecentActivities, 
+  getNotifications, 
+  getApplicationStatus
+} from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
   const [profile, setProfile] = useState(null)
   const [applications, setApplications] = useState(null)
+  const [recentActivities, setRecentActivities] = useState([])
+  const [notifications, setNotifications] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   
@@ -23,7 +29,7 @@ export function useDashboard() {
     localStorage.setItem('dashboardView', activeView)
   }, [activeView])
 
-// for loan processing simulation
+  // for loan processing simulation
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress((prev) => (prev < 100 ? prev + 20 : 100))
@@ -37,18 +43,21 @@ export function useDashboard() {
     return () => clearInterval(interval)
   }, [progress, mainStage])
 
-
-//For fetching data from the backend via api methods calls
+  // For fetching data from the backend via API methods calls
   const loadDashboard = async () => {
     setLoading(true)
     setError(null)
 
     try {
       const userProfileData = await userProfile()
-      const applicationData = await fetchApplicationStatus()
+      const applicationData = await getApplicationStatus()
+      const activitiesData = await getRecentActivities()
+      const notificationsData = await getNotifications()
 
       setProfile(userProfileData)
       setApplications(applicationData)
+      setRecentActivities(activitiesData)
+      setNotifications(notificationsData)
     } catch (err) {
       console.error('Dashboard load error:', err)
       setError(err?.message || 'Failed to load dashboard')
@@ -62,12 +71,13 @@ export function useDashboard() {
     loadDashboard()
   }, [])
 
-
   return {
     activeView,
     setActiveView,
     profile,
     applications,
+    recentActivities,
+    notifications,
     loading,
     error,
     loadDashboard,

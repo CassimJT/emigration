@@ -26,6 +26,7 @@ import PaymentFailedPage from '@/features/payments/pages/PaymentFailedPage'
 import PendingReviewsPage from '@/features/dashboard/pages/PendingReviewsPage'
 import StatisticsPage from '@/features/dashboard/pages/StatisticsPage'
 import { RoleRoute } from './RoleRoute'
+import ManageUsersPage from '@/features/dashboard/pages/ManageUsersPage'
 
 export const router = createBrowserRouter([
 
@@ -71,8 +72,9 @@ export const router = createBrowserRouter([
           { path: 'payment/success', element: <PaymentSuccessPage /> },
           { path: 'payment/failed', element: <PaymentFailedPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
-          { path: 'reviews', element: <PendingReviewsPage /> },
-          { path: 'stats', element: <StatisticsPage /> },
+          { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer'] },
+          { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer'] },
+          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin']}
         ]
       },
     ],

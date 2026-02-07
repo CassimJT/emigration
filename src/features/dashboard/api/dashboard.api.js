@@ -11,8 +11,54 @@ export async function userProfile() {
   }
 }
 
+export async function getAllUsers() {
+  try {
+    const { data } = await api.get('/users')
+    return data.message
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export async function getUserDetails(userId) {
+  try {
+    const { data } = await api.get(`/users/${userId}`)
+    return data.message
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export async function updateUser(userId, userData) {
+  try {
+    const { data } = await api.put(`/users/${userId}`, userData)
+    return data.message
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+export async function deleteUser(userId) {
+  try {
+    const { data } = await api.delete(`/users/${userId}`)
+    return data.message
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// Fetch recent activities for dashboard display
+export async function getRecentActivities() {
+    return [] 
+}
+
+// Fetch system notifications for dashboard display
+export async function getNotifications() {
+    return [] 
+}
+
 // Fetch passport/application status for dashboard display
-export async function fetchApplicationStatus() {
+export async function getApplicationStatus() {
     return [] 
 }
 
@@ -20,15 +66,17 @@ export async function fetchApplicationStatus() {
 // Consistent error handling function
 function handleError(error) {
   if (error.response) {
-    return { 
-      status: error.response.status, 
-      statusText: 'Failed', 
-      message: error.response.data?.message || 'Server error' 
-    }
+    throw error.response.data
   } else if (error.request) {
-    return { status: 500, statusText: 'Failed', message: 'No response from server' }
+    throw {
+      status: 500,
+      message: 'No response from server',
+    }
   } else {
-    return { status: 500, statusText: 'Failed', message: error.message }
+    throw {
+      status: 500,
+      message: error.message,
+    }
   }
 }
 
