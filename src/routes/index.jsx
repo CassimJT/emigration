@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
 
   // Role-based routes(no header / no footer)
   {
-    element: <RoleRoute allowedRoles={['admin', 'officer','client',]} />,
+    element: <RoleRoute allowedRoles={['superadmin', 'admin', 'officer','client',]} />,
     children: [
       { 
         path: '/dashboard', 
@@ -72,9 +72,9 @@ export const router = createBrowserRouter([
           { path: 'payment/success', element: <PaymentSuccessPage /> },
           { path: 'payment/failed', element: <PaymentFailedPage /> },
           { path: 'notifications', element: <NotificationsPage /> },
-          { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer'] },
-          { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer'] },
-          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin']}
+          { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
+          { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
+          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']}
         ]
       },
     ],

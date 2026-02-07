@@ -47,9 +47,11 @@ function LoginPage() {
 
     if (isAuthenticated) {
       navigate("/dashboard", { replace: true })
-    } else if (!verificationSessionId) {
+    } 
+    else if (!verificationSessionId) {
       navigate("/identity/verify", { replace: true })
-    } else if (loginSessionId) {
+    } 
+    else if (loginSessionId) {
       navigate("/otp", { replace: true })
     }
   }, [

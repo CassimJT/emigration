@@ -15,14 +15,17 @@ export function useAuth() {
     user,
     isAuthenticated,
 
+    //message state from context
+    message,
+    setMessage, 
+
     // Identity phase
     verificationSessionId,
 
+    // Login / OTP phase
     loginSessionId,
     startLoginSession,
     clearLoginSession,
-
-    message,
 
     // Final auth
     login: finalizeLogin,
@@ -66,8 +69,10 @@ export function useAuth() {
       if (!data || data.status !== 'success' || !data.loginSessionId) {
         throw new Error(data?.message || 'Login failed')
       }
-      //setting the message and session
-      startLoginSession(data.loginSessionId, data.message)
+      //setting the message
+      setMessage(data?.message)
+    
+      startLoginSession(data.loginSessionId)
       setStatus('success')
       return data
     } catch (err) {
@@ -130,6 +135,7 @@ export function useAuth() {
     verificationSessionId,
     loginSessionId,
     message,
+    setMessage,
 
     loading,
     error,
