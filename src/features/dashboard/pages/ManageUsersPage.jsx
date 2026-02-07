@@ -1,5 +1,4 @@
 import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
-import { useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -156,14 +155,10 @@ function UserTable({ users, onDelete }) {
 
 export default function ManageUsersPage() {
   const {
-    applications,
+    users,
     loading,
-    loadDashboard,
   } = useDashboard();
 
-  useEffect(() => {
-    loadDashboard();
-  }, [loadDashboard]);
 
   const handleDeleteUser = async () => {
     // Implement delete logic here
@@ -191,14 +186,14 @@ export default function ManageUsersPage() {
         <CardHeader className="pb-3">
           <CardTitle>All Users</CardTitle>
           <CardDescription>
-            Overview of all registered accounts ({applications?.length || "0"})
+            Overview of all registered accounts ({users?.length || "0"})
           </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div>Loading...</div>
           ) : (
-            <UserTable users={applications || []} onDelete={handleDeleteUser} />
+            <UserTable users={users|| []} onDelete={handleDeleteUser} />
           )}
         </CardContent>
       </Card>

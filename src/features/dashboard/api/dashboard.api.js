@@ -1,7 +1,6 @@
 import api from '@/lib/axios'
 
 
-// Fetch overall dashboard summary (user-specific)
 export async function userProfile() {
   try {
     const { data } = await api.get('/users/me/profile')
