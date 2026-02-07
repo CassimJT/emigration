@@ -5,9 +5,10 @@ import {
   getRecentActivities, 
   getNotifications, 
   getApplicationStatus,
-  getAllUsers,
+  getAllUsers as getAllUsersAPI,
   updateUser as updateUserAPI,
   deleteUser as deleteUserAPI,
+  updateUserProfile as updateUserProfileAPI,
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
@@ -53,13 +54,12 @@ export function useDashboard() {
     setError(null)
 
     try {
-      const allUsersData = await getAllUsers() 
+       
       const userProfileData = await userProfile()
       const applicationData = await getApplicationStatus()
       const activitiesData = await getRecentActivities()
       const notificationsData = await getNotifications()
 
-      setUsers(allUsersData)
       setProfile(userProfileData)
       setApplications(applicationData)
       setRecentActivities(activitiesData)
@@ -76,6 +76,26 @@ export function useDashboard() {
   useEffect(() => {
     loadDashboard()
   }, [])
+
+  const getAllUsers = async () => {
+    try {
+      const data = await getAllUsersAPI()
+      setUsers(data)
+    } catch (err) {
+      console.error('Get users error:', err)
+      setError(err?.message || 'Failed to fetch users')
+    }
+  }
+
+  const updateUserProfile = async (profileData) => {
+    try {
+      await updateUserProfileAPI(profileData)
+      await loadDashboard() 
+    } catch (err) {
+      console.error('Update profile error:', err)
+      setError(err?.message || 'Failed to update profile')
+    }
+  }
 
   const updateUser = async (userId, userData) => {
     try {
@@ -100,8 +120,10 @@ export function useDashboard() {
   return {
     users,
     profile,
+    updateUserProfile,
     updateUser,
     deleteUser,
+    getAllUsers,
 
     activeView,
     setActiveView,

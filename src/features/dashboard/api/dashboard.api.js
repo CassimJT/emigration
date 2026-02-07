@@ -10,6 +10,15 @@ export async function userProfile() {
   }
 }
 
+export async function updateUserProfile(profileData) {
+  try {
+    const { data } = await api.patch('/users/me/profile', profileData)
+    return data.message
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
 export async function getAllUsers() {
   try {
     const { data } = await api.get('/users')
