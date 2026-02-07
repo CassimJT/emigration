@@ -4,11 +4,13 @@ import {
   userProfile, 
   getRecentActivities, 
   getNotifications, 
-  getApplicationStatus
+  getApplicationStatus,
+  getAllUsers
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
   const [profile, setProfile] = useState(null)
+  const [users, setUsers] = useState(null)
   const [applications, setApplications] = useState(null)
   const [recentActivities, setRecentActivities] = useState([])
   const [notifications, setNotifications] = useState([])
@@ -49,11 +51,13 @@ export function useDashboard() {
     setError(null)
 
     try {
+      const allUsersData = await getAllUsers() // For admin user management page
       const userProfileData = await userProfile()
       const applicationData = await getApplicationStatus()
       const activitiesData = await getRecentActivities()
       const notificationsData = await getNotifications()
 
+      setUsers(allUsersData)
       setProfile(userProfileData)
       setApplications(applicationData)
       setRecentActivities(activitiesData)
@@ -72,6 +76,7 @@ export function useDashboard() {
   }, [])
 
   return {
+    users,
     activeView,
     setActiveView,
     profile,
