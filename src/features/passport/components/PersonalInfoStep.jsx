@@ -19,7 +19,7 @@ export default function PersonalInfoStep({
     <form onSubmit={onSubmit} className={cn("space-y-6", className)} {...props}>
       <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">Name</label>
           <input
@@ -45,9 +45,9 @@ export default function PersonalInfoStep({
             required
           />
         </div>
-      </div>
+      </div> */}
 
-      <div>
+      {/* <div>
         <label className="block text-sm font-medium text-gray-700">Email</label>
         <input
           id='email'
@@ -58,7 +58,7 @@ export default function PersonalInfoStep({
           placeholder="your.email@example.com"
           required
         />
-      </div>
+      </div> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
