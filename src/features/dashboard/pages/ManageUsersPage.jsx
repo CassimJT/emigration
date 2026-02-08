@@ -48,7 +48,7 @@ import { Navigate, useOutletContext } from "react-router-dom";
 const userRoles = ["client", "officer", "admin"];
 
 export default function ManageUsersPage() {
-  const { users,deleteUser } = useDashboard();
+  const { users,deleteUser, promoteUser, fetchProfile } = useDashboard();
   const { user } = useAuth();
 
   const { currentRole } = useOutletContext();
@@ -93,7 +93,7 @@ export default function ManageUsersPage() {
       [selectedUser.id]: pendingRole,
     }));
 
-    //  updateUserRole(selectedUser.id, pendingRole)
+    promoteUser(selectedUser.id)
 
     // Clean up
     setIsRoleDialogOpen(false);
@@ -107,8 +107,14 @@ export default function ManageUsersPage() {
     setPendingRole("");
   };
 
-  const handleViewProfile = (user) => console.log("View profile:", user.emailAddress);
-
+  const handleViewProfile = (user) => {
+    try {      
+      fetchProfile(user.id);
+    } catch (error) {
+      console.error("Failed to fetch profile:", error);
+    }
+  };
+  
   const handleDeleteUser = (id) => {
     try {
       deleteUser(id);
@@ -228,9 +234,11 @@ export default function ManageUsersPage() {
                               Actions
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-border/40 my-1" />
-                            <DropdownMenuItem className="gap-2.5 py-2.5 text-sm cursor-pointer">
+                            <DropdownMenuItem className="gap-2.5 py-2.5 text-sm cursor-pointer"> bg-bl
+                            <Button variant="ghost" size="sm" onClick={() => handleViewProfile(user)} className="h-8 px-3 bg-transparent">
                               <Eye className="h-4 w-4 opacity-80" />
                               View Profile
+                            </Button>
                             </DropdownMenuItem>
 
                             <Dialog>
