@@ -115,10 +115,10 @@ export default function ManageUsersPage() {
     }
   };
   
-  const handleDeleteUser = (user) => {
+  const handleDeleteUser = (id) => {
     try {
-      deleteUser(user.id);
-      console.log(`Deleted user ID: ${user.id}`);
+      deleteUser(id);
+      console.log(`Deleted user ID: ${id}`);
     } catch (error) {
       console.error("Failed to delete user:", error);
     }
