@@ -78,7 +78,7 @@ export default function ReviewStep({
           onClick={onClick}
           className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         >
-          Submit Application
+          Create Application
         </button>
       </div>
 
