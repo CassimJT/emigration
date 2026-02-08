@@ -5,11 +5,17 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import DashboardNavBar from '../components/DashboardNavBar'
 import { useAuth } from '@/features/auth/hooks/useAuth'
+import { useDashboard } from '../hooks/useDashboard'
 
 
 function DashboardPage() {
   const { user, logout } = useAuth()
+  const {profile} = useDashboard();
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  
+  // //temp: Initialize with actual user role but allow frontend-only override
+  const [tempRole, setTempRole] = useState(user?.role || 'client'); //temp
+  
   const navigate = useNavigate()
   
   const handleSignOut = () => {
@@ -22,6 +28,11 @@ function DashboardPage() {
     setIsMobileOpen(false)
   }
 
+  // //temp: Toggle between client and officer for demonstration purposes
+  const handleRoleToggle = () => { //temp
+    setTempRole(prev => prev === 'officer' ? 'client' : 'officer'); //temp
+  }; //temp
+
   return (
     <div className="flex h-screen bg-gray-50/30">
       
@@ -30,6 +41,9 @@ function DashboardPage() {
         className="hidden md:flex fixed left-0 top-0 h-screen z-30" 
         onSignOut={handleSignOut}
         user={user}
+        currentRole={tempRole} //temp
+        onRoleToggle={handleRoleToggle} //temp
+        userProfile={profile} 
       />
 
       {/* Main Layout */}
@@ -52,6 +66,9 @@ function DashboardPage() {
                   onSelect={handleNavSelect} 
                   onSignOut={handleSignOut}
                   user={user}
+                  currentRole={tempRole} //temp
+                  onRoleToggle={handleRoleToggle} //temp
+                  userProfile={profile}
                 />
               </SheetContent>
             </Sheet>
@@ -61,7 +78,8 @@ function DashboardPage() {
 
         {/*Dashboard Content Area */}
         <main className="flex-1 overflow-auto p-4 md:p-8 w-full max-w-7xl mx-auto">
-          <Outlet />
+          {/* //temp: Pass currentRole and profile via Outlet context to child components */}
+          <Outlet context={{ currentRole: tempRole, profile }} /> 
         </main>
       </div> 
     </div>

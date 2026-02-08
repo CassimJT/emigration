@@ -9,8 +9,10 @@ import {
   LogOut, 
   MessageCircle,
   Phone,
-  User 
+  User, 
+  User2
 } from "lucide-react";
+import React from "react";
 
 const CLIENT_NAV_ITEMS = [
   { 
@@ -59,6 +61,12 @@ const OFFICER_NAV_ITEMS = [
     badge: '5', 
     path: '/dashboard/notifications'
   },
+  { 
+    label: 'Users', 
+    icon: User2, 
+    badge: '5', 
+    path: '/dashboard/admin/users'
+  },
 ];
 
 const QUICK_LINKS = [
@@ -99,7 +107,9 @@ function NavItem({ item, isActive, onClick }) {
 
 /////////////////////////PROFILE COMPONENT/////////////////////////
 
-function UserProfile({ user, onSignOut }) {
+function UserProfile({ user, onSignOut, currentRole, onRoleToggle,userProfile }) {
+
+  // //temp: Simplified profile component to focus on temporary role switching
   return (
     <div className="mt-auto border-t border-gray-200 p-4 space-y-3">
       <div className="flex items-center gap-3 px-2">
@@ -108,11 +118,22 @@ function UserProfile({ user, onSignOut }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-            {user.emailAddress || user.name}
+              {userProfile?.firstName && userProfile.firstName !== "null" ? userProfile.firstName : (user?.emailAddress?.split('@')[0] || "User")}
           </p>
-          <p className="text-xs text-gray-500 truncate">
-            {user.role}
-          </p>
+          <div className="flex justify-between items-center text-xs text-gray-500 truncate mt-1">
+            <span className="capitalize">{currentRole}</span> 
+            {/* //temp: Show switch button ONLY for this specific email */}
+           {user?.emailAddress === "franklinlungu7@gmail.com" && (
+              <Button 
+                variant="ghost" 
+                size="xs" 
+                className="ml-2 h-6 px-1.5 py-0 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-50 border border-orange-200"
+                onClick={onRoleToggle}
+              >
+                switch
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       
@@ -136,6 +157,9 @@ export default function DashboardNavBar({
   onSelect, 
   onSignOut,
   user,
+  currentRole, //temp: Received from DashboardPage
+  onRoleToggle, //temp: Received from DashboardPage
+  userProfile,
   className = "" 
 }) {
   const navigate = useNavigate();
@@ -154,7 +178,8 @@ export default function DashboardNavBar({
     return location.pathname.startsWith(path);
   }
 
-  const role = user?.role?.toLowerCase() || 'client';
+  // //temp: Determine nav items based on the temporary frontend role
+  const role = currentRole?.toLowerCase();
   const navItems = (role === 'officer' || role === 'admin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
 
   return (
@@ -201,7 +226,10 @@ export default function DashboardNavBar({
       {/* User Profile Section */}
       <UserProfile 
         user={user || { name: 'Dev user', role: 'client' }} 
-        onSignOut={onSignOut} 
+        onSignOut={onSignOut}
+        currentRole={currentRole} //temp
+        onRoleToggle={onRoleToggle} //temp
+        userProfile={userProfile}
       />
     </aside>
   );

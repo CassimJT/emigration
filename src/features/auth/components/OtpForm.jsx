@@ -63,7 +63,7 @@ export default function OtpForm({
         />
         <h1 className="text-xl font-bold">Verify Identity</h1>
         <p className="text-sm text-gray-600">
-          {"Enter the " + (message || "OTP sent to your email") + " to verify your identity."}
+          Enter the  <strong>{message ?? "OTP"}</strong> to verify your identity.
         </p>
       </div>  
 

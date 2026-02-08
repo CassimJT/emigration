@@ -1,77 +1,70 @@
+import { useDashboardOverview } from './useDashboardOverview'
+import { useUserManagement } from './useUserManagement'
+import { useUserProfile } from './useUserProfile'
+import { useDashboardNavigation } from './useDashboardNavigation'
+import { useLoanSimulation } from './useLoanSimulation'   
 import { useState, useEffect, useMemo } from 'react'
 import { PGARRY } from '@/utils/constants'
-import { fetchDashboardSummary, fetchApplicationStatus } from '@/features/dashboard/api/dashboard.api'
+import { 
+  userProfile, 
+  getRecentActivities, 
+  getNotifications, 
+  getApplicationStatus,
+  getAllUsers as getAllUsersAPI,
+  updateUser as updateUserAPI,
+  deleteUser as deleteUserAPI,
+  updateUserProfile as updateUserProfileAPI,
+  promoteUser as promoteUserAPI
+} from '@/features/dashboard/api/dashboard.api'
 
-/*
- * Custom hook to manage the core Dashboard state and logic.
- * Responsibilities include:
- * - Managing active view state for navigation
- * - Tracking passport application progress
- * - Fetching and storing dashboard summary data (applications, payments) from the API
- */
 export function useDashboard() {
-  const [summary, setSummary] = useState(null)
-  const [applications, setApplications] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  
-  // for loan processing simulation
-  const [progress, setProgress] = useState(0)
-  const [mainStage, setMainStage] = useState(0)
-  const pgarry = useMemo(() => PGARRY, [])
+  const overview = useDashboardOverview()
+  const userMgmt = useUserManagement()
+  const profile = useUserProfile()
+  const navigation = useDashboardNavigation()
+  const simulation = useLoanSimulation()
 
-  // for navigation tracking 
-  const [activeView, setActiveView] = useState(() => {
-    return localStorage.getItem('dashboardView') || 'overview'
-  })
-
-  useEffect(() => {
-    localStorage.setItem('dashboardView', activeView)
-  }, [activeView])
-
-// for loan processing simulation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => (prev < 100 ? prev + 20 : 100))
-      for (let i = 0; i < 100; i += 20) {
-        if (progress === i) {
-          let stage = mainStage + 1
-          setMainStage(stage)
-        }
-      }
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [progress, mainStage])
-
-
-//For fetching data from the backend via api methods calls
-  const loadDashboard = async () => {
-    setLoading(true)
-    setError(null)
-
+  //promote user
+  const promoteUser = async (userId) => {
     try {
-      const summaryData = await fetchDashboardSummary()
-      const applicationData = await fetchApplicationStatus()
-
-      setSummary(summaryData)
-      setApplications(applicationData)
+      await promoteUserAPI(userId)
+      await loadDashboard()
     } catch (err) {
-      setError(err?.message || 'Failed to load dashboard')
-    } finally {
-      setLoading(false)
+      console.error('Promote user error:', err)
+      setError(err?.message || 'Failed to promote user')
     }
   }
 
   return {
-    activeView,
-    setActiveView,
-    summary,
-    applications,
-    loading,
-    error,
-    loadDashboard,
-    progress,
-    mainStage,
-    pgarry,
+    // Overview data
+    applications: overview.applications,
+    recentActivities: overview.recentActivities,
+    notifications: overview.notifications,
+    loading: overview.loading,
+    error: overview.error,
+    refreshOverview: overview.refreshOverview,
+
+    // User management
+    users: userMgmt.users,
+    loadingUsers: userMgmt.loadingUsers,
+    usersError: userMgmt.usersError,
+    getAllUsers: userMgmt.getAllUsers,
+    updateUser: userMgmt.updateUser,
+    deleteUser: userMgmt.deleteUser,
+
+    // Current user profile
+    profile: profile.profile,
+    profileLoading: profile.profileLoading,
+    profileError: profile.profileError,
+    fetchProfile: profile.fetchProfile,
+    updateUserProfile: profile.updateUserProfile,
+
+    // Navigation
+    activeView: navigation.activeView,
+    setActiveView: navigation.setActiveView,
+
+    progress: simulation.progress,
+    mainStage: simulation.mainStage,
+    pgarry: simulation.pgarry,
   }
 }
