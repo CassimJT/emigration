@@ -2,7 +2,7 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import ClientOverview from './ClientOverview';
 import OfficerOverview from './OfficerOverview';
 import React from 'react';
-import { useOutletContext } from 'react-router-dom'; //temp
+import { Navigate, useOutletContext } from 'react-router-dom'; //temp
 
 export default function DashboardOverview() {
     const { user } = useAuth();
@@ -11,9 +11,12 @@ export default function DashboardOverview() {
 
     const role = (currentRole || user?.role || 'client').toLowerCase(); //temp
     
-    if (role === 'officer' || role === 'admin') {
+    if (role === 'officer' || role === 'admin' || role === 'superadmin') {
         return <OfficerOverview />;
     }
-
-    return <ClientOverview />;
+    
+    if (role === 'client') {
+        return <ClientOverview />;
+    }
+    return <Navigate to="/unauthorized" replace />;
 }

@@ -1,3 +1,8 @@
+import { useDashboardOverview } from './useDashboardOverview'
+import { useUserManagement } from './useUserManagement'
+import { useUserProfile } from './useUserProfile'
+import { useDashboardNavigation } from './useDashboardNavigation'
+import { useLoanSimulation } from './useLoanSimulation'   
 import { useState, useEffect, useMemo } from 'react'
 import { PGARRY } from '@/utils/constants'
 import { 
@@ -13,110 +18,11 @@ import {
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
-  const [profile, setProfile] = useState(null)
-  const [users, setUsers] = useState(null)
-  const [applications, setApplications] = useState(null)
-  const [recentActivities, setRecentActivities] = useState([])
-  const [notifications, setNotifications] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  
-  // for loan processing simulation
-  const [progress, setProgress] = useState(0)
-  const [mainStage, setMainStage] = useState(0)
-  const pgarry = useMemo(() => PGARRY, [])
-
-  // for navigation tracking 
-  const [activeView, setActiveView] = useState(() => {
-    return localStorage.getItem('dashboardView') || 'overview'
-  })
-
-  useEffect(() => {
-    localStorage.setItem('dashboardView', activeView)
-  }, [activeView])
-
-  // for loan processing simulation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => (prev < 100 ? prev + 20 : 100))
-      for (let i = 0; i < 100; i += 20) {
-        if (progress === i) {
-          let stage = mainStage + 1
-          setMainStage(stage)
-        }
-      }
-    }, 2000)
-    return () => clearInterval(interval)
-  }, [progress, mainStage])
-
-  // For fetching data from the backend via API methods calls
-  const loadDashboard = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-       
-      const userProfileData = await userProfile()
-      const applicationData = await getApplicationStatus()
-      const activitiesData = await getRecentActivities()
-      const notificationsData = await getNotifications()
-
-      setProfile(userProfileData)
-      setApplications(applicationData)
-      setRecentActivities(activitiesData)
-      setNotifications(notificationsData)
-    } catch (err) {
-      console.error('Dashboard load error:', err)
-      setError(err?.message || 'Failed to load dashboard')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // Load dashboard data on mount
-  useEffect(() => {
-    loadDashboard()
-  }, [])
-
-  const getAllUsers = async () => {
-    try {
-      const data = await getAllUsersAPI()
-      setUsers(data)
-    } catch (err) {
-      console.error('Get users error:', err)
-      setError(err?.message || 'Failed to fetch users')
-    }
-  }
-
-  const updateUserProfile = async (profileData) => {
-    try {
-      await updateUserProfileAPI(profileData)
-      await loadDashboard() 
-    } catch (err) {
-      console.error('Update profile error:', err)
-      setError(err?.message || 'Failed to update profile')
-    }
-  }
-
-  const updateUser = async (userId, userData) => {
-    try {
-      await updateUserAPI(userId, userData)
-      await loadDashboard() 
-    } catch (err) {
-      console.error('Update user error:', err)
-      setError(err?.message || 'Failed to update user')
-    }
-  }
-
-  const deleteUser = async (userId) => {
-    try {
-      await deleteUserAPI(userId)
-      await loadDashboard() 
-    } catch (err) {
-      console.error('Delete user error:', err)
-      setError(err?.message || 'Failed to delete user')
-    }
-  }
+  const overview = useDashboardOverview()
+  const userMgmt = useUserManagement()
+  const profile = useUserProfile()
+  const navigation = useDashboardNavigation()
+  const simulation = useLoanSimulation()
 
   //promote user
   const promoteUser = async (userId) => {
@@ -130,26 +36,35 @@ export function useDashboard() {
   }
 
   return {
-    users,
-    profile,
-    updateUserProfile,
-    updateUser,
-    deleteUser,
-    promoteUser,
-    getAllUsers,
+    // Overview data
+    applications: overview.applications,
+    recentActivities: overview.recentActivities,
+    notifications: overview.notifications,
+    loading: overview.loading,
+    error: overview.error,
+    refreshOverview: overview.refreshOverview,
 
-    activeView,
-    setActiveView,
+    // User management
+    users: userMgmt.users,
+    loadingUsers: userMgmt.loadingUsers,
+    usersError: userMgmt.usersError,
+    getAllUsers: userMgmt.getAllUsers,
+    updateUser: userMgmt.updateUser,
+    deleteUser: userMgmt.deleteUser,
 
-    applications,
-    recentActivities,
-    notifications,
-    
-    loading,
-    error,
-    progress,
-    mainStage,
-    pgarry,
-    
+    // Current user profile
+    profile: profile.profile,
+    profileLoading: profile.profileLoading,
+    profileError: profile.profileError,
+    fetchProfile: profile.fetchProfile,
+    updateUserProfile: profile.updateUserProfile,
+
+    // Navigation
+    activeView: navigation.activeView,
+    setActiveView: navigation.setActiveView,
+
+    progress: simulation.progress,
+    mainStage: simulation.mainStage,
+    pgarry: simulation.pgarry,
   }
 }

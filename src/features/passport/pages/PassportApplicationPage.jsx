@@ -5,10 +5,16 @@ import React from "react";
  import PersonalInfoStep from '../components/PersonalInfoStep';
  import ReviewStep from '../components/ReviewStep';
  import { usePassportApplication } from '../hooks/usePassportApplication';
- import { useNavigate } from "react-router-dom";
+ import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 
 function PassportApplicationPage() {
+  const { user } = useAuth();
+  const { currentRole } = useOutletContext();
+  
+  const role = (currentRole || user?.role || 'client').toLowerCase();
+
   const navigate = useNavigate();
    const [passportTypeData, setPassportTypeData] = useState({
         passportType: 'Ordinary',
@@ -81,8 +87,11 @@ function PassportApplicationPage() {
       ...stepsData[2],
     };      
 
-  
-  
+  if (role !== 'client') {
+    return (
+      <Navigate to="*" replace />
+    );
+  }
 
   return(
     <div className="min-h-screen bg-gray-50 py-10 px-4">

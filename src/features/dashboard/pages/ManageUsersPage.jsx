@@ -42,11 +42,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { Navigate, useOutletContext } from "react-router-dom";
 
 const userRoles = ["client", "officer", "admin"];
 
 export default function ManageUsersPage() {
-  const { users, deleteUser } = useDashboard();
+  const { users,deleteUser } = useDashboard();
+  const { user } = useAuth();
+
+  const { currentRole } = useOutletContext();
+  const role = (currentRole || user?.role || 'officer').toLowerCase();
 
   // Track displayed role for each user (controlled value)
   const [displayedRoles, setDisplayedRoles] = useState(
@@ -64,7 +70,6 @@ export default function ManageUsersPage() {
   const handleRoleSelect = (userId, selectedRole) => {
     const currentRole = displayedRoles[userId];
 
-    // If same role → do nothing
     if (selectedRole === currentRole) return;
 
     const user = users.find((u) => u.id === userId);
@@ -102,7 +107,7 @@ export default function ManageUsersPage() {
     setPendingRole("");
   };
 
-  const handleViewProfile = (user) => console.log("View profile:", user.name);
+  const handleViewProfile = (user) => console.log("View profile:", user.emailAddress);
 
   const handleDeleteUser = (id) => {
     try {
@@ -113,14 +118,9 @@ export default function ManageUsersPage() {
     }
   };
 
-  // Optional: loading / empty state
-  if (!users || users.length === 0) {
+  if (role !== 'admin' && role !== 'superadmin') {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-background to-muted/30 py-10 px-4 md:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl text-center text-muted-foreground">
-          No users found.
-        </div>
-      </div>
+      <Navigate to="*" replace />
     );
   }
 
@@ -243,7 +243,7 @@ export default function ManageUsersPage() {
                                   Delete User
                                 </DropdownMenuItem>
                               </DialogTrigger>
-                              <DialogContent className="sm:max-w-md rounded-2xl border-border/60 bg-white">
+                              <DialogContent className="sm:max-w-md rounded-2xl border-4 border-slate-400 bg-white">
                                 <DialogHeader className="pb-4">
                                   <DialogTitle className="text-xl">Delete User?</DialogTitle>
                                   <DialogDescription className="pt-2 text-base leading-relaxed">
@@ -251,17 +251,16 @@ export default function ManageUsersPage() {
                                     <span className="text-red-600 font-medium">
                                       This will permanently remove
                                     </span>{" "}
-                                    <span className="font-medium text-foreground">{user.name}</span> (
-                                    {user.email}).
+                                    <span className="font-medium text-foreground">{user.emailAddress}</span> 
                                   </DialogDescription>
                                 </DialogHeader>
                                 <DialogFooter className="gap-3 sm:gap-0">
-                                  <Button variant="outline" className="sm:w-auto w-full">
+                                  <Button variant="outline" className="sm:w-auto w-full rounded bg-green-700 hover:bg-green-800 text-white">
                                     Cancel
                                   </Button>
                                   <Button
                                     variant="destructive"
-                                    className="sm:w-auto w-full"
+                                    className="sm:w-auto w-full rounded bg-red-700 hover:bg-red-800 text-white"
                                     onClick={() => handleDeleteUser(user.id)}
                                   >
                                     Delete
@@ -287,21 +286,21 @@ export default function ManageUsersPage() {
 
       {/* Role Change Confirmation Dialog */}
       <Dialog open={isRoleDialogOpen} onOpenChange={setIsRoleDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="sm:max-w-md rounded-xl border-4 border-slate-500 bg-white ">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-xl">Confirm Role Change</DialogTitle>
             <DialogDescription className="pt-3 text-base leading-relaxed">
-              Are you sure you want to change the role of{" "}
-              <span className="font-semibold">{selectedUser?.name}</span> to{" "}
-              <span className="font-semibold text-primary">{pendingRole}</span>?
+              <TriangleAlert className="h-5 w-5 inline mr-2 text-yellow-500" />
+              <span className="font-semibold">{selectedUser?.emailAddress}</span> role will be changed to{" "}
+              <span className="font-semibold text-primary text-blue-700">{pendingRole}</span>?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3 sm:gap-0 pt-2">
-            <Button variant="outline" onClick={cancelRoleChange}>
+            <Button variant="outline" onClick={cancelRoleChange} className="sm:w-auto rounded bg-green-700 hover:bg-green-800  w-full">
               Cancel
             </Button>
-            <Button variant="default" onClick={confirmRoleChange}>
-              Confirm Change
+            <Button variant="default" onClick={confirmRoleChange} className="sm:w-auto rounded bg-red-700 hover:bg-red-800 w-full">
+              Confirm
             </Button>
           </DialogFooter>
         </DialogContent>
