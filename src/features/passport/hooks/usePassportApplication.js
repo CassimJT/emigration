@@ -74,7 +74,11 @@ export function usePassportApplication() {
     setStatus(null)
 
     try {
-      const data = await createApplication(stepsData)
+      const payload ={
+        type: stepsData[0]?.passportType, 
+        formData: stepsData
+      }
+      const data = await createApplication(payload)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')

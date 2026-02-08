@@ -86,6 +86,16 @@ export async function verifyNationalId(payload) {
     return handleError(error)
   }
 }
+// LOGOUT
+export async function logout() {
+  try {
+    const { data } = await api.post('/auth/logout')
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
 
 // ERROR HANDLER
 function handleError(error) {
@@ -103,3 +113,4 @@ function handleError(error) {
     }
   }
 }
+
