@@ -1,9 +1,16 @@
 import React from "react"
 import { 
-  updateUser as updateUserAPI, 
-  deleteUser as deleteUserAPI, 
-  getAllUsers as getAllUsersAPI 
-} from "../api/dashboard.api"
+  userProfile, 
+  getRecentActivities, 
+  getNotifications, 
+  getApplicationStatus,
+  getAllUsers as getAllUsersAPI,
+  updateUser as updateUserAPI,
+  deleteUser as deleteUserAPI,
+  updateUserProfile as updateUserProfileAPI,
+  promoteUser as promoteUserAPI
+} from '@/features/dashboard/api/dashboard.api'
+
 
 export function useUserManagement() {
   const [users, setUsers] = React.useState([])
@@ -45,6 +52,17 @@ export function useUserManagement() {
     }
   }, [])
 
+    //promote user
+  const promoteUser = async (userId) => {
+    try {
+      await promoteUserAPI(userId)
+      await loadDashboard()
+    } catch (err) {
+      console.error('Promote user error:', err)
+      setError(err?.message || 'Failed to promote user')
+    }
+  }
+
   // Initial load
   React.useEffect(() => {
     getAllUsers()
@@ -57,5 +75,6 @@ export function useUserManagement() {
     getAllUsers,
     updateUser,
     deleteUser,
+    promoteUser
   }
 }
