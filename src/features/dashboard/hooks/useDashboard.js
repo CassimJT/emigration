@@ -9,6 +9,7 @@ import {
   updateUser as updateUserAPI,
   deleteUser as deleteUserAPI,
   updateUserProfile as updateUserProfileAPI,
+  promoteUser as promoteUserAPI
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
@@ -117,12 +118,24 @@ export function useDashboard() {
     }
   }
 
+  //promote user
+  const promoteUser = async (userId) => {
+    try {
+      await promoteUserAPI(userId)
+      await loadDashboard()
+    } catch (err) {
+      console.error('Promote user error:', err)
+      setError(err?.message || 'Failed to promote user')
+    }
+  }
+
   return {
     users,
     profile,
     updateUserProfile,
     updateUser,
     deleteUser,
+    promoteUser,
     getAllUsers,
 
     activeView,
