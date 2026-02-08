@@ -180,7 +180,7 @@ export default function DashboardNavBar({
 
   // //temp: Determine nav items based on the temporary frontend role
   const role = currentRole?.toLowerCase();
-  const navItems = (role === 'officer' || role === 'admin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
+  const navItems = (role === 'officer' || role === 'admin' || role === 'superadmin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
 
   return (
     <aside 
