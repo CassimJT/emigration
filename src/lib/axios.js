@@ -1,10 +1,18 @@
 import axios from 'axios'
 import { getToken, setAuthSession, clearAuthSession } from './storage'
-import { refreshToken as refreshTokenApi } from '@/features/auth/api/auth.api'
 
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+
+// Main API client (with interceptors)
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  withCredentials: true, 
+  baseURL: BASE_URL,
+  withCredentials: true,
+})
+
+// Bare client for refresh — NO interceptors
+const refreshClient = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true,
 })
 
 // Attach access token
@@ -20,9 +28,9 @@ let isRefreshing = false
 let refreshQueue = []
 
 const processQueue = (error, token = null) => {
-  refreshQueue.forEach(promise => {
-    if (error) promise.reject(error)
-    else promise.resolve(token)
+  refreshQueue.forEach(p => {
+    if (error) p.reject(error)
+    else p.resolve(token)
   })
   refreshQueue = []
 }
@@ -33,10 +41,7 @@ api.interceptors.response.use(
   async error => {
     const originalRequest = error.config
 
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry
-    ) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           refreshQueue.push({
@@ -53,16 +58,16 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const data = await refreshTokenApi() // cookie-based
-        const { accessToken, refreshToken } = data
+        const res = await refreshClient.post('/auth/refresh-token') // backend route
+        const { accessToken } = res.data
 
-        setAuthSession({ accessToken, refreshToken })
+        setAuthSession({ accessToken })
         processQueue(null, accessToken)
 
         originalRequest.headers.Authorization = `Bearer ${accessToken}`
         return api(originalRequest)
       } catch (err) {
-        processQueue(err, null)
+        processQueue(err)
         clearAuthSession()
         window.location.href = '/login'
         return Promise.reject(err)
