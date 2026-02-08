@@ -41,18 +41,18 @@ export default function ReviewStep({
           Personal Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          {/* <div>
+          <div>
             <span className="font-medium text-gray-600">Name:</span>
             <p>{data.name || '—'}</p>
-          </div> */}
-          {/* <div>
+          </div>
+          <div>
             <span className="font-medium text-gray-600">Surname:</span>
             <p>{data.surname || '—'}</p>
-          </div> */}
-          {/* <div className="col-span-2">
+          </div>
+          <div className="col-span-2">
             <span className="font-medium text-gray-600">Email:</span>
             <p>{data.email || '—'}</p>
-          </div> */}
+          </div>
           <div>
             <span className="font-medium text-gray-600">Residential Status:</span>
             <p>{data.residentialStatus || '—'}</p>
@@ -78,7 +78,7 @@ export default function ReviewStep({
           onClick={onClick}
           className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
         >
-          Submit Application
+          Create Application
         </button>
       </div>
 

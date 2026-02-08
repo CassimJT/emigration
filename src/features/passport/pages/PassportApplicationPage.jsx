@@ -1,11 +1,11 @@
 import React from "react";
- import { useState } from 'react';
- import ProgressIndicator from '../components/ProgressIndicator';
- import PassportTypeStep from '../components/PassportTypeStep';
- import PersonalInfoStep from '../components/PersonalInfoStep';
- import ReviewStep from '../components/ReviewStep';
- import { usePassportApplication } from '../hooks/usePassportApplication';
- import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
+import { useState } from 'react';
+import ProgressIndicator from '../components/ProgressIndicator';
+import PassportTypeStep from '../components/PassportTypeStep';
+import PersonalInfoStep from '../components/PersonalInfoStep';
+import ReviewStep from '../components/ReviewStep';
+import { usePassportApplication } from '../hooks/usePassportApplication';
+import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 
@@ -16,13 +16,13 @@ function PassportApplicationPage() {
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
   const navigate = useNavigate();
-   const [passportTypeData, setPassportTypeData] = useState({
+  const [passportTypeData, setPassportTypeData] = useState({
         passportType: 'Ordinary',
         serviceType: 'Normal',
         bookletType: '36 Pages',
    });
 
-   const [personalInfoStepData,setPersonalInfoStepData] = useState({
+  const [personalInfoStepData,setPersonalInfoStepData] = useState({
         name: '',
         surname: '',
         email: '',
@@ -30,16 +30,15 @@ function PassportApplicationPage() {
         occupation: 'Ordinary',
    })
 
-   const { 
+  const { 
     currentStep,
     nextStep,
     previousStep,
     saveStepData,
     stepsData,
-    createNewApplication,
     submitApplication } = usePassportApplication();
 
-    const preparePayload = () => {
+  const preparePayload = () => {
 
       if (currentStep === 0) {
         return {
@@ -61,7 +60,7 @@ function PassportApplicationPage() {
 
       return {};
     }
-    const handleChange = (e) => {
+  const handleChange = (e) => {
       const { id, value } = e.target;
 
       if (currentStep === 0) {
@@ -71,25 +70,21 @@ function PassportApplicationPage() {
       }
     };
 
-    const handleNext = (e) => {
+  const handleNext = (e) => {
       e.preventDefault();
       const payload = preparePayload();
       saveStepData(currentStep + 1, payload);
 
-      if(currentStep === 1){
-        createNewApplication();
-        nextStep();
-        return; 
-      }
-      else if(currentStep === 2){
+      if(currentStep === 2){
         submitApplication();
-        navigate('/passport/status');
+        navigate('/payment');
         return; 
       }
+
       nextStep();
     };
 
-    const formData = {
+  const formData = {
       ...stepsData[1],
       ...stepsData[2],
     };      
