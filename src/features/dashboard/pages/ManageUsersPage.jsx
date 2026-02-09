@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDashboard } from "../hooks/useDashboard";
 import {
   Card,
@@ -42,8 +42,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Navigate, useOutletContext } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Navigate } from "react-router-dom";
 
 const userRoles = ["client", "officer", "admin"];
 
@@ -51,28 +51,27 @@ export default function ManageUsersPage() {
   const { users,deleteUser, promoteUser, fetchProfile } = useDashboard();
   const { user } = useAuth();
 
-  const { currentRole } = useOutletContext();
-  const role = (currentRole || user?.role || 'officer').toLowerCase();
+  const role = ( user?.role ).toLowerCase();
 
   // Track displayed role for each user (controlled value)
-  const [displayedRoles, setDisplayedRoles] = useState(
+  const [displayedRoles, setDisplayedRoles] = React.useState(
     ! users ? {} : users.reduce((acc, user) => {
-      acc[user.id] = user.role;
+      acc[user._id] = user.role;
       return acc;
     }, {})
   );
 
   // Role change confirmation state
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [pendingRole, setPendingRole] = useState("");
-  const [isRoleDialogOpen, setIsRoleDialogOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = React.useState(null);
+  const [pendingRole, setPendingRole] = React.useState("");
+  const [isRoleDialogOpen, setIsRoleDialogOpen] = React.useState(false);
 
   const handleRoleSelect = (userId, selectedRole) => {
     const currentRole = displayedRoles[userId];
 
     if (selectedRole === currentRole) return;
 
-    const user = users.find((u) => u.id === userId);
+    const user = users.find((u) => u._id === userId);
     if (!user) return;
 
     setSelectedUser(user);
@@ -84,16 +83,16 @@ export default function ManageUsersPage() {
     if (!selectedUser || !pendingRole) return;
 
     console.log(
-      `Confirmed: Changed role of ${selectedUser.name} (ID ${selectedUser.id}) to ${pendingRole}`
+      `Confirmed: Changed role of ${selectedUser.name} (ID ${selectedUser._id}) to ${pendingRole}`
     );
 
     // Only now update the visible role
     setDisplayedRoles((prev) => ({
       ...prev,
-      [selectedUser.id]: pendingRole,
+      [selectedUser._id]: pendingRole,
     }));
 
-    promoteUser(selectedUser.id)
+    promoteUser(selectedUser._id)
 
     // Clean up
     setIsRoleDialogOpen(false);
@@ -109,7 +108,7 @@ export default function ManageUsersPage() {
 
   const handleViewProfile = (user) => {
     try {      
-      fetchProfile(user.id);
+      fetchProfile(user._id);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
     }
@@ -178,7 +177,7 @@ export default function ManageUsersPage() {
                     </TableRow>
                   ) : users.map((user) => (
                     <TableRow
-                      key={user.id}
+                      key={user._id}
                       className="group border-b last:border-none hover:bg-accent/60 transition-all duration-200"
                     >
                       <TableCell className="pl-8 py-5">
@@ -199,8 +198,8 @@ export default function ManageUsersPage() {
 
                       <TableCell>
                         <Select
-                          value={displayedRoles[user.id] || user.role}
-                          onValueChange={(newRole) => handleRoleSelect(user.id, newRole)}
+                          value={displayedRoles[user._id] || user.role}
+                          onValueChange={(newRole) => handleRoleSelect(user._id, newRole)}
                         >
                           <SelectTrigger className="w-40 bg-background/60 focus:ring-primary/40 h-9 text-sm shadow-sm">
                             <SelectValue placeholder="Select role" />
@@ -269,7 +268,7 @@ export default function ManageUsersPage() {
                                   <Button
                                     variant="destructive"
                                     className="sm:w-auto w-full rounded bg-red-700 hover:bg-red-800 text-white"
-                                    onClick={() => handleDeleteUser(user.id)}
+                                    onClick={() => handleDeleteUser(user._id)}
                                   >
                                     Delete
                                   </Button>
