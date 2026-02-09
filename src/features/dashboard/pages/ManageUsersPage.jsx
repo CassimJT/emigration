@@ -56,7 +56,7 @@ export default function ManageUsersPage() {
   // Track displayed role for each user (controlled value)
   const [displayedRoles, setDisplayedRoles] = React.useState(
     ! users ? {} : users.reduce((acc, user) => {
-      acc[user._id] = user.role;
+      acc[user.nationalId] = user.role;
       return acc;
     }, {})
   );
@@ -71,7 +71,7 @@ export default function ManageUsersPage() {
 
     if (selectedRole === currentRole) return;
 
-    const user = users.find((u) => u._id === userId);
+    const user = users.find((u) => u.nationalId === userId);
     if (!user) return;
 
     setSelectedUser(user);
@@ -83,16 +83,16 @@ export default function ManageUsersPage() {
     if (!selectedUser || !pendingRole) return;
 
     console.log(
-      `Confirmed: Changed role of ${selectedUser.name} (ID ${selectedUser._id}) to ${pendingRole}`
+      `Confirmed: Changed role of ${selectedUser.name} (ID ${selectedUser.nationalId}) to ${pendingRole}`
     );
 
     // Only now update the visible role
     setDisplayedRoles((prev) => ({
       ...prev,
-      [selectedUser._id]: pendingRole,
+      [selectedUser.nationalId]: pendingRole,
     }));
 
-    promoteUser(selectedUser._id)
+    promoteUser(selectedUser.nationalId)
 
     // Clean up
     setIsRoleDialogOpen(false);
@@ -108,7 +108,7 @@ export default function ManageUsersPage() {
 
   const handleViewProfile = (user) => {
     try {      
-      fetchProfile(user._id);
+      fetchProfile(user.nationalId);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
     }
@@ -177,7 +177,7 @@ export default function ManageUsersPage() {
                     </TableRow>
                   ) : users.map((user) => (
                     <TableRow
-                      key={user._id}
+                      key={user.nationalId}
                       className="group border-b last:border-none hover:bg-accent/60 transition-all duration-200"
                     >
                       <TableCell className="pl-8 py-5">
@@ -198,8 +198,8 @@ export default function ManageUsersPage() {
 
                       <TableCell>
                         <Select
-                          value={displayedRoles[user._id] || user.role}
-                          onValueChange={(newRole) => handleRoleSelect(user._id, newRole)}
+                          value={displayedRoles[user.nationalId] || user.role}
+                          onValueChange={(newRole) => handleRoleSelect(user.nationalId, newRole)}
                         >
                           <SelectTrigger className="w-40 bg-background/60 focus:ring-primary/40 h-9 text-sm shadow-sm">
                             <SelectValue placeholder="Select role" />
@@ -268,7 +268,7 @@ export default function ManageUsersPage() {
                                   <Button
                                     variant="destructive"
                                     className="sm:w-auto w-full rounded bg-red-700 hover:bg-red-800 text-white"
-                                    onClick={() => handleDeleteUser(user._id)}
+                                    onClick={() => handleDeleteUser(user.nationalId)}
                                   >
                                     Delete
                                   </Button>
