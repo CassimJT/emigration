@@ -2,14 +2,12 @@ import { useAuth } from '@/features/auth/hooks/useAuth';
 import ClientOverview from './ClientOverview';
 import OfficerOverview from './OfficerOverview';
 import React from 'react';
-import { Navigate, useOutletContext } from 'react-router-dom'; //temp
+import { Navigate } from 'react-router-dom';
 
 export default function DashboardOverview() {
     const { user } = useAuth();
-    // //temp: Get the frontend-overridden role from DashboardPage context
-    const { currentRole } = useOutletContext(); //temp
-
-    const role = (currentRole || user?.role || 'client').toLowerCase(); //temp
+    
+    const role = (user?.role || 'client').toLowerCase();
     
     if (role === 'officer' || role === 'admin' || role === 'superadmin') {
         return <OfficerOverview />;

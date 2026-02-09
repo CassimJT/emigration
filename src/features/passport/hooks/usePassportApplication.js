@@ -21,12 +21,11 @@ export function usePassportApplication() {
   // Data Management
 
   const saveStepData = (step, data) => {
-    console.log('Saving data for step', step, data) 
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
-    console.log('Updated stepsData:', {...stepsData, [step]: data})
+    
   }
 
   //resetApplication
@@ -74,7 +73,13 @@ export function usePassportApplication() {
     setStatus(null)
 
     try {
-      const data = await createApplication(stepsData)
+      const payload ={
+        type: stepsData[1]?.passportType, 
+        formData: stepsData
+      }
+      console.log('Creating application with payload:', payload)
+      const data = await createApplication(payload)
+      console.log('Create application response:', data)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
