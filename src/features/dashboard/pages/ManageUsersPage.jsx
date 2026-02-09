@@ -45,7 +45,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 
-const userRoles = ["client", "officer", "admin"];
+const userRoles = ["client", "officer", "admin", "superadmin"];
 
 export default function ManageUsersPage() {
   const { users,deleteUser, promoteUser, fetchProfile } = useDashboard();
@@ -293,7 +293,7 @@ export default function ManageUsersPage() {
 
       {/* Role Change Confirmation Dialog */}
       <Dialog open={isRoleDialogOpen} onOpenChange={setIsRoleDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-xl border-4 border-slate-500 bg-white ">
+        <DialogContent className="rounded-xl sm:max-w-md border-4 border-slate-500 bg-white ">
           <DialogHeader className="pb-4">
             <DialogTitle className="text-xl">Confirm Role Change</DialogTitle>
             <DialogDescription className="pt-3 text-base leading-relaxed">
