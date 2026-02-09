@@ -3,19 +3,16 @@ import { getToken, setAuthSession, clearAuthSession } from './storage'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
-// Main API client (with interceptors)
 const api = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 })
 
-// Bare client for refresh — NO interceptors
 const refreshClient = axios.create({
   baseURL: BASE_URL,
   withCredentials: true,
 })
 
-// Attach access token
 api.interceptors.request.use(config => {
   const token = getToken()
   if (token) {
@@ -35,7 +32,6 @@ const processQueue = (error, token = null) => {
   refreshQueue = []
 }
 
-// Handle expired access token
 api.interceptors.response.use(
   res => res,
   async error => {
@@ -58,7 +54,7 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const res = await refreshClient.post('/auth/refresh-token') // backend route
+        const res = await refreshClient.post('/auth/refresh-token')
         const { accessToken } = res.data
 
         setAuthSession({ accessToken })
