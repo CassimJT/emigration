@@ -57,7 +57,7 @@ export async function deleteUser(userId) {
 
 export async function promoteUser(userId) {
   try {
-    const { data } = await api.post(`/users/${userId}/promote`)
+    const { data } = await api.patch(`/users/${userId}/promote`)
     return data.message
   } catch (error) {
     return handleError(error)
