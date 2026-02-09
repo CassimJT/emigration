@@ -117,7 +117,7 @@ function UserProfile({ user, onSignOut, userProfile }) {
               {userProfile?.firstName && userProfile.firstName !== "null" ? userProfile.firstName : (user?.emailAddress?.split('@')[0] || "User")}
           </p>
           <div className="flex justify-between items-center text-xs text-gray-500 truncate mt-1">
-            <span className="capitalize">{user?.role}</span> 
+            <span className="capitalize">{user.role === "client" ? " " : user?.role}</span> 
           </div>
         </div>
       </div>
