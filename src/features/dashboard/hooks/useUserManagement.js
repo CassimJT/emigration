@@ -47,9 +47,9 @@ export function useUserManagement() {
     }
   }, [])
   // Promote user
-  const promoteUser = React.useCallback(async (userId) => {
+  const promoteUser = React.useCallback(async (userId, newRole) => {
     try {
-      await promoteUserAPI(userId)
+      await promoteUserAPI(userId, newRole)
       await getAllUsers()
     } catch (err) {
       console.error('Promote user error:', err)
