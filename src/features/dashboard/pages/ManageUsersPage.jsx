@@ -83,7 +83,7 @@ export default function ManageUsersPage() {
     if (!selectedUser || !pendingRole) return;
 
     console.log(
-      `Confirmed: Changed role of ${selectedUser.name} (ID ${selectedUser.nationalId}) to ${pendingRole}`
+      `Confirmed: Changed role of ${selectedUser.emailAddress} (ID ${selectedUser.nationalId}) to ${pendingRole}`
     );
 
     // Only now update the visible role
