@@ -40,7 +40,7 @@ export function useUserManagement() {
   const deleteUser = React.useCallback(async (userId) => {
     try {
       await deleteUserAPI(userId)
-      setUsers(prev => prev.filter(u => u._id !== userId))
+      setUsers(prev => prev.filter(u => u.nationalId !== userId))
     } catch (err) {
       console.error('Delete user error:', err)
       throw new Error(err?.message || 'Failed to delete user')
