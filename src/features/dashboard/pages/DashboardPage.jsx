@@ -4,12 +4,12 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet'
 import DashboardNavBar from '../components/DashboardNavBar'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 import { useDashboard } from '../hooks/useDashboard'
+import { useAuth } from '@/hooks/useAuth'
 
 
 function DashboardPage() {
-  const { user, logout } = useAuth()
+  const {logout, user} = useAuth()
   const {profile} = useDashboard();
   const [isMobileOpen, setIsMobileOpen] = useState(false)
   
