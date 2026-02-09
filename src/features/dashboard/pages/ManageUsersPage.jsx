@@ -51,7 +51,7 @@ export default function ManageUsersPage() {
   const { users,deleteUser, promoteUser, fetchProfile } = useDashboard();
   const { user } = useAuth();
 
-  const role = ( user?.role ).toLowerCase();
+  const role = user?.role.toLowerCase();
 
   // Track displayed role for each user (controlled value)
   const [displayedRoles, setDisplayedRoles] = React.useState(
@@ -92,7 +92,7 @@ export default function ManageUsersPage() {
       [selectedUser._id]: pendingRole,
     }));
 
-    promoteUser(selectedUser._id)
+    promoteUser(selectedUser._id, pendingRole);
 
     // Clean up
     setIsRoleDialogOpen(false);
