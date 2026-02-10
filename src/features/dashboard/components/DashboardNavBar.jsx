@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   Bell,
+  BookOpenCheck,
   CreditCard, 
   FileText, 
   HelpCircle,
@@ -10,7 +11,9 @@ import {
   MessageCircle,
   Phone,
   User, 
-  User2
+  User2,
+  UserCog,
+  Users
 } from "lucide-react";
 import React from "react";
 
@@ -63,7 +66,7 @@ const OFFICER_NAV_ITEMS = [
   },
   { 
     label: 'Users', 
-    icon: User2, 
+    icon: Users, 
     badge: '5', 
     path: '/dashboard/admin/users'
   },
@@ -76,8 +79,8 @@ const CLIENT_QUICK_LINKS = [
 ];
 
 const OFFICER_QUICK_LINKS = [
-  { label: "Review passport demo", icon: HelpCircle, path: '/passport/review/demo' },
-  { label: "Manage users demo", icon: MessageCircle, path: '/users/manage/demo' },
+  { label: "Review passport demo", icon: BookOpenCheck, path: '/passport/review/demo' },
+  { label: "Manage users demo", icon: UserCog, path: '/users/manage/demo' },
   { label: "Contact Support", icon: Phone, path: '/contacts' },
 ];
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -7,13 +7,13 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 
 
 function OtpVerificationPage() {
+  const location = useLocation()
   const navigate = useNavigate()
   const {
     verifyOtp,
     user,
     loading,
     error,
-    message,
     status,
     loginSessionId,
     verificationSessionId,
@@ -21,6 +21,7 @@ function OtpVerificationPage() {
     clearStatus,
     isAuthReady,
   } = useAuth()
+
 
   /* -------- ROUTE GUARD -------- */
   useEffect(() => {
@@ -48,6 +49,8 @@ function OtpVerificationPage() {
       navigate("/dashboard", { replace: true })
     }
   }, [status, navigate, clearStatus])
+
+  const message = location.state?.optMessage;
 
   const handleSubmit = async ({ otp }) => {
     try {

@@ -35,7 +35,7 @@ function LoginPage() {
     try {
       const data = await login({ credentials: preparePayload() })
       console.log('LOGIN PAGE RECEIVED:', data)
-      navigate('/otp')
+      navigate('/otp',data ? { state: { optMessage: data.message } } : undefined)
     } catch (err) {
       console.error('LOGIN PAGE ERROR:', err)
     }
