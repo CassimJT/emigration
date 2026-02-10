@@ -79,7 +79,7 @@ export function usePassportApplication() {
       const payload ={
         type: stepsData[1]?.passportType, 
         formData: stepsData,
-        verificationSessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
+        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
       }
       console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
