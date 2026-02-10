@@ -11,8 +11,9 @@ export default function Contacts() {
     </div>
   )}
  return (
-    <div className="w-full min-h-screen bg-background">
-        Contact super admin coming soon...
+    <div className="flex flex-col items-center justify-center min-h-[60vh]">
+      <h1 className="text-2xl font-bold mb-4">Contact Super Admin</h1>
+       Contact super admin coming soon...
     </div>
   )
 }

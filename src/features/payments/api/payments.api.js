@@ -12,19 +12,44 @@ export async function initiatePayment(payload) {
 
 // Verify payment status by reference
 export async function verifyPayment(reference) {
+  if (!reference || typeof reference !== 'string' || reference.trim() === '') {
+    throw new Error('Payment reference is required');
+  }
+
   try {
-    // Backend expects tx_ref in query: router.get("/verify", verify);
-    const { data } = await api.get(`/payments/verify?tx_ref=${reference}`)
-    return data
+    const response = await api.get(`/payments/verify?tx_ref=${encodeURIComponent(reference)}`);
+
+    const data = response.data;
+
+    if (!data.success) {
+      throw new Error(data.message || 'Payment verification failed');
+    }
+
+    if (data.payment && data.payment.status === 'failed') {
+      throw new Error('Payment was marked as failed');
+    }
+
+    return {
+      success: data.success,
+      message: data.message,
+      payment: data.payment,
+      verification: data.verification,
+      redirectURL: data.redirectURL
+    };
   } catch (error) {
-    throw handleError(error)
+    const handled = handleError(error);
+
+    throw new Error(
+      handled?.message ||
+      `Failed to verify payment for reference: ${reference}`
+    );
   }
 }
 
 // Fetch payment history for a user
 export async function fetchPaymentHistory(userId) {
   try {
-    // Backend: router.get('/user/:userId', ...)
+
     const { data } = await api.get(`/payments/user/${userId}`)
     return data
   } catch (error) {

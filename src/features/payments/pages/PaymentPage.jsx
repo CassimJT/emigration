@@ -5,8 +5,8 @@ import PaymentOptions from '@/features/payments/components/PaymentOptions'
 import PaymentSummary from '@/features/payments/components/PaymentSummary'
 import PayChangu from '@/assets/dashboard/payment/PayChangu.png'
 import { usePayments } from '../hooks/usePayments'
-import { useAuth } from '@/features/auth/hooks/useAuth'
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
 
 function PaymentPage() {
   const { user } = useAuth()
@@ -51,7 +51,7 @@ function PaymentPage() {
     }
   }
   const initialPaymentState = React.useMemo(() => {
-    let passportFees = 50000;
+    let passportFees = 0;
     try {
       const feesStr = import.meta.env.VITE_PASSPORT_FEES;
       if (feesStr) {
@@ -65,7 +65,7 @@ function PaymentPage() {
       amount: passportFees,
       passportID: user?.nationalId || '',
     };
-  }, [user?.nationalId]);
+  }, [user?.nationalId,]);
 
   useEffect(() => {
     setPaymentState(initialPaymentState);
