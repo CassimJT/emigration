@@ -62,7 +62,7 @@ export function useAuth() {
       const payload = {
         emailAddress: credentials.emailAddress,
         password: credentials.password,
-        verificationSessionId,
+        identitySessionId: verificationSessionId,
       }
 
       const data = await apiLogin(payload)
