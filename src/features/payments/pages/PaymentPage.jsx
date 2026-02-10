@@ -4,9 +4,9 @@ import { Lightbulb, Loader2, AlertCircle } from 'lucide-react'
 import PaymentOptions from '@/features/payments/components/PaymentOptions'
 import PaymentSummary from '@/features/payments/components/PaymentSummary'
 import PayChangu from '@/assets/dashboard/payment/PayChangu.png'
-import { usePayments } from '../hooks/usePayments'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { usePayment } from '../hooks/usePayments'
 
 function PaymentPage() {
   const { user } = useAuth()
@@ -17,7 +17,7 @@ function PaymentPage() {
     startPayment, 
     isLoading, 
     error: paymentError
-  } = usePayments()
+  } = usePayment()
 
     const preparePaymentPayload = () => {
     return {
