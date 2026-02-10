@@ -1,22 +1,41 @@
-import React, { useEffect, useState } from 'react'
-import { useSearchParams, Link } from 'react-router-dom'
+import React from 'react'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
 import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { usePayments } from '../hooks/usePayments'
+import { usePayment } from '../hooks/usePayments'
 
 function PaymentSuccessPage() {
-  const [searchParams] = useSearchParams()
-  const tx_ref = searchParams.get('tx_ref')
-  const { confirmPayment, isLoading, error } = usePayments()
-  const [paymentData, setPaymentData] = useState(null)
+ const { confirmPayment, isLoading, error, setError } = usePayment();
+  const [searchParams] = useSearchParams();
+  const tx_ref = searchParams.get('tx_ref');
+  const [paymentData, setPaymentData] = React.useState(null)
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (tx_ref) {
-      confirmPayment(tx_ref)
-        .then(res => setPaymentData(res))
-        .catch(err => console.error(err))
+  React.useEffect(() => {
+    if (!tx_ref) {
+      setError('Missing payment reference');
+      return;
     }
-  }, [tx_ref])
+
+    const verify = async () => {
+      try {
+        const result = await confirmPayment(tx_ref);
+
+        if (result.success) {
+          setPaymentData(result)
+          setTimeout(() => {
+            navigate('/dashboard')
+          }, 5000)
+        }
+        
+      } catch (err) {
+        setError(err.message || 'Payment verification failed.');
+        console.error('Payment verification error:', err);
+      }
+    };
+
+    verify();
+  }, [confirmPayment, error, navigate, setError, tx_ref]);
 
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center">

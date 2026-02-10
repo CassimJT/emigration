@@ -27,6 +27,8 @@ import PendingReviewsPage from '@/features/dashboard/pages/PendingReviewsPage'
 import StatisticsPage from '@/features/dashboard/pages/StatisticsPage'
 import { RoleRoute } from './RoleRoute'
 import ManageUsersPage from '@/features/dashboard/pages/ManageUsersPage'
+import PassportReviewDemo from '@/pages/PassportReviewDemo'
+import ManageUsersDemo from '@/pages/ManageUsersDemo'
 
 export const router = createBrowserRouter([
 
@@ -54,6 +56,8 @@ export const router = createBrowserRouter([
       { path: '/contacts', element: <Contacts /> },
       { path: '/demo', element: <ApplicationDemo /> },
       { path: '/faqs', element: <FAQs /> },
+      { path: '/passport/review/demo', element: <PassportReviewDemo /> },
+      { path: '/users/manage/demo', element: <ManageUsersDemo /> },
       
     ],
   },

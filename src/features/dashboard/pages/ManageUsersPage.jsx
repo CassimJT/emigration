@@ -233,7 +233,7 @@ export default function ManageUsersPage() {
                               Actions
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-border/40 my-1" />
-                            <DropdownMenuItem className="gap-2.5 py-2.5 text-sm cursor-pointer"> bg-bl
+                            <DropdownMenuItem className="gap-2.5 py-2.5 text-sm cursor-pointer">
                             <Button variant="ghost" size="sm" onClick={() => handleViewProfile(user)} className="h-8 px-3 bg-transparent">
                               <Eye className="h-4 w-4 opacity-80" />
                               View Profile

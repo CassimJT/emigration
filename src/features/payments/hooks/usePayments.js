@@ -3,7 +3,7 @@ import { initiatePayment, verifyPayment, fetchPaymentHistory } from '@/features/
 import { useAuth } from '@/features/auth/hooks/useAuth'
 
 
-export function usePayments() {
+export function usePayment() {
   const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -29,7 +29,7 @@ export function usePayments() {
       let redirectUrl = response?.checkout_url
       
       if (!redirectUrl) {
-         throw new Error("Failed to get checkout URL from payment gateway.")
+        throw new Error("Failed to get checkout URL from payment gateway.")
       }
 
       return { success: true, redirectUrl, tx_ref: response.tx_ref }
@@ -91,6 +91,7 @@ export function usePayments() {
     confirmPayment,
     getPaymentHistory,
     cancelPayment,
+    setError,
     isLoading,
     error
   }
