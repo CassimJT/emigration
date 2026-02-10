@@ -1,83 +1,116 @@
-import axios from 'axios'
-import { getToken, setAuthSession, clearAuthSession } from './storage'
+import api from '@/lib/axios'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
-
-// Main API client (with interceptors)
-const api = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
-})
-
-// Bare client for refresh — NO interceptors
-const refreshClient = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true,
-})
-
-// Attach access token
-api.interceptors.request.use(config => {
-  const token = getToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
+// LOGIN
+export async function login(credentials) {
+  try {
+    const { data } = await api.post('/auth/login', credentials)
+    return data
+  } catch (error) {
+    return handleError(error)
   }
-  return config
-})
-
-let isRefreshing = false
-let refreshQueue = []
-
-const processQueue = (error, token = null) => {
-  refreshQueue.forEach(p => {
-    if (error) p.reject(error)
-    else p.resolve(token)
-  })
-  refreshQueue = []
 }
 
-// Handle expired access token
-api.interceptors.response.use(
-  res => res,
-  async error => {
-    const originalRequest = error.config
-
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          refreshQueue.push({
-            resolve: token => {
-              originalRequest.headers.Authorization = `Bearer ${token}`
-              resolve(api(originalRequest))
-            },
-            reject,
-          })
-        })
-      }
-
-      originalRequest._retry = true
-      isRefreshing = true
-
-      try {
-        const res = await refreshClient.post('/auth/refresh-token') 
-        const { accessToken } = res.data
-
-        setAuthSession({ accessToken })
-        processQueue(null, accessToken)
-
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`
-        return api(originalRequest)
-      } catch (err) {
-        processQueue(err)
-        clearAuthSession()
-        window.location.href = '/login'
-        return Promise.reject(err)
-      } finally {
-        isRefreshing = false
-      }
-    }
-
-    return Promise.reject(error)
+// SIGNUP / REGISTER
+export async function signup(payload) {
+  try {
+    const { data } = await api.post('/auth/register', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
   }
-)
+}
 
-export default api
+// OTP VERIFICATION
+export async function verifyOtp(payload) {
+  try {
+    const { data } = await api.post('/auth/verify-otp', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// RESEND OTP
+export async function resendOtp(payload) {
+  try {
+    const { data } = await api.post('/auth/resend-otp', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// REFRESH TOKEN
+export async function refreshToken() {
+  const { data } = await refreshClient.post('/auth/refresh-token')
+  return data
+}
+
+
+// FORGOT PASSWORD
+export async function forgotPassword(payload) {
+  try {
+    const { data } = await api.post('/auth/request-reset', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// RESET PASSWORD
+export async function resetPassword(payload) {
+  try {
+    const { data } = await api.post('/auth/reset-password', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// CHANGE PASSWORD
+export async function changePassword(payload) {
+  try {
+    const { data } = await api.post('/auth/change-password', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+// VERIFY NATIONAL ID
+export async function verifyNationalId(payload) {
+  try {
+    const { data } = await api.post('/auth/verfy-national-id', payload)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+// LOGOUT
+export async function logout() {
+  try {
+    const { data } = await api.post('/auth/logout')
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
+
+// ERROR HANDLER
+function handleError(error) {
+  if (error.response) {
+    throw error.response.data
+  } else if (error.request) {
+    throw {
+      status: 500,
+      message: 'No response from server',
+    }
+  } else {
+    throw {
+      status: 500,
+      message: error.message,
+    }
+  }
+}
+

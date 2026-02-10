@@ -3,19 +3,6 @@ import { useUserManagement } from './useUserManagement'
 import { useUserProfile } from './useUserProfile'
 import { useDashboardNavigation } from './useDashboardNavigation'
 import { useLoanSimulation } from './useLoanSimulation'   
-import { useState, useEffect, useMemo } from 'react'
-import { PGARRY } from '@/utils/constants'
-import { 
-  userProfile, 
-  getRecentActivities, 
-  getNotifications, 
-  getApplicationStatus,
-  getAllUsers as getAllUsersAPI,
-  updateUser as updateUserAPI,
-  deleteUser as deleteUserAPI,
-  updateUserProfile as updateUserProfileAPI,
-  promoteUser as promoteUserAPI
-} from '@/features/dashboard/api/dashboard.api'
 
 export function useDashboard() {
   const overview = useDashboardOverview()
@@ -23,17 +10,6 @@ export function useDashboard() {
   const profile = useUserProfile()
   const navigation = useDashboardNavigation()
   const simulation = useLoanSimulation()
-
-  //promote user
-  const promoteUser = async (userId) => {
-    try {
-      await promoteUserAPI(userId)
-      await loadDashboard()
-    } catch (err) {
-      console.error('Promote user error:', err)
-      setError(err?.message || 'Failed to promote user')
-    }
-  }
 
   return {
     // Overview data
@@ -46,6 +22,7 @@ export function useDashboard() {
 
     // User management
     users: userMgmt.users,
+    promoteUser : userMgmt.promoteUser,
     loadingUsers: userMgmt.loadingUsers,
     usersError: userMgmt.usersError,
     getAllUsers: userMgmt.getAllUsers,

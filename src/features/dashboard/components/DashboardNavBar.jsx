@@ -69,14 +69,18 @@ const OFFICER_NAV_ITEMS = [
   },
 ];
 
-const QUICK_LINKS = [
-  { label: "How to Apply", icon: HelpCircle, path: '/demo' },
+const CLIENT_QUICK_LINKS = [
+  { label: "How to Apply", icon: HelpCircle, path: '/passport/apply/demo' },
   { label: "FAQs", icon: MessageCircle, path: '/faqs' },
   { label: "Contact Support", icon: Phone, path: '/contacts' },
 ];
 
+const OFFICER_QUICK_LINKS = [
+  { label: "Review passport demo", icon: HelpCircle, path: '/passport/review/demo' },
+  { label: "Manage users demo", icon: MessageCircle, path: '/users/manage/demo' },
+  { label: "Contact Support", icon: Phone, path: '/contacts' },
+];
 
-/////////////////////////NAVITEM COMPONENT/////////////////////////
 
 function NavItem({ item, isActive, onClick }) {
   const Icon = item.icon;
@@ -105,11 +109,9 @@ function NavItem({ item, isActive, onClick }) {
   );
 }
 
-/////////////////////////PROFILE COMPONENT/////////////////////////
+function UserProfile({ user, onSignOut, userProfile }) {
 
-function UserProfile({ user, onSignOut, currentRole, onRoleToggle,userProfile }) {
 
-  // //temp: Simplified profile component to focus on temporary role switching
   return (
     <div className="mt-auto border-t border-gray-200 p-4 space-y-3">
       <div className="flex items-center gap-3 px-2">
@@ -118,21 +120,10 @@ function UserProfile({ user, onSignOut, currentRole, onRoleToggle,userProfile })
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-              {userProfile?.firstName && userProfile.firstName !== "null" ? userProfile.firstName : (user?.emailAddress?.split('@')[0] || "User")}
+              {(userProfile?.firstName && userProfile.firstName !== "null") ||(user.firstName && user.firstName !== "null") ? userProfile.firstName || user.firstName : (user?.emailAddress?.split('@')[0] || "User")}
           </p>
           <div className="flex justify-between items-center text-xs text-gray-500 truncate mt-1">
-            <span className="capitalize">{currentRole}</span> 
-            {/* //temp: Show switch button ONLY for this specific email */}
-           {user?.emailAddress === "franklinlungu7@gmail.com" && (
-              <Button 
-                variant="ghost" 
-                size="xs" 
-                className="ml-2 h-6 px-1.5 py-0 text-[10px] text-orange-600 hover:text-orange-700 hover:bg-orange-50 border border-orange-200"
-                onClick={onRoleToggle}
-              >
-                switch
-              </Button>
-            )}
+            <span className="capitalize">{user.role === "client" ? " " : user?.role}</span> 
           </div>
         </div>
       </div>
@@ -149,7 +140,6 @@ function UserProfile({ user, onSignOut, currentRole, onRoleToggle,userProfile })
   );
 }
 
-/////////////////////////DASHBOARDNAVBAR COMPONENT/////////////////////////
 import { useNavigate, useLocation } from 'react-router-dom';
 
 
@@ -157,8 +147,6 @@ export default function DashboardNavBar({
   onSelect, 
   onSignOut,
   user,
-  currentRole, //temp: Received from DashboardPage
-  onRoleToggle, //temp: Received from DashboardPage
   userProfile,
   className = "" 
 }) {
@@ -178,9 +166,8 @@ export default function DashboardNavBar({
     return location.pathname.startsWith(path);
   }
 
-  // //temp: Determine nav items based on the temporary frontend role
-  const role = currentRole?.toLowerCase();
-  const navItems = (role === 'officer' || role === 'admin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
+  const role = user?.role?.toLowerCase();
+  const navItems = (role === 'officer' || role === 'admin' || role === 'superadmin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
 
   return (
     <aside 
@@ -212,7 +199,7 @@ export default function DashboardNavBar({
           <p className="px-4 py-2 text-sm font-semibold text-gray-950 uppercase tracking-wider">
             Quick Links
           </p>
-          {QUICK_LINKS.map((link) => (
+          {(role === 'client' ? CLIENT_QUICK_LINKS : OFFICER_QUICK_LINKS).map((link) => (
             <NavItem
               key={link.label}
               item={link}
@@ -227,8 +214,6 @@ export default function DashboardNavBar({
       <UserProfile 
         user={user || { name: 'Dev user', role: 'client' }} 
         onSignOut={onSignOut}
-        currentRole={currentRole} //temp
-        onRoleToggle={onRoleToggle} //temp
         userProfile={userProfile}
       />
     </aside>

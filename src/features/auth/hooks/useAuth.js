@@ -8,6 +8,7 @@ import {
   refreshToken as apiRefreshToken,
   resetPassword as apiResetPassword,
   changePassword as apiChangePassword,
+  logout as apiLogout,
 } from '../api/auth.api'
 
 export function useAuth() {
@@ -15,10 +16,7 @@ export function useAuth() {
     user,
     isAuthenticated,
 
-    //message state from context
-    message,
-    setMessage, 
-
+    
     // Identity phase
     verificationSessionId,
 
@@ -36,7 +34,8 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isAuthReady, setIsAuthReady] = useState(false)
-
+  const [message, setMessage] = useState(null)
+  
   // Mark auth as ready after initial render
   useEffect(() => {
     setIsAuthReady(true)
@@ -123,10 +122,27 @@ export function useAuth() {
   }
 
   /* ---------------- LOGOUT ---------------- */
-  const logout = () => {
-    finalizeLogout() // call AuthProvider logout
-    setStatus('success')
+  const logout = async () => {
+  setLoading(true)
+  setError(null)
+  setStatus(null)
+
+    try {
+      // Call backend to revoke refresh token
+      await apiLogout()
+      
+      // Clear frontend state
+      finalizeLogout()
+      setStatus('success')
+    } catch (err) {
+      setError(err?.message || 'Logout failed')
+      setStatus('failed')
+      console.error('Logout error:', err)
+    } finally {
+      setLoading(false)
+    }
   }
+
 
   return {
     user,
@@ -134,6 +150,7 @@ export function useAuth() {
     isAuthReady,
     verificationSessionId,
     loginSessionId,
+
     message,
     setMessage,
 

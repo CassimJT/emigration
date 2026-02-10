@@ -55,9 +55,13 @@ export async function deleteUser(userId) {
   }
 }
 
-export async function promoteUser(userId) {
+export async function promoteUser(userId, newRole) {
   try {
-    const { data } = await api.post(`/users/${userId}/promote`)
+    const { data } = await api.patch(`/users/${userId}/promote`, { role: newRole })
+    
+    if (data.status !== "success") {
+      throw new Error(data.message || "Promotion failed");
+    }
     return data.message
   } catch (error) {
     return handleError(error)

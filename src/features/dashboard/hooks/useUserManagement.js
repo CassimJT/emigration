@@ -40,16 +40,16 @@ export function useUserManagement() {
   const deleteUser = React.useCallback(async (userId) => {
     try {
       await deleteUserAPI(userId)
-      setUsers(prev => prev.filter(u => u.id !== userId))
+      setUsers(prev => prev.filter(u => u.nationalId !== userId))
     } catch (err) {
       console.error('Delete user error:', err)
       throw new Error(err?.message || 'Failed to delete user')
     }
   }, [])
   // Promote user
-  const promoteUser = React.useCallback(async (userId) => {
+  const promoteUser = React.useCallback(async (userId, newRole) => {
     try {
-      await promoteUserAPI(userId)
+      await promoteUserAPI(userId, newRole)
       await getAllUsers()
     } catch (err) {
       console.error('Promote user error:', err)
