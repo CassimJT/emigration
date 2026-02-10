@@ -5,6 +5,7 @@ import {
   submitApplication as apiSubmitApplication,
   fetchApplication,
 } from '../api/passport.api'
+import { useAuthContext } from '@/providers/AuthProvider' 
 
 export function usePassportApplication() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -19,6 +20,8 @@ export function usePassportApplication() {
   const previousStep = () => setCurrentStep((s) => (s > 0 ? s - 1 : 0))
 
   // Data Management
+
+ const { verificationSessionId } = useAuthContext()
 
   const saveStepData = (step, data) => {
     setStepsData((prev) => ({
@@ -75,7 +78,8 @@ export function usePassportApplication() {
     try {
       const payload ={
         type: stepsData[1]?.passportType, 
-        formData: stepsData
+        formData: stepsData,
+        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
       }
       console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
