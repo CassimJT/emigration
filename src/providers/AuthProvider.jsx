@@ -6,6 +6,8 @@ import {
   setTempSession,
   getTempSession,
   clearTempSession,
+  clearDashboardView,
+  setDashboardView,
 } from '@/lib/storage'
 
 const AuthContext = createContext(null)
@@ -77,9 +79,11 @@ export function AuthProvider({ children }) {
   const logout = () => {
     clearAuthSession()
     clearTempSession()
+    clearDashboardView()
     setUser(null)
     setVerificationSessionId(null)
     setLoginSessionId(null)
+    setDashboardView(null)
   }
 
   return (
