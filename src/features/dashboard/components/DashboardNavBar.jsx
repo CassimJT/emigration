@@ -109,7 +109,7 @@ function NavItem({ item, isActive, onClick }) {
       <span className="flex-1 text-left">{item.label}</span>
       {item.badge && (
         <Badge className="ml-auto bg-orange-100 text-orange-600 hover:bg-orange-100 border-0">
-          { item.label === "Users" ? users?.length || 0 : item.badge }
+          { item.label === "Users" ? users?.length : item.badge }
         </Badge>
       )}
     </button>
