@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import OtpForm from "../components/OtpForm"
 import home from "@/assets/home/home.png"
 import { useAuth } from '@/features/auth/hooks/useAuth'
@@ -7,13 +7,13 @@ import { useAuth } from '@/features/auth/hooks/useAuth'
 
 
 function OtpVerificationPage() {
+  const location = useLocation()
   const navigate = useNavigate()
   const {
     verifyOtp,
     user,
     loading,
     error,
-    message,
     status,
     loginSessionId,
     verificationSessionId,
@@ -21,6 +21,7 @@ function OtpVerificationPage() {
     clearStatus,
     isAuthReady,
   } = useAuth()
+
 
   /* -------- ROUTE GUARD -------- */
   useEffect(() => {
@@ -49,6 +50,8 @@ function OtpVerificationPage() {
     }
   }, [status, navigate, clearStatus])
 
+  const message = location.state?.optMessage;
+
   const handleSubmit = async ({ otp }) => {
     try {
       await verifyOtp({ otp })
@@ -64,7 +67,7 @@ function OtpVerificationPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
+      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white min-h-screen">
         <div className="w-full max-w-xl">
           <OtpForm
             onSubmit={handleSubmit}

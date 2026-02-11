@@ -1,7 +1,9 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
   Bell,
+  BookOpenCheck,
   CreditCard, 
   FileText, 
   HelpCircle,
@@ -10,7 +12,9 @@ import {
   MessageCircle,
   Phone,
   User, 
-  User2
+  User2,
+  UserCog,
+  Users
 } from "lucide-react";
 import React from "react";
 
@@ -63,15 +67,21 @@ const OFFICER_NAV_ITEMS = [
   },
   { 
     label: 'Users', 
-    icon: User2, 
+    icon: Users, 
     badge: '5', 
     path: '/dashboard/admin/users'
   },
 ];
 
-const QUICK_LINKS = [
-  { label: "How to Apply", icon: HelpCircle, path: '/demo' },
+const CLIENT_QUICK_LINKS = [
+  { label: "How to Apply", icon: HelpCircle, path: '/passport/apply/demo' },
   { label: "FAQs", icon: MessageCircle, path: '/faqs' },
+  { label: "Contact Support", icon: Phone, path: '/contacts' },
+];
+
+const OFFICER_QUICK_LINKS = [
+  { label: "Review passport demo", icon: BookOpenCheck, path: '/passport/review/demo' },
+  { label: "Manage users demo", icon: UserCog, path: '/users/manage/demo' },
   { label: "Contact Support", icon: Phone, path: '/contacts' },
 ];
 
@@ -114,10 +124,10 @@ function UserProfile({ user, onSignOut, userProfile }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-medium text-gray-900 text-sm truncate">
-              {userProfile?.firstName && userProfile.firstName !== "null" ? userProfile.firstName : (user?.emailAddress?.split('@')[0] || "User")}
+              {(userProfile?.firstName && userProfile.firstName !== "null") ||(user.firstName && user.firstName !== "null") ? userProfile.firstName || user.firstName : (user?.emailAddress?.split('@')[0] || "User")}
           </p>
           <div className="flex justify-between items-center text-xs text-gray-500 truncate mt-1">
-            <span className="capitalize">{user?.role}</span> 
+            <span className="capitalize">{user.role === "client" ? " " : user?.role}</span> 
           </div>
         </div>
       </div>
@@ -134,7 +144,7 @@ function UserProfile({ user, onSignOut, userProfile }) {
   );
 }
 
-import { useNavigate, useLocation } from 'react-router-dom';
+
 
 
 export default function DashboardNavBar({ 
@@ -193,7 +203,7 @@ export default function DashboardNavBar({
           <p className="px-4 py-2 text-sm font-semibold text-gray-950 uppercase tracking-wider">
             Quick Links
           </p>
-          {QUICK_LINKS.map((link) => (
+          {(role === 'client' ? CLIENT_QUICK_LINKS : OFFICER_QUICK_LINKS).map((link) => (
             <NavItem
               key={link.label}
               item={link}

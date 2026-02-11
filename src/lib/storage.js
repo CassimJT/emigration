@@ -4,6 +4,7 @@ const ACCESS_TOKEN_KEY = 'access_token'
 const REFRESH_TOKEN_KEY = 'refresh_token'
 const USER_KEY = 'auth_user'
 const TEMP_KEY = 'auth:temp'
+const DASHBOARD_VIEW_KEY = 'dashboardView'
 
 /* ---------------- Persistent Auth Session ---------------- */
 
@@ -63,4 +64,18 @@ export function getTempSession() {
 
 export function clearTempSession() {
   sessionStorage.removeItem(TEMP_KEY)
+}
+
+/* ---------------- Dashboard View Persistence ---------------- */
+
+export function setDashboardView(view) {
+  localStorage.setItem(DASHBOARD_VIEW_KEY, view)
+}
+
+export function getDashboardView() {
+  return localStorage.getItem(DASHBOARD_VIEW_KEY) || 'overview'
+}
+
+export function clearDashboardView() {
+  localStorage.removeItem(DASHBOARD_VIEW_KEY)
 }
