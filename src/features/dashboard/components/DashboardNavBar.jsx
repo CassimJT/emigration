@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
@@ -17,6 +17,7 @@ import {
   Users
 } from "lucide-react";
 import React from "react";
+import { useDashboardNavigation } from '../hooks/useDashboardNavigation';
 
 const CLIENT_NAV_ITEMS = [
   { 
@@ -157,23 +158,22 @@ export default function DashboardNavBar({
   className = "" 
 }) {
   const navigate = useNavigate();
-  const location = useLocation();
+  const { activeView, setActiveView } = useDashboardNavigation();
 
-  const handleNavigation = (path) => {
+ const handleNavigation = (path, label) => {
     navigate(path);
+    setActiveView(label); 
     if (onSelect) onSelect();
-  }
+  };
 
-  const isItemActive = (path) => {
-    // Exact match for root dashboard
-    if (path === '/dashboard') {
-      return location.pathname === '/dashboard';
-    }
-    return location.pathname.startsWith(path);
-  }
+  const isItemActive = (itemLabel) => {
+    return activeView === itemLabel;
+  };
 
   const role = user?.role?.toLowerCase();
-  const navItems = (role === 'officer' || role === 'admin' || role === 'superadmin') ? OFFICER_NAV_ITEMS : CLIENT_NAV_ITEMS;
+  const navItems = (role === 'officer' || role === 'admin' || role === 'superadmin')
+    ? OFFICER_NAV_ITEMS
+    : CLIENT_NAV_ITEMS;
 
   return (
     <aside 
@@ -192,8 +192,8 @@ export default function DashboardNavBar({
             <NavItem
               key={item.label}
               item={item}
-              isActive={isItemActive(item.path)}
-              onClick={() => handleNavigation(item.path)}
+              isActive={isItemActive(item.label)}
+              onClick={() => handleNavigation(item.path, item.label)}
             />
           ))}
         </div>
@@ -209,8 +209,8 @@ export default function DashboardNavBar({
             <NavItem
               key={link.label}
               item={link}
-              isActive={isItemActive(link.path)}
-              onClick={() => handleNavigation(link.path)}
+              isActive={isItemActive(link.label)}
+              onClick={() => handleNavigation(link.path, link.label)}
             />
           ))}
         </div>
