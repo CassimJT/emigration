@@ -1,3 +1,4 @@
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { 
@@ -143,7 +144,7 @@ function UserProfile({ user, onSignOut, userProfile }) {
   );
 }
 
-import { useNavigate, useLocation } from 'react-router-dom';
+
 
 
 export default function DashboardNavBar({ 
