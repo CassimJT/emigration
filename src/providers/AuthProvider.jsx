@@ -22,23 +22,26 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-    
-    const hidrateAuthState = () => {
-    const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
-      : getStoredUser()
-    const storedTemp = getTempSession()
+  const hydrateAuthState = () => {
+    try {
+      const storedUser = isDev
+        ? { id: 'dev-123', name: 'Dev User', role: 'admin', message: "sent to dev@example.com" }
+        : getStoredUser();
 
-    if (storedUser) setUser(storedUser)
-    if (storedTemp?.verificationSessionId)
-      setVerificationSessionId(storedTemp.verificationSessionId)
-    if (storedTemp?.loginSessionId)
-      setLoginSessionId(storedTemp.loginSessionId)
+      const storedTemp = getTempSession();
 
-    setIsAuthReady(true)
+      if (storedUser) setUser(storedUser);
+      if (storedTemp?.verificationSessionId) setVerificationSessionId(storedTemp.verificationSessionId);
+      if (storedTemp?.loginSessionId) setLoginSessionId(storedTemp.loginSessionId);
+    } catch (err) {
+      console.error("Auth hydration failed:", err);
+    } finally {
+      setIsAuthReady(true);  
     }
+  };
 
-    hidrateAuthState()
-  }, [isDev])
+  hydrateAuthState();
+}, [isDev]);
 
   /* ---------------- Identity phase ---------------- */
 
