@@ -6,15 +6,13 @@ import {
   setTempSession,
   getTempSession,
   clearTempSession,
-  clearDashboardView,
   setDashboardView,
-  getDashboardView,
 } from '@/lib/storage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const isDev = import.meta.env.VITE_DEV
+  const isDev = import.meta.env.VITE_DEV === "false"
 
   const [isAuthReady, setIsAuthReady] = useState(false)
   const [user, setUser] = useState(null)
@@ -24,7 +22,8 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-  
+    
+    const hidrateAuthState = () => {
     const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
       : getStoredUser()
     const storedTemp = getTempSession()
@@ -36,6 +35,9 @@ export function AuthProvider({ children }) {
       setLoginSessionId(storedTemp.loginSessionId)
 
     setIsAuthReady(true)
+    }
+
+    hidrateAuthState()
   }, [isDev])
 
   /* ---------------- Identity phase ---------------- */
@@ -79,7 +81,6 @@ export function AuthProvider({ children }) {
 
   const clearCurrentDashboardView = () => {
     setDashboardView(null)
-    clearDashboardView()
   }
 
   const logout = () => {
