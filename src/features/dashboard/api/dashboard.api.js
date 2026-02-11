@@ -17,7 +17,7 @@ export const getProfile = async () => {
 
 export async function updateUserProfile(profileData) {
   try {
-    const { data } = await api.patch('/users/me/profile', profileData)
+    const { data } = await api.patch(`/users/me/profile/${profileData.id}`, profileData)
     return data.message
   } catch (error) {
     return handleError(error)
