@@ -113,12 +113,13 @@ function NavItem({ item, isActive, onClick }) {
   );
 }
 
-function UserProfile({ user, onSignOut, userProfile }) {
+function UserProfile({ user, onSignOut, userProfile, onTraverse }) {
 
 
   return (
     <div className="mt-auto border-t border-gray-200 p-4 space-y-3">
       <div className="flex items-center gap-3 px-2">
+        <Button variant="ghost" className="p-0" onClick={onTraverse}>
         <div className="h-9 w-9 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
           <User className="h-5 w-5" />
         </div>
@@ -130,6 +131,7 @@ function UserProfile({ user, onSignOut, userProfile }) {
             <span className="capitalize">{user.role === "client" ? " " : user?.role}</span> 
           </div>
         </div>
+        </Button>
       </div>
       
       <Button 
@@ -219,6 +221,7 @@ export default function DashboardNavBar({
         user={user || { name: 'Dev user', role: 'client' }} 
         onSignOut={onSignOut}
         userProfile={userProfile}
+        onTraverse={() => navigate('/dashboard/users/me/profile')}
       />
     </aside>
   );
