@@ -6,14 +6,13 @@ import {
   setTempSession,
   getTempSession,
   clearTempSession,
-  clearDashboardView,
   setDashboardView,
 } from '@/lib/storage'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
-  const isDev = import.meta.env.VITE_DEV
+  const isDev = import.meta.env.VITE_DEV 
 
   const [isAuthReady, setIsAuthReady] = useState(false)
   const [user, setUser] = useState(null)
@@ -23,19 +22,26 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Hydrate auth state ---------------- */
   useEffect(() => {
-  
-    const storedUser = isDev === "true" ? { id: 'dev-123', name: 'Dev User', role: 'admin', message:" sent to dev@example.com" }
-      : getStoredUser()
-    const storedTemp = getTempSession()
+  const hydrateAuthState = () => {
+    try {
+      const storedUser = isDev === 'true'
+        ? { id: 'dev-123', name: 'Dev User', role: 'admin', message: "sent to dev@example.com" }
+        : getStoredUser();
 
-    if (storedUser) setUser(storedUser)
-    if (storedTemp?.verificationSessionId)
-      setVerificationSessionId(storedTemp.verificationSessionId)
-    if (storedTemp?.loginSessionId)
-      setLoginSessionId(storedTemp.loginSessionId)
+      const storedTemp = getTempSession();
 
-    setIsAuthReady(true)
-  }, [isDev])
+      if (storedUser) setUser(storedUser);
+      if (storedTemp?.verificationSessionId) setVerificationSessionId(storedTemp.verificationSessionId);
+      if (storedTemp?.loginSessionId) setLoginSessionId(storedTemp.loginSessionId);
+    } catch (err) {
+      console.error("Auth hydration failed:", err);
+    } finally {
+      setIsAuthReady(true);  
+    }
+  };
+
+  hydrateAuthState();
+}, [isDev]);
 
   /* ---------------- Identity phase ---------------- */
 
@@ -76,14 +82,17 @@ export function AuthProvider({ children }) {
     clearTempSession()
   }
 
+  const clearCurrentDashboardView = () => {
+    setDashboardView(null)
+  }
+
   const logout = () => {
     clearAuthSession()
     clearTempSession()
-    clearDashboardView()
+    clearCurrentDashboardView()
     setUser(null)
     setVerificationSessionId(null)
     setLoginSessionId(null)
-    setDashboardView(null)
   }
 
   return (
@@ -104,6 +113,8 @@ export function AuthProvider({ children }) {
 
         login,
         logout,
+        finalizeLogin: login,
+        finalizeLogout: logout,
       }}
     >
       {children}

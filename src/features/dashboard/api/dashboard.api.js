@@ -1,14 +1,19 @@
 import api from '@/lib/axios'
 
 
-export async function userProfile() {
+// Example with axios/fetch
+export const getProfile = async () => {
   try {
-    const { data } = await api.get('/users/me/profile')
-    return data.message
-  } catch (error) {
-    return handleError(error)
+    const {data} = await api.get('/users/me/profile'); 
+    if (data.status === 'success') {
+      return data.user;  
+    }
+    throw new Error(data.message || 'Failed to load profile');
+  } catch (err) {
+    console.error('Get profile error:', err);
+    throw err;
   }
-}
+};
 
 export async function updateUserProfile(profileData) {
   try {

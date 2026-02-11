@@ -56,7 +56,7 @@ function PaymentPage() {
       const feesStr = import.meta.env.VITE_PASSPORT_FEES;
       if (feesStr) {
         const fees = typeof feesStr === 'string' ? JSON.parse(feesStr) : feesStr;
-        passportFees = parseInt(fees.standard);
+        passportFees = parseInt(fees.ordinary);
       }
     } catch (e) {
       console.warn("Failed to parse passport fees from env:", e);

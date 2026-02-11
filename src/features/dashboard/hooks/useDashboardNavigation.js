@@ -1,20 +1,16 @@
-import { useAuthContext } from "@/providers/AuthProvider"
+import { getDashboardView, setDashboardView } from "@/lib/storage"
 import React from "react"
 
 export function useDashboardNavigation() {
-    const {getDashboardView, setDashboardView, clearDashboardView}= useAuthContext
 
     const [activeView, setActiveView] = React.useState(() => {
-        getDashboardView() 
+        return getDashboardView() || 'overview'
     })
 
-        React.useEffect(() => {
+    React.useEffect(() => {
         setDashboardView(activeView)
 
-        return () => {
-            clearDashboardView()
-        }
-    }, [activeView, clearDashboardView, setDashboardView])
+    }, [activeView])
 
     return { activeView, setActiveView }
 }

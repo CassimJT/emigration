@@ -2,7 +2,7 @@ import React from 'react'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 
-function PaymentSummary({ passportType = 'Official Passport', amount = 0 }) {
+function PaymentSummary({ passportType = '0fficial', amount = 0 }) {
   const total = amount 
 
   return (

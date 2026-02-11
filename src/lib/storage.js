@@ -69,13 +69,21 @@ export function clearTempSession() {
 /* ---------------- Dashboard View Persistence ---------------- */
 
 export function setDashboardView(view) {
-  localStorage.setItem(DASHBOARD_VIEW_KEY, view)
+  if (view === null || view === undefined) {
+    localStorage.removeItem(DASHBOARD_VIEW_KEY);
+  } else {
+    localStorage.setItem(DASHBOARD_VIEW_KEY, view);
+  }
 }
 
 export function getDashboardView() {
-  return localStorage.getItem(DASHBOARD_VIEW_KEY) || 'overview'
+  const value = localStorage.getItem(DASHBOARD_VIEW_KEY);
+  if (value === null || value === "null") {
+    return null;
+  }
+  return value;
 }
 
 export function clearDashboardView() {
-  localStorage.removeItem(DASHBOARD_VIEW_KEY)
+  localStorage.removeItem(DASHBOARD_VIEW_KEY);
 }
