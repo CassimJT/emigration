@@ -1,9 +1,9 @@
 import React from "react"
 import { 
-    userProfile as userProfileAPI,
+    getProfile as getProfileAPI,
     updateUserProfile as updateUserProfileAPI,
     
- } from "../api/dashboard.api"
+} from "../api/dashboard.api"
 
 export function useUserProfile() {
     const [profile, setProfile] = React.useState(null)
@@ -14,7 +14,7 @@ export function useUserProfile() {
         setProfileLoading(true)
         setProfileError(null)
         try {
-        const data = await userProfileAPI()
+        const data = await getProfileAPI()
         setProfile(data)
         return data
         } catch (err) {
@@ -34,11 +34,6 @@ export function useUserProfile() {
         console.error('Update profile error:', err)
         throw new Error(err?.message || 'Failed to update profile')
         }
-    }, [fetchProfile])
-
-    // Optional: load on mount
-    React.useEffect(() => {
-        fetchProfile()
     }, [fetchProfile])
 
     return {
