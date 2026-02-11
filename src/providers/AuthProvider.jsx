@@ -115,6 +115,8 @@ export function AuthProvider({ children }) {
 
         login,
         logout,
+        finalizeLogin: login,
+        finalizeLogout: logout,
       }}
     >
       {children}
