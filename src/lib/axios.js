@@ -1,24 +1,19 @@
-import axios from 'axios'
-import { getToken, setAuthSession, clearAuthSession } from './storage'
+import axios from "axios"
+import { getToken, setAuthSession, clearAuthSession } from "./storage"
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
 
-// Main API client (with interceptors)
 const api = axios.create({
   baseURL: BASE_URL,
 })
 
-// Bare client for refresh — NO interceptors
 const refreshClient = axios.create({
   baseURL: BASE_URL,
 })
 
-// Attach access token
 api.interceptors.request.use(config => {
   const token = getToken()
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`
   return config
 })
 
@@ -66,7 +61,7 @@ api.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const res = await refreshClient.post('/auth/refresh-token') // backend route
+        const res = await refreshClient.post("/auth/refresh-token")
         const { accessToken } = res.data
 
         setAuthSession({ accessToken })
@@ -77,7 +72,7 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err)
         clearAuthSession()
-        window.location.href = '/login'
+        window.location.href = "/login"
         return Promise.reject(err)
       } finally {
         isRefreshing = false

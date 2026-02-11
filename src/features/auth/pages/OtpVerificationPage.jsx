@@ -67,7 +67,7 @@ function OtpVerificationPage() {
 
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white">
+      <div className="flex flex-col items-center justify-center p-6 md:p-10 bg-white min-h-screen">
         <div className="w-full max-w-xl">
           <OtpForm
             onSubmit={handleSubmit}

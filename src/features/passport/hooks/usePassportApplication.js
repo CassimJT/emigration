@@ -5,6 +5,7 @@ import {
   submitApplication as apiSubmitApplication,
   fetchApplication,
 } from '../api/passport.api'
+import { useAuthContext } from '@/providers/AuthProvider' 
 
 export function usePassportApplication() {
   const [currentStep, setCurrentStep] = useState(0)
@@ -20,13 +21,14 @@ export function usePassportApplication() {
 
   // Data Management
 
+ const { verificationSessionId } = useAuthContext()
+
   const saveStepData = (step, data) => {
-    console.log('Saving data for step', step, data) 
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
-    console.log('Updated stepsData:', {...stepsData, [step]: data})
+    
   }
 
   //resetApplication
@@ -75,10 +77,13 @@ export function usePassportApplication() {
 
     try {
       const payload ={
-        type: stepsData[0]?.passportType, 
-        formData: stepsData
+        type: stepsData[1]?.passportType, 
+        formData: stepsData,
+        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
       }
+      console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
+      console.log('Create application response:', data)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
