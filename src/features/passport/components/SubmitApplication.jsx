@@ -1,4 +1,5 @@
 // components/SubmitPage.jsx
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Loader2 } from "lucide-react"
@@ -43,25 +44,21 @@ export default function SubmitApplicationPage({
 
           {/* Buttons */}
           <div className="flex justify-between pt-4">
-            {onBack && (
-              <Button variant="outline" onClick={onBack}>
-                Back
-              </Button>
-            )}
+            <button
+                type="button"
+                onClick={onBack}
+                className="rounded-full border border-gray-300 px-8 py-3 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+         >
+                        Back
+        </button>
 
-            <Button onClick={onSubmit} disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Submit Application
-                </>
-              )}
-            </Button>
+            <button
+                type="button"
+                onClick={onSubmit}
+                className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+         >
+                Create Application
+        </button>
           </div>
 
         </CardContent>
