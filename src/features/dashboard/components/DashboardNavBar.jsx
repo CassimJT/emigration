@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { useDashboardNavigation } from '../hooks/useDashboardNavigation';
+import { useDashboard } from '../hooks/useDashboard';
 
 const CLIENT_NAV_ITEMS = [
   { 
@@ -89,6 +90,7 @@ const OFFICER_QUICK_LINKS = [
 
 function NavItem({ item, isActive, onClick }) {
   const Icon = item.icon;
+  const {users} =useDashboard();
   
   return (
     <button
@@ -107,7 +109,7 @@ function NavItem({ item, isActive, onClick }) {
       <span className="flex-1 text-left">{item.label}</span>
       {item.badge && (
         <Badge className="ml-auto bg-orange-100 text-orange-600 hover:bg-orange-100 border-0">
-          {item.badge}
+          { item.label === "Users" ? users?.length || 0 : item.badge }
         </Badge>
       )}
     </button>
