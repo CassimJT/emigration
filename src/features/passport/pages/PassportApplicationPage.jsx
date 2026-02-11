@@ -4,7 +4,7 @@ import ProgressIndicator from '../components/ProgressIndicator';
 import PassportTypeStep from '../components/PassportTypeStep';
 import PersonalInfoStep from '../components/PersonalInfoStep';
 import ReviewStep from '../components/ReviewStep';
-import SubmitPage from "../components/SubmitApplication";
+import SubmitApplicationPage from "../components/SubmitApplication";
 import { usePassportApplication } from '../hooks/usePassportApplication';
 import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -146,7 +146,7 @@ function PassportApplicationPage() {
             />
           )}
           {currentStep === 3 && (
-            <SubmitPage 
+            <SubmitApplicationPage 
               summaryData={Object.entries(formData).map(([label, value]) => ({ label, value }))} 
               onBack={previousStep} 
               onSubmit={handleNext}

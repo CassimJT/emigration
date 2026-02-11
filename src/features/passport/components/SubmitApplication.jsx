@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Loader2 } from "lucide-react"
 
-export default function SubmitPage({
+export default function SubmitApplicationPage({
   title = "Submit Application",
   description = "Review your details before submission.",
   summaryData = [],
