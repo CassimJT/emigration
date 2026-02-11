@@ -81,14 +81,21 @@ function PassportApplicationPage() {
       if(currentStep === 2){
         createNewApplication();
         nextStep(); 
+        return;
       }
       if(currentStep === 3){
-        setIsSubmitting(true);
-        submitApplication();
-        navigate("/dashboard")
+        try {
+          setIsSubmitting(true);
+          submitApplication();
+          navigate("/dashboard");
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsSubmitting(false);
+        }
+          return;
       }
-
-      nextStep();
+       nextStep();
     };
 
   const formData = {
