@@ -4,6 +4,7 @@ import ProgressIndicator from '../components/ProgressIndicator';
 import PassportTypeStep from '../components/PassportTypeStep';
 import PersonalInfoStep from '../components/PersonalInfoStep';
 import ReviewStep from '../components/ReviewStep';
+import SubmitPage from "../components/SubmitApplication";
 import { usePassportApplication } from '../hooks/usePassportApplication';
 import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
@@ -15,6 +16,7 @@ function PassportApplicationPage() {
   
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
+  const[isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const [passportTypeData, setPassportTypeData] = useState({
         passportType: 'Ordinary',
@@ -36,6 +38,7 @@ function PassportApplicationPage() {
     previousStep,
     saveStepData,
     stepsData,
+    createNewApplication,
     submitApplication } = usePassportApplication();
 
   const preparePayload = () => {
@@ -76,9 +79,13 @@ function PassportApplicationPage() {
       saveStepData(currentStep + 1, payload);
 
       if(currentStep === 2){
+        createNewApplication();
+        nextStep(); 
+      }
+      if(currentStep === 3){
+        setIsSubmitting(true);
         submitApplication();
-        navigate('/payment');
-        return; 
+        navigate("/dashboard")
       }
 
       nextStep();
@@ -120,9 +127,9 @@ function PassportApplicationPage() {
           )}
           {currentStep === 1 && (
             <PersonalInfoStep
-              // name={personalInfoStepData.name}
-              // surname={personalInfoStepData.surname}
-              // email={personalInfoStepData.email}
+              name={personalInfoStepData.name}
+              surname={personalInfoStepData.surname}
+              email={personalInfoStepData.email}
               residentialStatus={personalInfoStepData.residentialStatus}
               occupation={personalInfoStepData.occupation}
               onBack={previousStep}
@@ -136,6 +143,14 @@ function PassportApplicationPage() {
               data={formData} 
               onBack={previousStep} 
               onClick={handleNext}
+            />
+          )}
+          {currentStep === 3 && (
+            <SubmitPage 
+              summaryData={Object.entries(formData).map(([label, value]) => ({ label, value }))} 
+              onBack={previousStep} 
+              onSubmit={handleNext}
+              isSubmitting={isSubmitting}
             />
           )}
         </div>
