@@ -1,6 +1,6 @@
 // passport/components/ProgressIndicator.jsx
 export default function ProgressIndicator({ currentStep }) {
-  const totalSteps = 3;
+  const totalSteps = 4;
   const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
 
   return (

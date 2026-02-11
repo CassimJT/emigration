@@ -72,7 +72,7 @@ export default function OtpForm({
         <p className="text-sm text-red-600 text-center">{error}</p>
       )}
 
-      <div className="flex flex-col items-center justify-center gap-6 mt-6">
+      <div className="flex flex-col items-center justify-center gap-6 mt-4 md:mt-6">
         <InputOTP 
           maxLength={otpLength} 
           disabled={loading}
@@ -99,7 +99,7 @@ export default function OtpForm({
         </button>
       </div>
 
-      <div className="flex items-center justify-center mt-12 mb-8">
+      <div className="flex items-center justify-center mt-6 mb-4 md:mt-12 md:mb-8">
         <Button
           type="submit"
           disabled={loading || !isComplete}

@@ -16,10 +16,7 @@ export function useAuth() {
     user,
     isAuthenticated,
 
-    //message state from context
-    message,
-    setMessage, 
-
+    
     // Identity phase
     verificationSessionId,
 
@@ -37,7 +34,8 @@ export function useAuth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [isAuthReady, setIsAuthReady] = useState(false)
-
+  const [message, setMessage] = useState(null)
+  
   // Mark auth as ready after initial render
   useEffect(() => {
     setIsAuthReady(true)
@@ -152,6 +150,7 @@ export function useAuth() {
     isAuthReady,
     verificationSessionId,
     loginSessionId,
+
     message,
     setMessage,
 
