@@ -12,7 +12,6 @@ import {
   MessageCircle,
   Phone,
   User, 
-  User2,
   UserCog,
   Users
 } from "lucide-react";
@@ -53,7 +52,7 @@ const OFFICER_NAV_ITEMS = [
   { 
     label: 'Pending Reviews', 
     icon: FileText, 
-    path: '/dashboard/reviews',
+    path: '/dashboard/passport/reviews',
     badge: '12'
   },
   { 

@@ -46,31 +46,31 @@ export function usePassportApplication() {
   // API Operations
 
   //loadApplication
-  const loadApplication = async (id) => {
-    if (!id) return
-    setLoading(true)
-    setError(null)
-    setStatus(null)
+const loadApplication = React.useCallback(async (id) => {
+  if (!id) return;
 
-    try {
-      const data = await fetchApplication(id)
+  setLoading(true);
+  setError(null);
+  setStatus(null);
 
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to fetch application')
-      }
-
-      setApplicationId(id)
-      setStepsData(data.data || {})
-      setStatus('success')
-      return data
-    } catch (err) {
-      setError(err.message || 'Failed to fetch application')
-      setStatus('failed')
-      throw err
-    } finally {
-      setLoading(false)
+  try {
+    const data = await fetchApplication(id);
+    if (!data || data.status !== 'success') {
+      throw new Error(data?.message || 'Failed to fetch application');
     }
+
+    setApplicationId(id);
+    setStepsData(data.data || {});
+    setStatus('success');
+    return data;
+  } catch (err) {
+    setError(err.message || 'Failed to fetch application');
+    setStatus('failed');
+    throw err;
+  } finally {
+    setLoading(false);
   }
+}, []);
   
   //////////load all applications (for dashboard)/////////////
 const loadApplications = React.useCallback(async (params = {}) => {
