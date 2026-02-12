@@ -85,6 +85,7 @@ function PassportApplicationPage() {
         setLoading(true);
         await createNewApplication();
         nextStep();
+        return;
         
        }
         catch(err){ 
