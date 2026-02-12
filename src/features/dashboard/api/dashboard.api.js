@@ -17,7 +17,7 @@ export const getProfile = async () => {
 
 export async function updateUserProfile(profileData) {
   try {
-    const { data } = await api.patch('/users/me/profile', profileData)
+    const { data } = await api.patch(`/users/me/profile`, profileData)
     return data.message
   } catch (error) {
     return handleError(error)
@@ -36,9 +36,13 @@ export async function getAllUsers() {
 export async function getUserDetails(userId) {
   try {
     const { data } = await api.get(`/users/${userId}`)
-    return data.message
-  } catch (error) {
-    return handleError(error)
+  if (data.status === 'success') {
+      return data.user;  
+    }
+    throw new Error(data.message || 'Failed to load user');
+  } catch (err) {
+    console.error('Get user details error:', err);
+    throw err;
   }
 }
 

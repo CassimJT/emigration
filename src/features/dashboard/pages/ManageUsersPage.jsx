@@ -43,13 +43,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const userRoles = ["client", "officer", "admin", "superadmin"];
 
 export default function ManageUsersPage() {
-  const { users,deleteUser, promoteUser, fetchProfile } = useDashboard();
+  const { users,deleteUser, promoteUser, getAllUsers } = useDashboard();
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    getAllUsers();
+  }, [getAllUsers]);
 
   const role = user?.role.toLowerCase();
 
@@ -106,13 +111,6 @@ export default function ManageUsersPage() {
     setPendingRole("");
   };
 
-  const handleViewProfile = (user) => {
-    try {      
-      fetchProfile(user._id);
-    } catch (error) {
-      console.error("Failed to fetch profile:", error);
-    }
-  };
   
   const handleDeleteUser = (id) => {
     try {
@@ -226,7 +224,7 @@ export default function ManageUsersPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
-                            align="end"
+                            align="start"
                             className="w-56 rounded-xl mt-1 bg-white"
                           >
                             <DropdownMenuLabel className="text-xs text-muted-foreground font-normal py-1.5">
@@ -234,7 +232,7 @@ export default function ManageUsersPage() {
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator className="bg-border/40 my-1" />
                             <DropdownMenuItem className="gap-2.5 py-2.5 text-sm cursor-pointer">
-                            <Button variant="ghost" size="sm" onClick={() => handleViewProfile(user)} className="h-8 px-3 bg-transparent">
+                            <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/admin/users/${user._id}`)} className="h-8 px-3 bg-transparent">
                               <Eye className="h-4 w-4 opacity-80" />
                               View Profile
                             </Button>

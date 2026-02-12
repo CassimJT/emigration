@@ -33,9 +33,10 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const data = await login({ credentials: preparePayload() })
-      console.log('LOGIN PAGE RECEIVED:', data)
-      navigate('/otp',data ? { state: { optMessage: data.message } } : undefined)
+      const {message, status} = await login({ credentials: preparePayload() })
+      console.log('LOGIN PAGE RECEIVED:', {message, status})
+      if(status)
+      navigate('/otp',{ state: { optMessage: message } })
     } catch (err) {
       console.error('LOGIN PAGE ERROR:', err)
     }

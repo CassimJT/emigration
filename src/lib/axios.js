@@ -30,6 +30,17 @@ const processQueue = (error, token = null) => {
   refreshQueue = []
 }
 
+//debug log interceptor to verify token is being sent
+api.interceptors.request.use(config => {
+  const token = getToken();
+  console.log('Sending token:', token ? 'yes' : 'NO TOKEN'); 
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Handle expired access token
 api.interceptors.response.use(
   res => res,
   async error => {
