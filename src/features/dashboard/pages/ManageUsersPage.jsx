@@ -43,14 +43,18 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const userRoles = ["client", "officer", "admin", "superadmin"];
 
 export default function ManageUsersPage() {
-  const { users,deleteUser, promoteUser } = useDashboard();
+  const { users,deleteUser, promoteUser, getAllUsers } = useDashboard();
   const { user } = useAuth();
-  const navigate = React.useNavigate();
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    getAllUsers();
+  }, [getAllUsers]);
 
   const role = user?.role.toLowerCase();
 
