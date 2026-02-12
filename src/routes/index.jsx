@@ -81,8 +81,12 @@ export const router = createBrowserRouter([
           { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'users/me/profile', element: <ProfilePage />, allowedRoles: ['client','officer', 'admin','superadmin']},
-          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
-          { path: 'admin/users/user', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
+          { path: 'admin',
+            children: [
+              { path: 'users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
+              { path: 'users/:userId', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
+            ]
+          },
         ]
       },
     ],
