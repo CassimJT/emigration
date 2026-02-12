@@ -4,51 +4,68 @@ import {
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
+  fetchMyApplications,
+  fetchApplicationsForReview,
+  startReview as apiStartReview,
+  approveApplication as apiApproveApplication,
+  rejectApplication as apiRejectApplication,
+  fetchImmigrationRecord,
 } from '../api/passport.api'
-import { useAuthContext } from '@/providers/AuthProvider' 
+
+import { useAuthContext } from '@/providers/AuthProvider'
 
 export function usePassportApplication() {
+  const { verificationSessionId } = useAuthContext()
+
+  // STATE
+
   const [currentStep, setCurrentStep] = useState(0)
   const [stepsData, setStepsData] = useState({})
   const [applicationId, setApplicationId] = useState(null)
+
+  const [applications, setApplications] = useState([])
+  const [reviewQueue, setReviewQueue] = useState([])
+  const [immigrationRecord, setImmigrationRecord] = useState(null)
+
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null) 
+  const [status, setStatus] = useState(null)
 
-  // Navigation
+
+  // NAVIGATION
+
   const nextStep = () => setCurrentStep((s) => s + 1)
-  const previousStep = () => setCurrentStep((s) => (s > 0 ? s - 1 : 0))
+  const previousStep = () =>
+    setCurrentStep((s) => (s > 0 ? s - 1 : 0))
 
-  // Data Management
 
- const { verificationSessionId } = useAuthContext()
+  // DATA MANAGEMENT
 
   const saveStepData = (step, data) => {
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
-    
   }
 
-  //resetApplication
   const resetApplication = () => {
     setCurrentStep(0)
     setStepsData({})
     setApplicationId(null)
+    setImmigrationRecord(null)
     setError(null)
     setStatus(null)
     setLoading(false)
   }
 
-  // API Operations
 
-  //loadApplication
+  // CLIENT SIDE OPERATIONS
+
   const loadApplication = async (id) => {
     if (!id) return
+
     setLoading(true)
     setError(null)
-    setStatus(null)
 
     try {
       const data = await fetchApplication(id)
@@ -58,49 +75,49 @@ export function usePassportApplication() {
       }
 
       setApplicationId(id)
-      setStepsData(data.data || {})
+      setStepsData(data.data?.formData || {})
       setStatus('success')
+
       return data
     } catch (err) {
-      setError(err.message || 'Failed to fetch application')
+      setError(err.message)
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-  //  createNewApplication
+
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
-    setStatus(null)
 
     try {
-      const payload ={
-        type: stepsData[1]?.passportType, 
+      const payload = {
+        type: stepsData[1]?.passportType,
         formData: stepsData,
-        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
+        identitySessionId: verificationSessionId,
       }
-      console.log('Creating application with payload:', payload)
+
       const data = await createApplication(payload)
-      console.log('Create application response:', data)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
 
-      setApplicationId(data?.data?.id || null)
+      setApplicationId(data.data?._id || data.data?.id)
       setStatus('success')
+
       return data
     } catch (err) {
-      setError(err.message || 'Failed to create application')
+      setError(err.message)
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-//updateExistingApplication
+
   const updateExistingApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
@@ -108,10 +125,11 @@ export function usePassportApplication() {
 
     setLoading(true)
     setError(null)
-    setStatus(null)
 
     try {
-      const data = await updateApplication(applicationId, stepsData)
+      const data = await updateApplication(applicationId, {
+        formData: stepsData,
+      })
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to update application')
@@ -120,14 +138,14 @@ export function usePassportApplication() {
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message || 'Failed to update application')
+      setError(err.message)
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-//submitFinalApplication
+
   const submitFinalApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
@@ -135,7 +153,6 @@ export function usePassportApplication() {
 
     setLoading(true)
     setError(null)
-    setStatus(null)
 
     try {
       const data = await apiSubmitApplication(applicationId)
@@ -147,7 +164,7 @@ export function usePassportApplication() {
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message || 'Failed to submit application')
+      setError(err.message)
       setStatus('failed')
       throw err
     } finally {
@@ -155,7 +172,135 @@ export function usePassportApplication() {
     }
   }
 
-  // workflow helper
+  const loadMyApplications = async (filterStatus = null) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await fetchMyApplications(filterStatus)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to load applications')
+      }
+
+      setApplications(data.data || [])
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadImmigrationRecord = async (appId) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await fetchImmigrationRecord(appId)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to load immigration record')
+      }
+
+      setImmigrationRecord(data.data)
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+   //  OFFICER / ADMIN OPERATIONS
+
+
+  const loadReviewQueue = async (status = 'SUBMITTED') => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await fetchApplicationsForReview(status)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to load review queue')
+      }
+
+      setReviewQueue(data.data || [])
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const startReview = async (id) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await apiStartReview(id)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to start review')
+      }
+
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const approveApplication = async (id) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await apiApproveApplication(id)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to approve application')
+      }
+
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const rejectApplication = async (id, reason = null) => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await apiRejectApplication(id, reason)
+
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to reject application')
+      }
+
+      return data
+    } catch (err) {
+      setError(err.message)
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  
+  //   WORKFLOW HELPERS
+ 
 
   const saveAndContinue = async () => {
     if (!applicationId) {
@@ -163,6 +308,7 @@ export function usePassportApplication() {
     } else {
       await updateExistingApplication()
     }
+
     nextStep()
   }
 
@@ -172,14 +318,20 @@ export function usePassportApplication() {
     } else {
       await updateExistingApplication()
     }
+
     return submitFinalApplication()
   }
+
+   //  RETURN
 
   return {
     /* state */
     currentStep,
     stepsData,
     applicationId,
+    applications,
+    reviewQueue,
+    immigrationRecord,
     loading,
     error,
     status,
@@ -192,11 +344,19 @@ export function usePassportApplication() {
     saveStepData,
     resetApplication,
 
-    /* api-backed actions */
-    loadApplication,            // -> fetchApplication
-    createNewApplication,       // -> createApplication
-    updateExistingApplication,  // -> updateApplication
-    submitFinalApplication,     // -> submitApplication
+    /* client operations */
+    loadApplication,
+    createNewApplication,
+    updateExistingApplication,
+    submitFinalApplication,
+    loadMyApplications,
+    loadImmigrationRecord,
+
+    /* officer operations */
+    loadReviewQueue,
+    startReview,
+    approveApplication,
+    rejectApplication,
 
     /* workflow */
     saveAndContinue,
