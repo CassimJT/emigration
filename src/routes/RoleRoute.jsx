@@ -5,13 +5,13 @@ import { Loader2 } from 'lucide-react'
 export function RoleRoute({ allowedRoles }) {
   const { isAuthenticated, role, isAuthReady } = useAuth()
 
-  if (!isAuthReady) return <div className="flex justify-center items-center h-64">
-        <Loader2 className="animate-spin" /> Loading...
-    </div>
-  if (!isAuthenticated) return <Navigate to="/" replace />
-  if (!allowedRoles.includes(role)) {
-    return <Navigate to="/unauthorized" replace />
-  }
+  // if (!isAuthReady) return <div className="flex justify-center items-center h-64">
+  //       <Loader2 className="animate-spin" /> Loading...
+  //   </div>
+  // if (!isAuthenticated) return <Navigate to="/" replace />
+  // if (!allowedRoles.includes(role)) {
+  //   return <Navigate to="/unauthorized" replace />
+  // }
 
   return <Outlet />
 }
