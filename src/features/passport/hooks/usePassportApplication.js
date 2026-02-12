@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
+  fetchApplications,
 } from '../api/passport.api'
 import { useAuthContext } from '@/providers/AuthProvider' 
 
@@ -14,6 +15,7 @@ export function usePassportApplication() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [status, setStatus] = useState(null) 
+  const [applications, setApplications] = useState([]) 
 
   // Navigation
   const nextStep = () => setCurrentStep((s) => s + 1)
@@ -69,6 +71,28 @@ export function usePassportApplication() {
       setLoading(false)
     }
   }
+  
+  //////////load all applications (for dashboard)/////////////
+const loadApplications = React.useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchApplications(params);
+      if (response?.status !== 'success') {
+        throw new Error(response?.message || 'Failed to load applications');
+      }
+      setApplications(response.data || []);
+      return response;
+    } catch (err) {
+      const message = err.message || 'Failed to fetch applications';
+      setError(message);
+      console.error('Load applications error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   //  createNewApplication
   const createNewApplication = async () => {
     setLoading(true)
@@ -177,6 +201,7 @@ export function usePassportApplication() {
 
   return {
     /* state */
+    applicationsList: applications,
     currentStep,
     stepsData,
     applicationId,
@@ -194,6 +219,7 @@ export function usePassportApplication() {
 
     /* api-backed actions */
     loadApplication,            // -> fetchApplication
+    loadApplications,           // -> fetchApplications
     createNewApplication,       // -> createApplication
     updateExistingApplication,  // -> updateApplication
     submitFinalApplication,     // -> submitApplication

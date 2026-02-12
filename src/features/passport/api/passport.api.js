@@ -24,9 +24,22 @@ export async function updateApplication(applicationId, payload) {
 export async function fetchApplication(applicationId) {
   try {
     const { data } = await api.get(`/passport/applications/${applicationId}`)
+    if (data.status === 'success') {
     return data
+  }  throw new Error(data.message || 'Failed to fetch application') 
   } catch (error) {
     return handleError(error)
+  }
+}
+
+export async function fetchApplications() {
+try {
+  const { data } = await api.get('/passport/applications') 
+  if (data.status === 'success') {
+    return data 
+  } throw new Error(data.message || 'Failed to fetch applications')
+  } catch (error) { 
+  return handleError(error) 
   }
 }
 
