@@ -21,7 +21,7 @@ export function useUserManagement() {
     setUsersError(null)
     try {
       const data = await getAllUsersAPI()
-      setUsers(data || [])
+      setUsers(data)
     } catch (err) {
       console.error('Get all users error:', err)
       setUsersError(err?.message || 'Failed to fetch users')

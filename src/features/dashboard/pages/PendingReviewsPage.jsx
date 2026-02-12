@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { Navigate, useOutletContext } from 'react-router-dom';
+import { Navigate, useNavigate, useOutletContext } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -44,6 +44,7 @@ const getStatusBadge = (status) => {
 
 export default function PendingReviewsPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { currentRole, profile } = useOutletContext();
 
   const { applications, loading, error, loadApplications } = usePassportApplication({
@@ -170,7 +171,9 @@ export default function PendingReviewsPage() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-1 translate-x-2 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
+                              onClick={() => navigate(`/dashboard/passport/process/${app._id}`)}
+                            >
                               <Eye className="h-4 w-4" />
                             </Button>
                             <Button variant="ghost" size="icon" className="h-8 w-8 text-gray-400 hover:text-gray-600">
