@@ -133,8 +133,9 @@ export function usePassportApplication() {
   }
 //submitFinalApplication
   const submitFinalApplication = async () => {
-    console.log('Submitting application with ID:', applicationId) 
-    if (!applicationId) {
+    const id = applicationId
+    console.log('Submitting application with ID:', id) 
+    if (!id) {
       throw new Error('No applicationId set')
     }
 
@@ -143,7 +144,7 @@ export function usePassportApplication() {
     setStatus(null)
 
     try {
-      const data = await apiSubmitApplication(applicationId)
+      const data = await apiSubmitApplication(id)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
