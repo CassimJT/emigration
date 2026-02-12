@@ -88,9 +88,13 @@ export function usePassportApplication() {
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-      setApplicationId(data?.data?._id)
+      const newAppId = data?.data?._id
+      if (!newAppId) {
+        throw new Error('No application ID returned from createApplication')
+      }
+      setApplicationId(newAppId)
       setStatus('success')
-      console.log('Application created with ID:', applicationId)
+      console.log('Application created with ID:',newAppId)
       return data
     } catch (err) {
       setError(err.message || 'Failed to create application')
