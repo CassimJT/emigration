@@ -10,6 +10,7 @@ import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 
+
 function PassportApplicationPage() {
   const { user } = useAuth();
   const { currentRole } = useOutletContext();
@@ -74,27 +75,30 @@ function PassportApplicationPage() {
       }
     };
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
       e.preventDefault();
       const payload = preparePayload();
       saveStepData(currentStep + 1, payload);
 
       if(currentStep === 2){
+       try{
         setLoading(true);
-        createNewApplication().then(() => {
+        await createNewApplication();
+        nextStep();
+        
+       }
+        catch(err){ 
+          console.error(err);
+        } finally {
           setLoading(false);
-        }).catch((err) => {
-          console.error('Error creating application:', err);
-          setLoading(false);
-        });
-        nextStep(); 
-        return;
+        }
+        
       }
       if(currentStep === 3){
         try {
           setIsSubmitting(true);
-          submitFinalApplication();
-          navigate("/dashboard");
+          await submitFinalApplication();
+          navigate("/dashboard/payments");
         } catch (err) {
           console.error(err);
         } finally {
@@ -102,8 +106,7 @@ function PassportApplicationPage() {
         }
           return;
       }
-       nextStep();
-    };
+    }
 
   const formData = {
       ...stepsData[1],
