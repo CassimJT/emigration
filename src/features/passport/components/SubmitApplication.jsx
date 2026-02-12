@@ -1,4 +1,5 @@
 // components/SubmitPage.jsx
+import React from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Loader2 } from "lucide-react"
@@ -17,7 +18,7 @@ export default function SubmitApplicationPage({
   
 }) {
   return (
-    <div className={cn("flex justify-center items-center min-h-screen p-4 bg-muted/40", className)} {...props}>
+    <div className={cn("space-y-8",className)} {...props}>
       <Card className="w-full max-w-2xl shadow-lg rounded-2xl">
         <CardHeader>
           <CardTitle className="text-2xl font-bold">{title}</CardTitle>
@@ -43,25 +44,28 @@ export default function SubmitApplicationPage({
 
           {/* Buttons */}
           <div className="flex justify-between pt-4">
-            {onBack && (
-              <Button variant="outline" onClick={onBack}>
+            <Button
+              type="button"
+              onClick={onBack}
+              className="rounded-full border border-gray-300 px-8 py-3 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            >
                 Back
-              </Button>
-            )}
-
-            <Button onClick={onSubmit} disabled={isSubmitting}>
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Submit Application
-                </>
-              )}
             </Button>
+
+            <Button
+                type="button"
+                onClick={onSubmit}
+                className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                disabled={isSubmitting} >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit Application"
+                )}
+        </Button>
           </div>
 
         </CardContent>

@@ -39,7 +39,7 @@ function PassportApplicationPage() {
     saveStepData,
     stepsData,
     createNewApplication,
-    submitApplication } = usePassportApplication();
+    submitFinalApplication } = usePassportApplication();
 
   const preparePayload = () => {
 
@@ -86,7 +86,7 @@ function PassportApplicationPage() {
       if(currentStep === 3){
         try {
           setIsSubmitting(true);
-          submitApplication();
+          submitFinalApplication();
           navigate("/dashboard");
         } catch (err) {
           console.error(err);
