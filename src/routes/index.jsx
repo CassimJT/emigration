@@ -82,7 +82,7 @@ export const router = createBrowserRouter([
           { path: 'passport/reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'users/me/profile', element: <ProfilePage />, allowedRoles: ['client','officer', 'admin','superadmin']},
-          { path:  'users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
+          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
           { path: 'users/:userId', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
           { path: 'passport/process/:applicationId', element: <PassportProcessingPage />, allowedRoles: ['admin','superadmin']},
         ]
