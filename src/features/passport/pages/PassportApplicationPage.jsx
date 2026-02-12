@@ -106,6 +106,7 @@ function PassportApplicationPage() {
         }
           return;
       }
+      nextStep();
     }
 
   const formData = {
