@@ -4,12 +4,15 @@ import {
   updateUser as updateUserAPI,
   deleteUser as deleteUserAPI,
   promoteUser as promoteUserAPI,
-  updateUserProfile as updateUserProfileAPI,
+  getUserDetails as getUserDetailsAPI,
 } from '@/features/dashboard/api/dashboard.api'
 
 export function useUserManagement() {
   const [users, setUsers] = React.useState([])
+  const [userToView, setUserToView] = React.useState(null)
   const [loadingUsers, setLoadingUsers] = React.useState(false)
+  const [loadingUserDetails, setLoadingUserDetails] = React.useState(false)
+  const [userError, setUserError] = React.useState(null)
   const [usersError, setUsersError] = React.useState(null)
 
   // Fetch all users
@@ -24,6 +27,20 @@ export function useUserManagement() {
       setUsersError(err?.message || 'Failed to fetch users')
     } finally {
       setLoadingUsers(false)
+    }
+  }, [])
+  // Get user details
+  const getUserDetails = React.useCallback(async (userId) => {
+        setLoadingUserDetails(true)
+        setUserError(null)
+    try {
+      const user = await getUserDetailsAPI(userId)
+      setUserToView(user)
+    } catch (err) {
+      console.error('Get user details error:', err)
+      throw new Error(err?.message || 'Failed to fetch user details')
+    }finally {
+      setLoadingUserDetails(false)
     }
   }, [])
   // Update user
@@ -56,29 +73,19 @@ export function useUserManagement() {
       throw new Error(err?.message || 'Failed to promote user')
     }
   }, [getAllUsers])
-  // Update user profile
-  const updateUserProfile = React.useCallback(async (userId, profileData) => {
-    try {
-      await updateUserProfileAPI(userId, profileData)
-      await getAllUsers()
-    } catch (err) {
-      console.error('Update user profile error:', err)
-      throw new Error(err?.message || 'Failed to update profile')
-    }
-  }, [getAllUsers])
-
-  React.useEffect(() => {
-    getAllUsers()
-  }, [getAllUsers])
+  
 
   return {
     users,
+    userToView,
     loadingUsers,
-    usersError,
+    loadingUserDetails,
     getAllUsers,
+    getUserDetails,
     updateUser,
-    deleteUser,
     promoteUser,
-    updateUserProfile,
+    deleteUser,
+    usersError,
+    userError,
   }
 }

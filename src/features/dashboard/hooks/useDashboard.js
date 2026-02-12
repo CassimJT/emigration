@@ -22,10 +22,14 @@ export function useDashboard() {
 
     // User management
     users: userMgmt.users,
+    userToView: userMgmt.userToView,
+    loadingUserDetails: userMgmt.loadingUserDetails,
+    userError: userMgmt.userError,
     promoteUser : userMgmt.promoteUser,
     loadingUsers: userMgmt.loadingUsers,
     usersError: userMgmt.usersError,
     getAllUsers: userMgmt.getAllUsers,
+    getUserDetails: userMgmt.getUserDetails,
     updateUser: userMgmt.updateUser,
     deleteUser: userMgmt.deleteUser,
 

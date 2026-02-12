@@ -30,6 +30,7 @@ import ManageUsersPage from '@/features/dashboard/pages/ManageUsersPage'
 import PassportReviewDemo from '@/pages/PassportReviewDemo'
 import ManageUsersDemo from '@/pages/ManageUsersDemo'
 import ProfilePage from '@/features/dashboard/pages/ProfilePage'
+import UserDetailPage from '@/features/dashboard/pages/UserDetailsPage'
 
 export const router = createBrowserRouter([
 
@@ -79,8 +80,9 @@ export const router = createBrowserRouter([
           { path: 'notifications', element: <NotificationsPage />, allowedRoles: ['officer','client', 'admin', 'superadmin']},
           { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
+          { path: 'users/me/profile', element: <ProfilePage />, allowedRoles: ['client','officer', 'admin','superadmin']},
           { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
-          { path: 'users/me/profile', element: <ProfilePage />, allowedRoles: ['client','officer', 'admin','superadmin']}
+          { path: 'admin/users/user', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
         ]
       },
     ],
