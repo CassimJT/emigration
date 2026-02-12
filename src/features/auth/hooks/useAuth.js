@@ -70,6 +70,7 @@ export function useAuth() {
       setMessage(data?.message)
       startLoginSession(data.loginSessionId)
       setStatus('success')
+      console.log(data)
       return data
     } catch (err) {
       setStatus('failed')
