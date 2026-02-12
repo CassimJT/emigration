@@ -17,6 +17,7 @@ function PassportApplicationPage() {
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
   const[isSubmitting, setIsSubmitting] = useState(false);
+  const[loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [passportTypeData, setPassportTypeData] = useState({
         passportType: 'Ordinary',
@@ -79,7 +80,13 @@ function PassportApplicationPage() {
       saveStepData(currentStep + 1, payload);
 
       if(currentStep === 2){
-        createNewApplication();
+        setLoading(true);
+        createNewApplication().then(() => {
+          setLoading(false);
+        }).catch((err) => {
+          console.error('Error creating application:', err);
+          setLoading(false);
+        });
         nextStep(); 
         return;
       }
@@ -150,6 +157,7 @@ function PassportApplicationPage() {
               data={formData} 
               onBack={previousStep} 
               onClick={handleNext}
+              loading={loading}
             />
           )}
           {currentStep === 3 && (
