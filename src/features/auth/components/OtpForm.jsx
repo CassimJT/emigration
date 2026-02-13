@@ -75,12 +75,15 @@ export default function OtpForm({
           disabled={loading}
           onChange={(value) => setOtp(value)}
         >
-          <InputOTPGroup className="flex gap-4">
+          <InputOTPGroup className="flex gap-1 sm:gap-2">
             {Array.from({ length: otpLength }).map((_, index) => (
               <InputOTPSlot 
                 key={index}
                 index={index}
-                className="h-12 w-12 sm:h-14 sm:w-14 rounded-xl border-2 border-black text-2xl"
+                className={cn(
+                  "h-10 w-10 sm:h-12 sm:w-12 rounded-xl border-2 border-black text-2xl transition-colors",
+                  otp[index] ? "border-orange-500" : "border-black"
+                )}
               />
             ))}
           </InputOTPGroup>
