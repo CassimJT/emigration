@@ -47,14 +47,14 @@ export default function PendingReviewsPage() {
   const navigate = useNavigate();
   const { currentRole, profile } = useOutletContext();
 
-  const { applications, loading, error, loadApplications } = usePassportApplication({
-    status: APP_STATUS.APPROVED,
+  const { applications, loading, error, loadReviewQueue } = usePassportApplication({
+    applicationStatus: 'SUBMITTED',
     limit: 20,
   });
   
   React.useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    loadReviewQueue();
+  }, [loadReviewQueue]);
 
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -94,7 +94,7 @@ export default function PendingReviewsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={loadApplications} disabled={loading} className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">
+          <Button variant="outline" size="sm" onClick={loadReviewQueue} disabled={loading} className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">
             Refresh
           </Button>
           <Button variant="outline" size="sm">
