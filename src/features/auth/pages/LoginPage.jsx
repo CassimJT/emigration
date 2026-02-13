@@ -36,7 +36,7 @@ function LoginPage() {
       const {message, status} = await login({ credentials: preparePayload() })
       console.log('LOGIN PAGE RECEIVED:', {message, status})
       if(status)
-      navigate('/otp',{ state: { optMessage: message } })
+      navigate('/otp',{ state: { otpMessage: message } })
     } catch (err) {
       console.error('LOGIN PAGE ERROR:', err)
     }
@@ -52,9 +52,10 @@ function LoginPage() {
     else if (!verificationSessionId) {
       navigate("/identity/verify", { replace: true })
     } 
-    else if (loginSessionId) {
-      navigate("/otp", { replace: true })
-    }
+    //navigating to OTP page on submit only ......
+    // else if (loginSessionId) {
+    //   navigate("/otp", { replace: true })
+    // }
   }, [
     isAuthReady,
     isAuthenticated,
