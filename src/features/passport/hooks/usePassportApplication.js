@@ -4,7 +4,7 @@ import {
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
-  fetchApplications,
+  fetchApplicationsForReview,
 } from '../api/passport.api'
 import { useAuthContext } from '@/providers/AuthProvider' 
 
@@ -15,7 +15,13 @@ export function usePassportApplication() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [status, setStatus] = useState(null)
-  const [applications, setApplications] = useState([]) 
+  const [reviewQueue, setReviewQueue] = useState([]); // renamed from applications for clarity
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    pages: 1,
+  });
 
   // Navigation
   const nextStep = () => setCurrentStep((s) => s + 1)
@@ -74,23 +80,30 @@ export function usePassportApplication() {
     }
   }
 
-  const loadApplications =React.useCallback(async () => {   
-  setLoading(true);
-  setError(null);
-  try {
-    const response = await fetchApplications();  
-    if (response.status !== 'success') {
-      throw new Error(response.message || 'Failed to load applications');
+const loadReviewQueue = React.useCallback(async ({ page = 1, status = "SUBMITTED", limit = 10 } = {}) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetchApplicationsForReview({ status, page, limit });
+
+      setReviewQueue(response.data || []);
+      setPagination(response.pagination || { page, limit, total: 0, pages: 1 });
+
+      return response;
+    } catch (err) {
+      setError(err.message || "Failed to load review queue");
+      throw err;
+    } finally {
+      setLoading(false);
     }
-    setApplications(response.data || []);         
-    return response;
-  } catch (err) {
-    setError(err.message);
-    throw err;
-  } finally {
-    setLoading(false);
-  }
-}, [])
+  }, []);
+
+  // Helper to change page
+  const changePage = (newPage) => {
+    if (newPage < 1 || newPage > pagination.pages) return;
+    loadReviewQueue({ page: newPage, limit: pagination.limit });
+  };
 
   //  createNewApplication
   const createNewApplication = async () => {
@@ -206,7 +219,6 @@ export function usePassportApplication() {
 
   return {
     /* state */
-    applications,
     currentStep,
     stepsData,
     applicationId,
@@ -224,7 +236,6 @@ export function usePassportApplication() {
 
     /* api-backed actions */
     loadApplication,            // -> fetchApplication
-    loadApplications,           // -> fetchApplications
     createNewApplication,       // -> createApplication
     updateExistingApplication,  // -> updateApplication
     submitFinalApplication,     // -> submitApplication
@@ -232,5 +243,11 @@ export function usePassportApplication() {
     /* workflow */
     saveAndContinue,
     submitApplication,
+
+    // review queue
+    reviewQueue,
+    pagination,
+    loadReviewQueue,
+    changePage,
   }
 }

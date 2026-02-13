@@ -77,14 +77,28 @@ export async function fetchMyApplications(status = null) {
  //  OFFICER / ADMIN – REVIEW FLOW
 
 // Fetch applications for review (default SUBMITTED)
-export async function fetchApplicationsForReview(status = "SUBMITTED") {
+export async function fetchApplicationsForReview({
+  status = "SUBMITTED",
+  page = 1,
+  limit = 10,
+} = {}) {
   try {
-    const { data } = await api.get(
-      `/passport/admin/applications?status=${status}`
-    )
-    return data
+    const { data } = await api.get("/admin/applications", {  
+      params: {
+        status,
+        page,
+        limit,
+      },
+    });
+
+    if (data.status === "success") {
+      return data; // { status, data: [...apps], pagination: { page, limit, total, pages } }
+    }
+
+    throw new Error(data.message || "Failed to fetch review queue");
   } catch (error) {
-    return handleError(error)
+    console.error("API error:", error);
+    return handleError(error);
   }
 }
 
