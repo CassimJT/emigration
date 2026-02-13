@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   createApplication,
   updateApplication,
@@ -74,7 +74,7 @@ export function usePassportApplication() {
     }
   }
 
-  const loadApplications = async () => {   
+  const loadApplications =React.useCallback(async () => {   
   setLoading(true);
   setError(null);
   try {
@@ -90,7 +90,7 @@ export function usePassportApplication() {
   } finally {
     setLoading(false);
   }
-};
+}, [])
 
   //  createNewApplication
   const createNewApplication = async () => {
