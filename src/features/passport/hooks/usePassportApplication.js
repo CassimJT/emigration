@@ -1,73 +1,56 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
-  fetchMyApplications,
-  fetchApplicationsForReview,
-  startReview as apiStartReview,
-  approveApplication as apiApproveApplication,
-  rejectApplication as apiRejectApplication,
-  fetchImmigrationRecord,
 } from '../api/passport.api'
+import { useAuthContext } from '@/providers/AuthProvider' 
 
-import { useAuthContext } from '@/providers/AuthProvider'
-
-  
-export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
-  const { verificationSessionId } = useAuthContext()
-
-  
-   //  STATE
-
-
-  const [currentStep, setCurrentStep] = useState(0)
+export function usePassportApplication() {
+  const [currentStep, setCurrentStep] = useState(1)
   const [stepsData, setStepsData] = useState({})
   const [applicationId, setApplicationId] = useState(null)
-
-  const [applications, setApplications] = useState([])
-  const [reviewQueue, setReviewQueue] = useState([])
-  const [immigrationRecord, setImmigrationRecord] = useState(null)
-
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null)
+  const [status, setStatus] = useState(null) 
 
-    const reviewConfig = { applicationStatus, limit }; 
-  // NAVIGATION
+  // Navigation
   const nextStep = () => setCurrentStep((s) => s + 1)
-  const previousStep = () =>
-    setCurrentStep((s) => (s > 0 ? s - 1 : 0))
+  const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1))
 
+  // Data Management
 
-  // DATA MANAGEMENT
+ const { verificationSessionId } = useAuthContext()
 
   const saveStepData = (step, data) => {
+    console.log(`Saving data for step ${step}:`, data)
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
+    console.log(`updated data for ${step}:`,stepsData)
+    
   }
 
+  //resetApplication
   const resetApplication = () => {
     setCurrentStep(0)
     setStepsData({})
     setApplicationId(null)
-    setImmigrationRecord(null)
     setError(null)
     setStatus(null)
     setLoading(false)
   }
 
+  // API Operations
 
-  // CLIENT SIDE OPERATIONS
-
+  //loadApplication
   const loadApplication = async (id) => {
     if (!id) return
-
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
       const data = await fetchApplication(id)
@@ -77,49 +60,53 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
       }
 
       setApplicationId(id)
-      setStepsData(data.data?.formData || {})
+      setStepsData(data.data || {})
       setStatus('success')
-
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to fetch application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+  //  createNewApplication
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const payload = {
-        type: stepsData[1]?.passportType,
+      const payload ={
+        type: stepsData[1]?.passportType, 
         formData: stepsData,
-        identitySessionId: verificationSessionId,
+        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
       }
-
+      console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
+      console.log('Create application response:', data)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-
-      setApplicationId(data.data?._id || data.data?.id)
+      const newAppId = data?.data?._id
+      if (!newAppId) {
+        throw new Error('No application ID returned from createApplication')
+      }
+      setApplicationId(newAppId)
       setStatus('success')
-
+      console.log('Application created with ID:',newAppId)
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to create application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+//updateExistingApplication
   const updateExistingApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
@@ -127,11 +114,10 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
 
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const data = await updateApplication(applicationId, {
-        formData: stepsData,
-      })
+      const data = await updateApplication(applicationId, stepsData)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to update application')
@@ -140,24 +126,27 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to update application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+//submitFinalApplication
   const submitFinalApplication = async () => {
-    if (!applicationId) {
+    const id = applicationId
+    console.log('Submitting application with ID:', id) 
+    if (!id) {
       throw new Error('No applicationId set')
     }
 
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const data = await apiSubmitApplication(applicationId)
+      const data = await apiSubmitApplication(id)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
@@ -166,7 +155,7 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to submit application')
       setStatus('failed')
       throw err
     } finally {
@@ -174,136 +163,7 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     }
   }
 
-  const loadApplications = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await fetchMyApplications()
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to load applications')
-      }
-
-      setApplications(data.data || [])
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadImmigrationRecord = async (appId) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await fetchImmigrationRecord(appId)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to load immigration record')
-      }
-
-      setImmigrationRecord(data.data)
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-   //  OFFICER / ADMIN OPERATIONS
-
-
-  
-    const loadReviewQueue = React.useCallback(async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const data = await fetchApplicationsForReview(reviewConfig.status, reviewConfig.limit)
-
-        if (!data || data.status !== 'success') {
-          throw new Error(data?.message || 'Failed to load review queue')
-        }
-
-        setReviewQueue(data.data || [])
-        return data
-      } catch (err) {
-        setError(err.message)
-        throw err
-      } finally {
-        setLoading(false)
-      }
-    }, [reviewConfig.status, reviewConfig.limit])
-
-  const startReview = async (id) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiStartReview(id)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to start review')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const approveApplication = async (id) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiApproveApplication(id)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to approve application')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const rejectApplication = async (id, reason = null) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiRejectApplication(id, reason)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to reject application')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  
-  //   WORKFLOW HELPERS
- 
+  // workflow helper
 
   const saveAndContinue = async () => {
     if (!applicationId) {
@@ -311,7 +171,6 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     } else {
       await updateExistingApplication()
     }
-
     nextStep()
   }
 
@@ -321,22 +180,14 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     } else {
       await updateExistingApplication()
     }
-
     return submitFinalApplication()
   }
-
-  
-   //  RETURN
-
 
   return {
     /* state */
     currentStep,
     stepsData,
     applicationId,
-    applications,
-    reviewQueue,
-    immigrationRecord,
     loading,
     error,
     status,
@@ -349,19 +200,11 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     saveStepData,
     resetApplication,
 
-    /* client operations */
-    loadApplication,
-    createNewApplication,
-    updateExistingApplication,
-    submitFinalApplication,
-    loadApplications,
-    loadImmigrationRecord,
-
-    /* officer operations */
-    loadReviewQueue,
-    startReview,
-    approveApplication,
-    rejectApplication,
+    /* api-backed actions */
+    loadApplication,            // -> fetchApplication
+    createNewApplication,       // -> createApplication
+    updateExistingApplication,  // -> updateApplication
+    submitFinalApplication,     // -> submitApplication
 
     /* workflow */
     saveAndContinue,
