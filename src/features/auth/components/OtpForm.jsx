@@ -75,7 +75,7 @@ export default function OtpForm({
           disabled={loading}
           onChange={(value) => setOtp(value)}
         >
-          <InputOTPGroup className="flex gap-2 sm:gap-4">
+          <InputOTPGroup className="flex gap-1 sm:gap-2">
             {Array.from({ length: otpLength }).map((_, index) => (
               <InputOTPSlot 
                 key={index}
