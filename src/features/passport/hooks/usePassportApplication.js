@@ -17,7 +17,7 @@ export function usePassportApplication() {
 
   // Navigation
   const nextStep = () => setCurrentStep((s) => s + 1)
-  const previousStep = () => setCurrentStep((s) => (s > 0 ? s - 1 : 0))
+  const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1))
 
   // Data Management
 
