@@ -8,6 +8,7 @@ import SubmitApplicationPage from "../components/SubmitApplication";
 import { usePassportApplication } from '../hooks/usePassportApplication';
 import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLocation } from "react-router-dom";
 
 
 
@@ -16,14 +17,19 @@ function PassportApplicationPage() {
   const { currentRole } = useOutletContext();
   
   const role = (currentRole || user?.role || 'client').toLowerCase();
+  
 
   const[isSubmitting, setIsSubmitting] = useState(false);
   const[loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Extract selectedType from location state if available
+  const location = useLocation();
+  const selectedType = location.state?.selectedType || null;
   const [passportTypeData, setPassportTypeData] = useState({
-        passportType: 'Ordinary',
-        serviceType: 'Normal',
-        bookletType: '36 Pages',
+        passportType: selectedType?.type || 'Ordinary',
+        serviceType: selectedType?.serviceType || 'Normal',
+        bookletType: selectedType?.pages || '36 Pages',
    });
 
   const [personalInfoStepData,setPersonalInfoStepData] = useState({
@@ -40,12 +46,12 @@ function PassportApplicationPage() {
     previousStep,
     saveStepData,
     stepsData,
-    createNewApplication,
+    saveAndContinue,
     submitFinalApplication } = usePassportApplication();
 
   const preparePayload = () => {
 
-      if (currentStep === 0) {
+      if (currentStep === 1) {
         return {
           passportType: passportTypeData.passportType.trim(),
           serviceType: passportTypeData.serviceType.trim(),
@@ -53,7 +59,7 @@ function PassportApplicationPage() {
         }
       }
 
-      else if (currentStep === 1) {
+      else if (currentStep === 2) {
         return {
           name: personalInfoStepData.name.trim(),
           surname: personalInfoStepData.surname.trim(),
@@ -68,9 +74,9 @@ function PassportApplicationPage() {
   const handleChange = (e) => {
       const { id, value } = e.target;
 
-      if (currentStep === 0) {
+      if (currentStep === 1) {
         setPassportTypeData((prev) => ({ ...prev, [id]: value }));
-      } else if (currentStep === 1) {
+      } else if (currentStep === 2) {
         setPersonalInfoStepData((prev) => ({ ...prev, [id]: value }));
       }
     };
@@ -78,12 +84,12 @@ function PassportApplicationPage() {
   const handleNext = async (e) => {
       e.preventDefault();
       const payload = preparePayload();
-      saveStepData(currentStep + 1, payload);
+      saveStepData(currentStep , payload);
 
-      if(currentStep === 2){
+      if(currentStep === 3){
        try{
         setLoading(true);
-        await createNewApplication();
+        await saveAndContinue();
         nextStep();
         return;
         
@@ -95,7 +101,7 @@ function PassportApplicationPage() {
         }
         
       }
-      if(currentStep === 3){
+      if(currentStep === 4){
         try {
           setIsSubmitting(true);
           await submitFinalApplication();
@@ -107,7 +113,8 @@ function PassportApplicationPage() {
         }
           return;
       }
-      nextStep();
+      await saveAndContinue();
+      //nextStep();
     }
 
   const formData = {
@@ -134,7 +141,7 @@ function PassportApplicationPage() {
 
         {/* Form Card */}
         <div className="mt-8 rounded-xl bg-white p-8 shadow-sm">
-          {currentStep === 0 && (
+          {currentStep === 1 && (
             <PassportTypeStep
               passportType={passportTypeData.passportType}
               serviceType={passportTypeData.serviceType}
@@ -144,7 +151,7 @@ function PassportApplicationPage() {
               initialData={formData} 
             />
           )}
-          {currentStep === 1 && (
+          {currentStep === 2 && (
             <PersonalInfoStep
               name={personalInfoStepData.name}
               surname={personalInfoStepData.surname}
@@ -157,7 +164,7 @@ function PassportApplicationPage() {
               initialData={formData} 
             />
           )}
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <ReviewStep 
               data={formData} 
               onBack={previousStep} 
@@ -165,7 +172,7 @@ function PassportApplicationPage() {
               loading={loading}
             />
           )}
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <SubmitApplicationPage 
               summaryData={Object.entries(formData).map(([label, value]) => ({ label, value }))} 
               onBack={previousStep} 

@@ -1,72 +1,57 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
-  fetchMyApplications,
-  fetchApplicationsForReview,
-  startReview as apiStartReview,
-  approveApplication as apiApproveApplication,
-  rejectApplication as apiRejectApplication,
-  fetchImmigrationRecord,
 } from '../api/passport.api'
+import { useAuthContext } from '@/providers/AuthProvider' 
 
-import { useAuthContext } from '@/providers/AuthProvider'
-
-  export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
-  const { verificationSessionId } = useAuthContext()
-
-  
-   //  STATE
-
-
-  const [currentStep, setCurrentStep] = useState(0)
+export function usePassportApplication() {
+  const [currentStep, setCurrentStep] = useState(1)
   const [stepsData, setStepsData] = useState({})
   const [applicationId, setApplicationId] = useState(null)
-
-  const [applications, setApplications] = useState([])
-  const [reviewQueue, setReviewQueue] = useState([])
-  const [immigrationRecord, setImmigrationRecord] = useState(null)
-
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null)
+  const [status, setStatus] = useState(null) 
 
     const reviewConfig = { applicationStatus, limit }; 
   // NAVIGATION
   const nextStep = () => setCurrentStep((s) => s + 1)
-  const previousStep = () =>
-    setCurrentStep((s) => (s > 0 ? s - 1 : 0))
+  const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1))
 
+  // Data Management
 
-  // DATA MANAGEMENT
+ const { verificationSessionId } = useAuthContext()
 
   const saveStepData = (step, data) => {
+    console.log(`Saving data for step ${step}:`, data)
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
+    console.log(`updated data for ${step}:`,stepsData)
+    
   }
 
+  //resetApplication
   const resetApplication = () => {
     setCurrentStep(0)
     setStepsData({})
     setApplicationId(null)
-    setImmigrationRecord(null)
     setError(null)
     setStatus(null)
     setLoading(false)
   }
 
+  // API Operations
 
-  // CLIENT SIDE OPERATIONS
-
+  //loadApplication
   const loadApplication = async (id) => {
     if (!id) return
-
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
       const data = await fetchApplication(id)
@@ -76,49 +61,53 @@ import { useAuthContext } from '@/providers/AuthProvider'
       }
 
       setApplicationId(id)
-      setStepsData(data.data?.formData || {})
+      setStepsData(data.data || {})
       setStatus('success')
-
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to fetch application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+  //  createNewApplication
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const payload = {
-        type: stepsData[1]?.passportType,
+      const payload ={
+        type: stepsData[1]?.passportType, 
         formData: stepsData,
-        identitySessionId: verificationSessionId,
+        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
       }
-
+      console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
+      console.log('Create application response:', data)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-
-      setApplicationId(data.data?._id || data.data?.id)
+      const newAppId = data?.data?._id
+      if (!newAppId) {
+        throw new Error('No application ID returned from createApplication')
+      }
+      setApplicationId(newAppId)
       setStatus('success')
-
+      console.log('Application created with ID:',newAppId)
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to create application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+//updateExistingApplication
   const updateExistingApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set')
@@ -126,11 +115,10 @@ import { useAuthContext } from '@/providers/AuthProvider'
 
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const data = await updateApplication(applicationId, {
-        formData: stepsData,
-      })
+      const data = await updateApplication(applicationId, stepsData)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to update application')
@@ -139,24 +127,27 @@ import { useAuthContext } from '@/providers/AuthProvider'
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to update application')
       setStatus('failed')
       throw err
     } finally {
       setLoading(false)
     }
   }
-
+//submitFinalApplication
   const submitFinalApplication = async () => {
-    if (!applicationId) {
+    const id = applicationId
+    console.log('Submitting application with ID:', id) 
+    if (!id) {
       throw new Error('No applicationId set')
     }
 
     setLoading(true)
     setError(null)
+    setStatus(null)
 
     try {
-      const data = await apiSubmitApplication(applicationId)
+      const data = await apiSubmitApplication(id)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
@@ -165,7 +156,7 @@ import { useAuthContext } from '@/providers/AuthProvider'
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to submit application')
       setStatus('failed')
       throw err
     } finally {
@@ -310,7 +301,6 @@ import { useAuthContext } from '@/providers/AuthProvider'
     } else {
       await updateExistingApplication()
     }
-
     nextStep()
   }
 
@@ -320,22 +310,14 @@ import { useAuthContext } from '@/providers/AuthProvider'
     } else {
       await updateExistingApplication()
     }
-
     return submitFinalApplication()
   }
-
-  
-   //  RETURN
-
 
   return {
     /* state */
     currentStep,
     stepsData,
     applicationId,
-    applications,
-    reviewQueue,
-    immigrationRecord,
     loading,
     error,
     status,
