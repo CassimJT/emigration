@@ -47,10 +47,7 @@ export default function PendingReviewsPage() {
   const navigate = useNavigate();
   const { currentRole, profile } = useOutletContext();
 
-  const { applications, loading, error, loadReviewQueue } = usePassportApplication({
-    applicationStatus: 'SUBMITTED',
-    limit: 20,
-  });
+  const { applications, loading, error, loadApplications } = usePassportApplication();
   
   React.useEffect(() => {
     loadReviewQueue();
