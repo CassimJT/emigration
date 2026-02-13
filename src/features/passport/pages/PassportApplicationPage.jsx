@@ -40,7 +40,6 @@ function PassportApplicationPage() {
     previousStep,
     saveStepData,
     stepsData,
-    createNewApplication,
     saveAndContinue,
     submitFinalApplication } = usePassportApplication();
 
