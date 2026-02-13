@@ -83,7 +83,7 @@ export async function fetchApplicationsForReview({
   limit = 10,
 } = {}) {
   try {
-    const { data } = await api.get("/api/passport/admin/applications", {  
+    const { data } = await api.get("/passport/admin/applications", {  
       params: {
         status,
         page,
