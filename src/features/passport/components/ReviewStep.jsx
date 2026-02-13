@@ -1,9 +1,11 @@
 // passport/components/ReviewStep.jsx
 import React from "react";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 export default function ReviewStep({
    data,
    className,
+   loading = false,
    onClick, 
    onBack,
    ...props
@@ -76,10 +78,13 @@ export default function ReviewStep({
         <button
           type="button"
           onClick={onClick}
-          className="rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          disabled={loading}
+          className="flex items-center justify-center gap-2 rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70"
         >
-          Create Application
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {loading ? "Creating..." : "Create Application"}
         </button>
+
       </div>
 
       <p className="text-center text-sm text-gray-500 mt-6">

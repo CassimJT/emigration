@@ -28,16 +28,38 @@ export async function updateApplication(applicationId, payload) {
 // Fetch a single application
 export async function fetchApplication(applicationId) {
   try {
+<<<<<<< HEAD
     const { data } = await api.get(
       `/passport/applications/${applicationId}`
     )
     return data.data
+=======
+    const { data } = await api.get(`/passport/applications/${applicationId}`)
+    if (data.status === 'success') {
+    return data
+  }  throw new Error(data.message || 'Failed to fetch application') 
+>>>>>>> ee76828ed1d873ee7191b1893ee8a8e04ddc5792
   } catch (error) {
     return handleError(error)
   }
 }
 
+<<<<<<< HEAD
 // Submit a completed application (atomic backend protected)
+=======
+export async function fetchApplications() {
+try {
+  const { data } = await api.get('/passport/applications') 
+  if (data.status === 'success') {
+    return data 
+  } throw new Error(data.message || 'Failed to fetch applications')
+  } catch (error) { 
+  return handleError(error) 
+  }
+}
+
+// Submit a completed application
+>>>>>>> ee76828ed1d873ee7191b1893ee8a8e04ddc5792
 export async function submitApplication(applicationId) {
   try {
     const { data } = await api.post(

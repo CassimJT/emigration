@@ -31,6 +31,7 @@ import PassportReviewDemo from '@/pages/PassportReviewDemo'
 import ManageUsersDemo from '@/pages/ManageUsersDemo'
 import ProfilePage from '@/features/dashboard/pages/ProfilePage'
 import UserDetailPage from '@/features/dashboard/pages/UserDetailsPage'
+import PassportProcessingPage from '@/features/dashboard/pages/PassportProcessingPage'
 
 export const router = createBrowserRouter([
 
@@ -78,19 +79,17 @@ export const router = createBrowserRouter([
           { path: 'payment/success', element: <PaymentSuccessPage />, allowedRoles: ['client'] },
           { path: 'payment/failed', element: <PaymentFailedPage />, allowedRoles: ['client'] },
           { path: 'notifications', element: <NotificationsPage />, allowedRoles: ['officer','client', 'admin', 'superadmin']},
-          { path: 'reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
+          { path: 'passport/reviews', element: <PendingReviewsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'stats', element: <StatisticsPage />, allowedRoles: ['officer','admin','superadmin'] },
           { path: 'users/me/profile', element: <ProfilePage />, allowedRoles: ['client','officer', 'admin','superadmin']},
-          { path: 'admin',
-            children: [
-              { path: 'users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
-              { path: 'users/:userId', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
-            ]
-          },
+          { path: 'admin/users', element: <ManageUsersPage />, allowedRoles: ['admin','superadmin']},
+          { path: 'users/:userId', element: <UserDetailPage />, allowedRoles: ['admin','superadmin']},
+          { path: 'passport/process/:applicationId', element: <PassportProcessingPage />, allowedRoles: ['admin','superadmin']},
         ]
       },
-    ],
+    ]
   },
+    
    // System
   { path: '*', element: <NotFoundPage /> }
 ])

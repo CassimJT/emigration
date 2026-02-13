@@ -10,6 +10,7 @@ import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 
+
 function PassportApplicationPage() {
   const { user } = useAuth();
   const { currentRole } = useOutletContext();
@@ -17,6 +18,7 @@ function PassportApplicationPage() {
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
   const[isSubmitting, setIsSubmitting] = useState(false);
+  const[loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [passportTypeData, setPassportTypeData] = useState({
         passportType: 'Ordinary',
@@ -39,7 +41,7 @@ function PassportApplicationPage() {
     saveStepData,
     stepsData,
     createNewApplication,
-    submitApplication } = usePassportApplication();
+    submitFinalApplication } = usePassportApplication();
 
   const preparePayload = () => {
 
@@ -73,21 +75,31 @@ function PassportApplicationPage() {
       }
     };
 
-  const handleNext = (e) => {
+  const handleNext = async (e) => {
       e.preventDefault();
       const payload = preparePayload();
       saveStepData(currentStep + 1, payload);
 
       if(currentStep === 2){
-        createNewApplication();
-        nextStep(); 
+       try{
+        setLoading(true);
+        await createNewApplication();
+        nextStep();
         return;
+        
+       }
+        catch(err){ 
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+        
       }
       if(currentStep === 3){
         try {
           setIsSubmitting(true);
-          submitApplication();
-          navigate("/dashboard");
+          await submitFinalApplication();
+          navigate("/dashboard/payments");
         } catch (err) {
           console.error(err);
         } finally {
@@ -95,8 +107,8 @@ function PassportApplicationPage() {
         }
           return;
       }
-       nextStep();
-    };
+      nextStep();
+    }
 
   const formData = {
       ...stepsData[1],
@@ -150,6 +162,7 @@ function PassportApplicationPage() {
               data={formData} 
               onBack={previousStep} 
               onClick={handleNext}
+              loading={loading}
             />
           )}
           {currentStep === 3 && (

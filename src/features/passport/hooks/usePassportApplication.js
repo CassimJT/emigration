@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
+  fetchApplications,
   fetchMyApplications,
   fetchApplicationsForReview,
   startReview as apiStartReview,
@@ -29,7 +30,8 @@ export function usePassportApplication() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null)
+  const [status, setStatus] = useState(null) 
+  const [applications, setApplications] = useState([]) 
 
 
   // NAVIGATION
@@ -61,33 +63,55 @@ export function usePassportApplication() {
 
   // CLIENT SIDE OPERATIONS
 
-  const loadApplication = async (id) => {
-    if (!id) return
+  //loadApplication
+const loadApplication = React.useCallback(async (id) => {
+  if (!id) return;
 
-    setLoading(true)
-    setError(null)
+  setLoading(true);
+  setError(null);
+  setStatus(null);
 
-    try {
-      const data = await fetchApplication(id)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to fetch application')
-      }
-
-      setApplicationId(id)
-      setStepsData(data.data?.formData || {})
-      setStatus('success')
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      setStatus('failed')
-      throw err
-    } finally {
-      setLoading(false)
+  try {
+    const data = await fetchApplication(id);
+    if (!data || data.status !== 'success') {
+      throw new Error(data?.message || 'Failed to fetch application');
     }
-  }
 
+    setApplicationId(id);
+    setStepsData(data.data || {});
+    setStatus('success');
+    return data;
+  } catch (err) {
+    setError(err.message || 'Failed to fetch application');
+    setStatus('failed');
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+}, []);
+  
+  //////////load all applications (for dashboard)/////////////
+const loadApplications = React.useCallback(async (params = {}) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetchApplications(params);
+      if (response?.status !== 'success') {
+        throw new Error(response?.message || 'Failed to load applications');
+      }
+      setApplications(response.data || []);
+      return response;
+    } catch (err) {
+      const message = err.message || 'Failed to fetch applications';
+      setError(message);
+      console.error('Load applications error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  //  createNewApplication
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
@@ -104,10 +128,13 @@ export function usePassportApplication() {
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-
-      setApplicationId(data.data?._id || data.data?.id)
+      const newAppId = data?.data?._id
+      if (!newAppId) {
+        throw new Error('No application ID returned from createApplication')
+      }
+      setApplicationId(newAppId)
       setStatus('success')
-
+      console.log('Application created with ID:',newAppId)
       return data
     } catch (err) {
       setError(err.message)
@@ -147,7 +174,9 @@ export function usePassportApplication() {
   }
 
   const submitFinalApplication = async () => {
-    if (!applicationId) {
+    const id = applicationId
+    console.log('Submitting application with ID:', id) 
+    if (!id) {
       throw new Error('No applicationId set')
     }
 
@@ -155,7 +184,7 @@ export function usePassportApplication() {
     setError(null)
 
     try {
-      const data = await apiSubmitApplication(applicationId)
+      const data = await apiSubmitApplication(id)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
@@ -326,6 +355,7 @@ export function usePassportApplication() {
 
   return {
     /* state */
+    applicationsList: applications,
     currentStep,
     stepsData,
     applicationId,
@@ -344,19 +374,12 @@ export function usePassportApplication() {
     saveStepData,
     resetApplication,
 
-    /* client operations */
-    loadApplication,
-    createNewApplication,
-    updateExistingApplication,
-    submitFinalApplication,
-    loadMyApplications,
-    loadImmigrationRecord,
-
-    /* officer operations */
-    loadReviewQueue,
-    startReview,
-    approveApplication,
-    rejectApplication,
+    /* api-backed actions */
+    loadApplication,            // -> fetchApplication
+    loadApplications,           // -> fetchApplications
+    createNewApplication,       // -> createApplication
+    updateExistingApplication,  // -> updateApplication
+    submitFinalApplication,     // -> submitApplication
 
     /* workflow */
     saveAndContinue,
