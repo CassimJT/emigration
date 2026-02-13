@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from '@/features/auth/hooks/useAuth';
@@ -16,9 +16,7 @@ import {
   Loader2,
   AlertCircle
 } from "lucide-react";
-import { matchQuery } from '@tanstack/react-query';
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
-import { APP_STATUS } from '@/utils/constants';
 
 const getApplicantName = (formData) => {
   const personal = formData?.[2] || {};
@@ -41,37 +39,42 @@ const getStatusBadge = (status) => {
   );
 };
 
-
 export default function PendingReviewsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { currentRole, profile } = useOutletContext();
 
-  const { applications, loading, error, loadApplications } = usePassportApplication();
-  
+  const {
+    reviewQueue,
+    pagination,
+    loading,
+    error,
+    loadReviewQueue,
+    changePage,
+  } = usePassportApplication();
+
   React.useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    loadReviewQueue({ page: 1 }); // defaults: status="SUBMITTED", limit=10
+  }, [loadReviewQueue]);
 
   const [searchQuery, setSearchQuery] = React.useState('');
-
   const role = (currentRole || user?.role || 'officer').toLowerCase();
-  const displayName = profile?.firstName && profile.firstName !== "null" 
-    ? profile.firstName 
+  const displayName = profile?.firstName && profile.firstName !== "null"
+    ? profile.firstName
     : (user?.emailAddress?.split('@')[0] || "User");
 
   const filteredApplications = React.useMemo(() => {
-    if (!applications) return [];
-    return applications.filter(app => {
-      const query = searchQuery.toLowerCase();
+    if (!reviewQueue?.length) return [];
+    const query = searchQuery.toLowerCase().trim();
+    return reviewQueue.filter(app => {
       const name = getApplicantName(app.formData).toLowerCase();
       const id = app._id?.toLowerCase() || '';
       const type = app.type?.toLowerCase() || '';
       return id.includes(query) || name.includes(query) || type.includes(query);
     });
-  }, [applications, searchQuery]);
+  }, [reviewQueue, searchQuery]);
 
-   if (!['officer', 'admin', 'superadmin'].includes(role)) {
+  if (!['officer', 'admin', 'superadmin'].includes(role)) {
     return <Navigate to="*" replace />;
   }
 
@@ -91,7 +94,13 @@ export default function PendingReviewsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={loadApplications} disabled={loading} className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => loadReviewQueue({ page: pagination.page })}
+            disabled={loading}
+            className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors"
+          >
             Refresh
           </Button>
           <Button variant="outline" size="sm">
@@ -168,7 +177,10 @@ export default function PendingReviewsPage() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-1 translate-x-2 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-0">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
                               onClick={() => navigate(`/dashboard/passport/process/${app._id}`)}
                             >
                               <Eye className="h-4 w-4" />
@@ -183,7 +195,9 @@ export default function PendingReviewsPage() {
                   ) : (
                     <tr>
                       <td colSpan={6} className="px-6 py-12 text-center text-gray-500 font-medium">
-                        No pending applications found{matchQuery && ' matching your search'}.
+                        {searchQuery.trim()
+                          ? `No applications found matching "${searchQuery.trim()}"`
+                          : "No pending applications found"}
                       </td>
                     </tr>
                   )}
@@ -193,13 +207,37 @@ export default function PendingReviewsPage() {
           )}
         </CardContent>
 
-        <div className="px-6 py-4 border-t border-gray-100 bg-white/80 flex items-center justify-between">
-          <p className="text-sm text-gray-500">
-            Showing {filteredApplications.length} of {applications?.length || 0} applications
+        {/* Pagination Controls */}
+        <div className="px-6 py-4 border-t border-gray-100 bg-white/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+          <p className="text-gray-600">
+            Showing {filteredApplications.length} of {pagination.total || 0} applications
+            {pagination.total > 0 && ` (page ${pagination.page} of ${pagination.pages})`}
           </p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled className="h-8 text-xs rounded-lg">Previous</Button>
-            <Button variant="outline" size="sm" className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">Next</Button>
+
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page <= 1 || loading}
+              onClick={() => changePage(pagination.page - 1)}
+              className="h-8 text-xs rounded-lg"
+            >
+              Previous
+            </Button>
+
+            <span className="font-medium min-w-[80px] text-center">
+              Page {pagination.page} / {pagination.pages || 1}
+            </span>
+
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={pagination.page >= pagination.pages || loading}
+              onClick={() => changePage(pagination.page + 1)}
+              className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors"
+            >
+              Next
+            </Button>
           </div>
         </div>
       </Card>
