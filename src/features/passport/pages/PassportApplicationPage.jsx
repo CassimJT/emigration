@@ -8,6 +8,7 @@ import SubmitApplicationPage from "../components/SubmitApplication";
 import { usePassportApplication } from '../hooks/usePassportApplication';
 import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useLocation } from "react-router-dom";
 
 
 
@@ -16,14 +17,19 @@ function PassportApplicationPage() {
   const { currentRole } = useOutletContext();
   
   const role = (currentRole || user?.role || 'client').toLowerCase();
+  
 
   const[isSubmitting, setIsSubmitting] = useState(false);
   const[loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Extract selectedType from location state if available
+  const location = useLocation();
+  const selectedType = location.state?.selectedType || null;
   const [passportTypeData, setPassportTypeData] = useState({
-        passportType: 'Ordinary',
-        serviceType: 'Normal',
-        bookletType: '36 Pages',
+        passportType: selectedType.type || 'Ordinary',
+        serviceType: selectedType.serviceType || 'Normal',
+        bookletType: selectedType.page || '36 Pages',
    });
 
   const [personalInfoStepData,setPersonalInfoStepData] = useState({
