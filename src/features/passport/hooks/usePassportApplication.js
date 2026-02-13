@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
-  fetchApplications,
   fetchMyApplications,
   fetchApplicationsForReview,
   startReview as apiStartReview,
@@ -18,7 +17,9 @@ import { useAuthContext } from '@/providers/AuthProvider'
 export function usePassportApplication() {
   const { verificationSessionId } = useAuthContext()
 
-  // STATE
+  
+   //  STATE
+
 
   const [currentStep, setCurrentStep] = useState(0)
   const [stepsData, setStepsData] = useState({})
@@ -30,11 +31,12 @@ export function usePassportApplication() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null) 
-  const [applications, setApplications] = useState([]) 
+  const [status, setStatus] = useState(null)
+
 
 
   // NAVIGATION
+
 
   const nextStep = () => setCurrentStep((s) => s + 1)
   const previousStep = () =>
@@ -63,55 +65,33 @@ export function usePassportApplication() {
 
   // CLIENT SIDE OPERATIONS
 
-  //loadApplication
-const loadApplication = React.useCallback(async (id) => {
-  if (!id) return;
+  const loadApplication = async (id) => {
+    if (!id) return
 
-  setLoading(true);
-  setError(null);
-  setStatus(null);
+    setLoading(true)
+    setError(null)
 
-  try {
-    const data = await fetchApplication(id);
-    if (!data || data.status !== 'success') {
-      throw new Error(data?.message || 'Failed to fetch application');
-    }
-
-    setApplicationId(id);
-    setStepsData(data.data || {});
-    setStatus('success');
-    return data;
-  } catch (err) {
-    setError(err.message || 'Failed to fetch application');
-    setStatus('failed');
-    throw err;
-  } finally {
-    setLoading(false);
-  }
-}, []);
-  
-  //////////load all applications (for dashboard)/////////////
-const loadApplications = React.useCallback(async (params = {}) => {
-    setLoading(true);
-    setError(null);
     try {
-      const response = await fetchApplications(params);
-      if (response?.status !== 'success') {
-        throw new Error(response?.message || 'Failed to load applications');
-      }
-      setApplications(response.data || []);
-      return response;
-    } catch (err) {
-      const message = err.message || 'Failed to fetch applications';
-      setError(message);
-      console.error('Load applications error:', err);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      const data = await fetchApplication(id)
 
-  //  createNewApplication
+      if (!data || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to fetch application')
+      }
+
+      setApplicationId(id)
+      setStepsData(data.data?.formData || {})
+      setStatus('success')
+
+      return data
+    } catch (err) {
+      setError(err.message)
+      setStatus('failed')
+      throw err
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const createNewApplication = async () => {
     setLoading(true)
     setError(null)
@@ -128,13 +108,10 @@ const loadApplications = React.useCallback(async (params = {}) => {
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-      const newAppId = data?.data?._id
-      if (!newAppId) {
-        throw new Error('No application ID returned from createApplication')
-      }
-      setApplicationId(newAppId)
+
+      setApplicationId(data.data?._id || data.data?.id)
       setStatus('success')
-      console.log('Application created with ID:',newAppId)
+
       return data
     } catch (err) {
       setError(err.message)
@@ -174,9 +151,7 @@ const loadApplications = React.useCallback(async (params = {}) => {
   }
 
   const submitFinalApplication = async () => {
-    const id = applicationId
-    console.log('Submitting application with ID:', id) 
-    if (!id) {
+    if (!applicationId) {
       throw new Error('No applicationId set')
     }
 
@@ -184,7 +159,7 @@ const loadApplications = React.useCallback(async (params = {}) => {
     setError(null)
 
     try {
-      const data = await apiSubmitApplication(id)
+      const data = await apiSubmitApplication(applicationId)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
@@ -351,11 +326,12 @@ const loadApplications = React.useCallback(async (params = {}) => {
     return submitFinalApplication()
   }
 
+  
    //  RETURN
+
 
   return {
     /* state */
-    applicationsList: applications,
     currentStep,
     stepsData,
     applicationId,
@@ -374,12 +350,19 @@ const loadApplications = React.useCallback(async (params = {}) => {
     saveStepData,
     resetApplication,
 
-    /* api-backed actions */
-    loadApplication,            // -> fetchApplication
-    loadApplications,           // -> fetchApplications
-    createNewApplication,       // -> createApplication
-    updateExistingApplication,  // -> updateApplication
-    submitFinalApplication,     // -> submitApplication
+    /* client operations */
+    loadApplication,
+    createNewApplication,
+    updateExistingApplication,
+    submitFinalApplication,
+    loadMyApplications,
+    loadImmigrationRecord,
+
+    /* officer operations */
+    loadReviewQueue,
+    startReview,
+    approveApplication,
+    rejectApplication,
 
     /* workflow */
     saveAndContinue,
