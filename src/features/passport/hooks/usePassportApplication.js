@@ -85,10 +85,10 @@ export function usePassportApplication() {
       const data = await createApplication(payload)
       console.log('Create application response:', data)
 
-      if (!data || data.status !== 'DRAFT') {
+      if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
-      const newAppId = data?._id
+      const newAppId = data?.data?._id
       if (!newAppId) {
         throw new Error('No application ID returned from createApplication')
       }

@@ -6,7 +6,7 @@ import api from '@/lib/axios'
 export async function createApplication(payload) {
   try {
     const { data } = await api.post('/passport/applications', payload)
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -19,7 +19,7 @@ export async function updateApplication(applicationId, payload) {
       `/passport/applications/${applicationId}`,
       payload
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -55,7 +55,7 @@ export async function submitApplication(applicationId) {
     const { data } = await api.post(
       `/passport/applications/${applicationId}/submit`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -68,7 +68,7 @@ export async function fetchMyApplications(status = null) {
     const { data } = await api.get(
       `/passport/applications${query}`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -82,7 +82,7 @@ export async function fetchApplicationsForReview(status = "SUBMITTED") {
     const { data } = await api.get(
       `/passport/admin/applications?status=${status}`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -94,7 +94,7 @@ export async function startReview(applicationId) {
     const { data } = await api.post(
       `/passport/admin/applications/${applicationId}/start-review`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -106,7 +106,7 @@ export async function approveApplication(applicationId) {
     const { data } = await api.post(
       `/passport/admin/applications/${applicationId}/approve`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -119,7 +119,7 @@ export async function rejectApplication(applicationId, reason = null) {
       `/passport/admin/applications/${applicationId}/reject`,
       { reason }
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
@@ -133,7 +133,7 @@ export async function fetchImmigrationRecord(applicationId) {
     const { data } = await api.get(
       `/passport/applications/${applicationId}/immigration`
     )
-    return data.data
+    return data
   } catch (error) {
     return handleError(error)
   }
