@@ -40,7 +40,7 @@ export async function fetchApplication(applicationId) {
 
 export async function fetchApplications() {
 try {
-  const { data } = await api.get('/admin/applications') 
+  const { data } = await api.get('/passport/applications') 
   if (data.status === 'success') {
     return data 
   } throw new Error(data.message || 'Failed to fetch applications')

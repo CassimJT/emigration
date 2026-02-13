@@ -50,8 +50,8 @@ export default function PendingReviewsPage() {
   const { applications, loading, error, loadApplications } = usePassportApplication();
   
   React.useEffect(() => {
-    loadApplications();
-  }, [loadApplications]);
+    loadReviewQueue();
+  }, [loadReviewQueue]);
 
   const [searchQuery, setSearchQuery] = React.useState('');
 
@@ -91,7 +91,7 @@ export default function PendingReviewsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={loadApplications} disabled={loading} className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">
+          <Button variant="outline" size="sm" onClick={loadReviewQueue} disabled={loading} className="h-8 text-xs rounded-lg hover:border-orange-500 hover:text-orange-500 transition-colors">
             Refresh
           </Button>
           <Button variant="outline" size="sm">
