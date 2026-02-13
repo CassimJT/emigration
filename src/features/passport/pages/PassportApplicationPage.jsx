@@ -84,7 +84,7 @@ function PassportApplicationPage() {
   const handleNext = async (e) => {
       e.preventDefault();
       const payload = preparePayload();
-      saveStepData(currentStep + 1, payload);
+      saveStepData(currentStep , payload);
 
       if(currentStep === 3){
        try{

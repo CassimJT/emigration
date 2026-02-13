@@ -24,10 +24,12 @@ export function usePassportApplication() {
  const { verificationSessionId } = useAuthContext()
 
   const saveStepData = (step, data) => {
+    console.log(`Saving data for step ${step}:`, data)
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
     }))
+    console.log(`updated data for ${step}:`,stepsData)
     
   }
 
