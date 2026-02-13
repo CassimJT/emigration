@@ -14,7 +14,8 @@ import {
 
 import { useAuthContext } from '@/providers/AuthProvider'
 
-  export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
+  
+export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
   const { verificationSessionId } = useAuthContext()
 
   
