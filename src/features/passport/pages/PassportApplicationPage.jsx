@@ -41,6 +41,7 @@ function PassportApplicationPage() {
     saveStepData,
     stepsData,
     createNewApplication,
+    saveAndContinue,
     submitFinalApplication } = usePassportApplication();
 
   const preparePayload = () => {
@@ -83,7 +84,7 @@ function PassportApplicationPage() {
       if(currentStep === 2){
        try{
         setLoading(true);
-        await createNewApplication();
+        await saveAndContinue();
         nextStep();
         return;
         
@@ -107,7 +108,8 @@ function PassportApplicationPage() {
         }
           return;
       }
-      nextStep();
+      await saveAndContinue();
+      //nextStep();
     }
 
   const formData = {

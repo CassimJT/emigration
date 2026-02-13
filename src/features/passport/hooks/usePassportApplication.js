@@ -8,7 +8,7 @@ import {
 import { useAuthContext } from '@/providers/AuthProvider' 
 
 export function usePassportApplication() {
-  const [currentStep, setCurrentStep] = useState(0)
+  const [currentStep, setCurrentStep] = useState(1)
   const [stepsData, setStepsData] = useState({})
   const [applicationId, setApplicationId] = useState(null)
   const [loading, setLoading] = useState(false)
