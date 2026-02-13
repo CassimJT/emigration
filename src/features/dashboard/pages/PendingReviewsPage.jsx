@@ -64,7 +64,7 @@ export default function PendingReviewsPage() {
     : (user?.emailAddress?.split('@')[0] || "User");
 
   const filteredApplications = React.useMemo(() => {
-    if (!reviewQueue?.length) return [];
+    if (!reviewQueue?.length) {console.log("zero applications"); return [];}
     const query = searchQuery.toLowerCase().trim();
     return reviewQueue.filter(app => {
       const name = getApplicantName(app.formData).toLowerCase();

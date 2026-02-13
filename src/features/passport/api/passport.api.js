@@ -83,7 +83,7 @@ export async function fetchApplicationsForReview({
   limit = 10,
 } = {}) {
   try {
-    const { data } = await api.get("/admin/applications", {  
+    const { data } = await api.get("/api/passport/admin/applications", {  
       params: {
         status,
         page,
@@ -92,7 +92,7 @@ export async function fetchApplicationsForReview({
     });
 
     if (data.status === "success") {
-      return data; // { status, data: [...apps], pagination: { page, limit, total, pages } }
+      return data;
     }
 
     throw new Error(data.message || "Failed to fetch review queue");
