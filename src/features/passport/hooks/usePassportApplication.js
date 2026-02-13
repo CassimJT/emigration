@@ -80,7 +80,7 @@ export function usePassportApplication() {
     }
   }
 
-const loadReviewQueue = React.useCallback(async ({ page = 1, status = "SUBMITTED", limit = 10 } = {}) => {
+const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", limit = 10 } = {}) => {
     setLoading(true);
     setError(null);
 
