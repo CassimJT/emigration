@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import {
   createApplication,
   updateApplication,
@@ -14,7 +14,7 @@ import {
 
 import { useAuthContext } from '@/providers/AuthProvider'
 
-export function usePassportApplication() {
+export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
   const { verificationSessionId } = useAuthContext()
 
   
@@ -33,11 +33,8 @@ export function usePassportApplication() {
   const [error, setError] = useState(null)
   const [status, setStatus] = useState(null)
 
-
-
+  const reviewConfig = { applicationStatus, limit }; 
   // NAVIGATION
-
-
   const nextStep = () => setCurrentStep((s) => s + 1)
   const previousStep = () =>
     setCurrentStep((s) => (s > 0 ? s - 1 : 0))
@@ -221,12 +218,12 @@ export function usePassportApplication() {
    //  OFFICER / ADMIN OPERATIONS
 
 
-  const loadReviewQueue = async (status = 'SUBMITTED') => {
+  const loadReviewQueue = React.useCallback(async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const data = await fetchApplicationsForReview(status)
+      const data = await fetchApplicationsForReview(reviewConfig.status, reviewConfig.limit)
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to load review queue')
@@ -240,7 +237,7 @@ export function usePassportApplication() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [reviewConfig.status, reviewConfig.limit])
 
   const startReview = async (id) => {
     setLoading(true)
