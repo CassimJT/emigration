@@ -14,7 +14,7 @@ import {
 
 import { useAuthContext } from '@/providers/AuthProvider'
 
-export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
+  export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit = 20 } = {}) {
   const { verificationSessionId } = useAuthContext()
 
   
@@ -33,7 +33,7 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
   const [error, setError] = useState(null)
   const [status, setStatus] = useState(null)
 
-  const reviewConfig = { applicationStatus, limit }; 
+    const reviewConfig = { applicationStatus, limit }; 
   // NAVIGATION
   const nextStep = () => setCurrentStep((s) => s + 1)
   const previousStep = () =>
@@ -173,12 +173,12 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     }
   }
 
-  const loadMyApplications = async (filterStatus = null) => {
+  const loadApplications = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const data = await fetchMyApplications(filterStatus)
+      const data = await fetchMyApplications()
 
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to load applications')
@@ -218,26 +218,27 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
    //  OFFICER / ADMIN OPERATIONS
 
 
-  const loadReviewQueue = React.useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  
+    const loadReviewQueue = React.useCallback(async () => {
+      setLoading(true)
+      setError(null)
 
-    try {
-      const data = await fetchApplicationsForReview(reviewConfig.status, reviewConfig.limit)
+      try {
+        const data = await fetchApplicationsForReview(reviewConfig.status, reviewConfig.limit)
 
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to load review queue')
+        if (!data || data.status !== 'success') {
+          throw new Error(data?.message || 'Failed to load review queue')
+        }
+
+        setReviewQueue(data.data || [])
+        return data
+      } catch (err) {
+        setError(err.message)
+        throw err
+      } finally {
+        setLoading(false)
       }
-
-      setReviewQueue(data.data || [])
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }, [reviewConfig.status, reviewConfig.limit])
+    }, [reviewConfig.status, reviewConfig.limit])
 
   const startReview = async (id) => {
     setLoading(true)
@@ -352,7 +353,7 @@ export function usePassportApplication({ applicationStatus = 'SUBMITTED', limit 
     createNewApplication,
     updateExistingApplication,
     submitFinalApplication,
-    loadMyApplications,
+    loadApplications,
     loadImmigrationRecord,
 
     /* officer operations */
