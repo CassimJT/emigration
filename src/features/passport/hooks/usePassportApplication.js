@@ -15,8 +15,7 @@ export function usePassportApplication() {
   const [error, setError] = useState(null)
   const [status, setStatus] = useState(null) 
 
-    const reviewConfig = { applicationStatus, limit }; 
-  // NAVIGATION
+  // Navigation
   const nextStep = () => setCurrentStep((s) => s + 1)
   const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1))
 
@@ -164,136 +163,7 @@ export function usePassportApplication() {
     }
   }
 
-  const loadApplications = async () => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await fetchMyApplications()
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to load applications')
-      }
-
-      setApplications(data.data || [])
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const loadImmigrationRecord = async (appId) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await fetchImmigrationRecord(appId)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to load immigration record')
-      }
-
-      setImmigrationRecord(data.data)
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-   //  OFFICER / ADMIN OPERATIONS
-
-
-  
-    const loadReviewQueue = React.useCallback(async () => {
-      setLoading(true)
-      setError(null)
-
-      try {
-        const data = await fetchApplicationsForReview(reviewConfig.status, reviewConfig.limit)
-
-        if (!data || data.status !== 'success') {
-          throw new Error(data?.message || 'Failed to load review queue')
-        }
-
-        setReviewQueue(data.data || [])
-        return data
-      } catch (err) {
-        setError(err.message)
-        throw err
-      } finally {
-        setLoading(false)
-      }
-    }, [reviewConfig.status, reviewConfig.limit])
-
-  const startReview = async (id) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiStartReview(id)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to start review')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const approveApplication = async (id) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiApproveApplication(id)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to approve application')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const rejectApplication = async (id, reason = null) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const data = await apiRejectApplication(id, reason)
-
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to reject application')
-      }
-
-      return data
-    } catch (err) {
-      setError(err.message)
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  
-  //   WORKFLOW HELPERS
- 
+  // workflow helper
 
   const saveAndContinue = async () => {
     if (!applicationId) {
@@ -330,19 +200,11 @@ export function usePassportApplication() {
     saveStepData,
     resetApplication,
 
-    /* client operations */
-    loadApplication,
-    createNewApplication,
-    updateExistingApplication,
-    submitFinalApplication,
-    loadApplications,
-    loadImmigrationRecord,
-
-    /* officer operations */
-    loadReviewQueue,
-    startReview,
-    approveApplication,
-    rejectApplication,
+    /* api-backed actions */
+    loadApplication,            // -> fetchApplication
+    createNewApplication,       // -> createApplication
+    updateExistingApplication,  // -> updateApplication
+    submitFinalApplication,     // -> submitApplication
 
     /* workflow */
     saveAndContinue,
