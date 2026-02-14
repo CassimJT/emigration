@@ -13,7 +13,7 @@ export function usePassportApplication() {
   const [stepsData, setStepsData] = useState({});
   const [applicationId, setApplicationId] = useState(null);
 
-  // ─── Required root fields on every update 
+  // Required root fields — must be captured and resent on update
   const [appType, setAppType] = useState(null);
   const [applicantId, setApplicantId] = useState(null);
   const [identitySession, setIdentitySession] = useState(null);
@@ -56,24 +56,21 @@ export function usePassportApplication() {
     setLoading(false);
   };
 
-  // ─── Load existing application ───
   const loadApplication = async (id) => {
     if (!id) return;
     setLoading(true);
     setError(null);
     setStatus(null);
-
     try {
       const response = await fetchApplication(id);
       if (!response || response.status !== 'success') {
         throw new Error(response?.message || 'Failed to fetch application');
       }
-
       const app = response.data;
       setApplicationId(id);
       setStepsData(app.formData || {});
 
-      // Capture required root fields for future updates
+      // Capture root fields
       setAppType(app.type);
       setApplicantId(app.applicant?._id || app.applicant);
       setIdentitySession(app.identitySession?._id || app.identitySession);
@@ -89,12 +86,10 @@ export function usePassportApplication() {
     }
   };
 
-  // ─── Create ───
   const createNewApplication = async (customPayload) => {
     setLoading(true);
     setError(null);
     setStatus(null);
-
     try {
       const payload = customPayload || {
         type: stepsData[1]?.passportType,
@@ -113,13 +108,11 @@ export function usePassportApplication() {
       const newApp = response.data;
       const newId = newApp._id;
 
-      if (!newId) {
-        throw new Error('No application ID returned');
-      }
+      if (!newId) throw new Error('No application ID returned');
 
       setApplicationId(newId);
 
-      // Capture required root fields for future updates
+      // Capture root fields from response
       setAppType(newApp.type);
       setApplicantId(newApp.applicant?._id || newApp.applicant);
       setIdentitySession(newApp.identitySession?._id || newApp.identitySession);
@@ -129,9 +122,7 @@ export function usePassportApplication() {
       return response;
     } catch (err) {
       console.error('Create error:', err);
-      if (err.response) {
-        console.log('Response data:', err.response.data);
-      }
+      if (err.response) console.log('Response data:', err.response.data);
       setError(err.message || 'Failed to create application');
       setStatus('failed');
       throw err;
@@ -140,13 +131,17 @@ export function usePassportApplication() {
     }
   };
 
-  // ─── Update ─── (critical fix: always send required root fields)
   const updateExistingApplication = async () => {
     if (!applicationId) {
       throw new Error('No applicationId set');
     }
     if (!appType || !applicantId || !identitySession) {
-      throw new Error('Missing required root fields (type/applicant/identitySession) – load or create first');
+      console.error('Missing root fields at update time:', {
+        appType,
+        applicantId,
+        identitySession,
+      });
+      throw new Error('Missing required root fields – cannot update');
     }
 
     setLoading(true);
@@ -154,13 +149,11 @@ export function usePassportApplication() {
     setStatus(null);
 
     try {
-      // Flatten all steps into one object (backend expects formData as flat object)
       const flattenedFormData = Object.values(stepsData).reduce(
         (acc, stepData) => ({ ...acc, ...stepData }),
         {}
       );
 
-      // This payload satisfies backend validation (required fields)
       const payload = {
         type: appType,
         applicant: applicantId,
@@ -192,14 +185,11 @@ export function usePassportApplication() {
     }
   };
 
-  // ─── Submit ───
   const submitFinalApplication = async () => {
     if (!applicationId) throw new Error('No applicationId set');
-
     setLoading(true);
     setError(null);
     setStatus(null);
-
     try {
       const response = await apiSubmitApplication(applicationId);
       if (!response || response.status !== 'success') {
@@ -216,7 +206,6 @@ export function usePassportApplication() {
     }
   };
 
-  // Workflow helpers
   const saveAndContinue = async (freshStepData) => {
     if (freshStepData) {
       saveStepData(currentStep, freshStepData);
@@ -248,7 +237,6 @@ export function usePassportApplication() {
     return submitFinalApplication();
   };
 
-  // Review queue (unchanged)
   const loadReviewQueue = useCallback(
     async ({ page = 1, status = 'DRAFT', limit = 10 } = {}) => {
       setLoading(true);
