@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,19 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useOutletContext, useParams, Navigate } from 'react-router-dom';
 import {
-    Loader2, AlertCircle, CheckCircle2, XCircle, Eye, FileText, MessageSquare,
-    User, Clock, ShieldCheck, UserCheck, Download, Upload
+    Loader2, AlertCircle, CheckCircle2, XCircle, FileText, MessageSquare,
+    User, Clock, ShieldCheck, Download, Upload
     } from "lucide-react";
     import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 
     const getStatusBadge = (status) => {
     const variants = {
         DRAFT: { label: 'Draft', variant: 'secondary' },
+        IN_PROGRESS: { label: 'In Progress', variant: 'secondary' },
         SUBMITTED: { label: 'Pending Review', variant: 'outline' },
-        'In Review': { label: 'In Review', variant: 'default' },
+        UNDER_REVIEW: { label: 'Under Review', variant: 'default' },
         APPROVED: { label: 'Approved', variant: 'success' },
         REJECTED: { label: 'Rejected', variant: 'destructive' },
-        'Awaiting Documents': { label: 'Awaiting Documents', variant: 'warning' },
+        EXPIRED: { label: 'Expired', variant: 'secondary' },
+        // 'Awaiting Documents': { label: 'Awaiting Documents', variant: 'warning' },
     };
     const v = variants[status] || { label: status || 'Unknown', variant: 'secondary' };
     return <Badge variant={v.variant}>{v.label}</Badge>;
@@ -33,50 +35,70 @@ import {
     };
 
     export default function PassportProcessingPage() {
-    const { applicationId: paramId } = useParams(); 
+    const { applicationId: paramId } = useParams();
     const { user } = useAuth();
     const { currentRole, profile } = useOutletContext();
 
     const {
         loadApplication,
+        initiateReview,
+        selectedStatus,
+        setSelectedStatus,
+        reviewData,
         loading,
         error,
     } = usePassportApplication();
 
-    const [application, setApplication] = React.useState(null);
-    const [notes, setNotes] = React.useState('');
-    const [selectedStatus, setSelectedStatus] = React.useState('');
+    const [notes, setNotes] = useState('');
 
     const role = (currentRole || user?.role || 'officer').toLowerCase();
-    const displayName = profile?.firstName && profile.firstName !== "null"
+    const displayName =
+        profile?.firstName && profile.firstName !== "null"
         ? profile.firstName
         : (user?.emailAddress?.split('@')[0] || "Officer");
 
-   
-
     useEffect(() => {
-        if (paramId) {
-        loadApplication(paramId)
-            .then((res) => {
-            if (res?.status === 'success') {
-                setApplication(res.data);
-                setSelectedStatus(res.data.status || 'In Review');
-            }
-            })
-            .catch(() => {});
+        if (!paramId) return;
+
+        let isMounted = true;
+
+        const tryStartReview = async () => {
+        try {
+            await initiateReview(paramId);
+        } catch (err) {
+            if (!isMounted) return;
+            console.warn("Review start failed (may already be claimed):", err.message);
         }
-    }, [paramId, loadApplication]);
+        };
+
+        tryStartReview();
+
+        return () => {
+        isMounted = false;
+        };
+    }, [paramId, initiateReview]);
+
 
     const handleStatusChange = async () => {
-        // TO Call  updateApplication API with new status + notes + reviewer = current user
-        console.log('Updating status to:', selectedStatus, 'with notes:', notes);
-        // Example: await updateApplication(paramId, { status: selectedStatus, notes });
-        // Then reload or update local state
+    if (!selectedStatus || selectedStatus === reviewData?.status) return;
+
+    console.log('Updating status →', selectedStatus);
+    console.log('Notes:', notes);
+    console.log('Reviewer:', user?._id || user?.id, displayName);
+
+    // TO call  real update endpoint 
+    // await updateApplication(paramId, {
+    //   status: selectedStatus,
+    //   notes,
+    //   reviewer: user._id || user.id,
+    //   reviewedAt: new Date(),
+    // });
+    // Then: loadApplication(paramId) or rely on webhook/socket refresh
     };
 
     const handleDownloadDocuments = () => {
-        // TO Implement ZIP download or individual file downloads
-        console.log('Downloading documents for application', paramId);
+        console.log('Download documents →', paramId);
+        // TO implement download logic
     };
 
     if (!['officer', 'admin', 'superadmin'].includes(role)) {
@@ -91,12 +113,14 @@ import {
         );
     }
 
-    if (error || !application) {
+    if (error || !reviewData) {
         return (
         <div className="p-8 text-center text-red-600">
             <AlertCircle className="h-12 w-12 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold">Application not found or error loading</h2>
-            <p className="mt-2">{error || 'Invalid application ID'}</p>
+            <h2 className="text-xl font-semibold">Cannot load application</h2>
+            <p className="mt-2">
+            {error || 'Application not found, already under review, or invalid ID.'}
+            </p>
         </div>
         );
     }
@@ -107,11 +131,12 @@ import {
             <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Process Application</h1>
             <p className="text-gray-500 mt-1">
-                Reviewing passport application • ID: <span className="font-mono font-medium">{application._id}</span>
+                Reviewing passport application • ID:{' '}
+                <span className="font-mono font-medium">{reviewData._id}</span>
             </p>
             </div>
             <div className="flex items-center gap-3">
-            {getStatusBadge(application.status)}
+            {getStatusBadge(reviewData.status)}
             <Button variant="outline" size="sm" onClick={() => loadApplication(paramId)}>
                 Refresh
             </Button>
@@ -125,36 +150,36 @@ import {
                 Applicant Information
             </CardTitle>
             <CardDescription>
-                Personal details submitted by {getApplicantName(application.formData)}
+                Personal details submitted by {getApplicantName(reviewData.formData)}
             </CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-                <p className="mt-1 font-medium">{getApplicantName(application.formData)}</p>
+                <p className="mt-1 font-medium">{getApplicantName(reviewData.formData)}</p>
                 </div>
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Email</Label>
-                <p className="mt-1">{application.formData?.[2]?.email || 'N/A'}</p>
+                <p className="mt-1">{reviewData.formData?.[2]?.email || 'N/A'}</p>
                 </div>
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Passport Type</Label>
-                <p className="mt-1">{application.formData?.[1]?.passportType || 'Ordinary'}</p>
+                <p className="mt-1">{reviewData.formData?.[1]?.passportType || 'Ordinary'}</p>
                 </div>
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Booklet Type</Label>
-                <p className="mt-1">{application.formData?.[1]?.bookletType || 'N/A'}</p>
+                <p className="mt-1">{reviewData.formData?.[1]?.bookletType || 'N/A'}</p>
                 </div>
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Service Type</Label>
-                <p className="mt-1">{application.formData?.[1]?.serviceType || 'Normal'}</p>
+                <p className="mt-1">{reviewData.formData?.[1]?.serviceType || 'Normal'}</p>
                 </div>
                 <div>
                 <Label className="text-sm font-medium text-gray-500">Created</Label>
                 <div className="flex items-center gap-2 mt-1 text-gray-600">
                     <Clock className="h-4 w-4" />
-                    {new Date(application.createdAt).toLocaleString()}
+                    {new Date(reviewData.createdAt).toLocaleString()}
                 </div>
                 </div>
             </div>
@@ -169,8 +194,9 @@ import {
                     <Download className="h-4 w-4 mr-2" />
                     Download All Documents
                 </Button>
-                {/* Placeholder for document previews/thumbnails */}
-                <div className="text-sm text-gray-500 italic">Photo, ID scan, Birth certificate previews here...</div>
+                <div className="text-sm text-gray-500 italic">
+                    Photo, ID scan, Birth certificate previews here...
+                </div>
                 </div>
             </div>
             </CardContent>
@@ -205,18 +231,18 @@ import {
                         <SelectValue placeholder="Select action" />
                         </SelectTrigger>
                         <SelectContent>
-                        <SelectItem value="In Review">In Review</SelectItem>
-                        <SelectItem value="Awaiting Documents">Request More Documents</SelectItem>
+                        <SelectItem value="UNDER_REVIEW">Under Review</SelectItem>
                         <SelectItem value="APPROVED">Approve</SelectItem>
                         <SelectItem value="REJECTED">Reject</SelectItem>
+                        {/* Add if you implement this status in backend */}
+                        {/* <SelectItem value="AWAITING_DOCUMENTS">Request More Documents</SelectItem> */}
                         </SelectContent>
                     </Select>
                     </div>
-
                     <div className="flex items-end">
-                    <Button 
+                    <Button
                         onClick={handleStatusChange}
-                        disabled={loading || !selectedStatus}
+                        disabled={loading || !selectedStatus || selectedStatus === reviewData.status}
                         className="w-full md:w-auto"
                     >
                         {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
@@ -261,11 +287,17 @@ import {
                 </CardHeader>
                 <CardContent>
                 <div className="space-y-4 text-sm text-gray-600">
-                    <p><strong>Created:</strong> {new Date(application.createdAt).toLocaleString()} by Applicant</p>
-                    {application.reviewedAt && (
-                    <p><strong>Last Reviewed:</strong> {new Date(application.reviewedAt).toLocaleString()} by {application.reviewer || 'Unknown'}</p>
+                    <p>
+                    <strong>Created:</strong>{' '}
+                    {new Date(reviewData.createdAt).toLocaleString()} by Applicant
+                    </p>
+                    {reviewData.reviewedAt && (
+                    <p>
+                        <strong>Last Reviewed:</strong>{' '}
+                        {new Date(reviewData.reviewedAt).toLocaleString()} by{' '}
+                        {reviewData.reviewer || 'Unknown'}
+                    </p>
                     )}
-                    {/* TODO: Fetch and display full audit log / notes history here */}
                     <p className="italic">No additional notes yet.</p>
                 </div>
                 </CardContent>

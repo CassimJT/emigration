@@ -5,6 +5,7 @@ import {
   submitApplication as apiSubmitApplication,
   fetchApplication,
   fetchApplicationsForReview,
+  startReview,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -20,6 +21,8 @@ export function usePassportApplication() {
   const [status, setStatus] = useState(null);
 
   const [reviewQueue, setReviewQueue] = useState([]);
+  const [reviewData, setReviewData] = useState();
+  const [selectedStatus, setSelectedStatus] = useState();
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -230,6 +233,24 @@ const updateExistingApplication = async () => {
     []
   );
 
+  const initiateReview = useCallback( async (applicationId) =>{
+    setLoading(true);
+    setError(null);
+    try {
+      const {data, status} = await startReview(applicationId);
+      if(status === "success "){
+      console.log("reviwed data:" + data);
+      setReviewData(data)
+      setSelectedStatus(data.status)
+      }
+    } catch (error) {
+      setError(error.message || 'Failed to load review queue');
+      throw error;
+    }finally{
+      setLoading(false);
+    }
+  },[])
+
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;
     loadReviewQueue({ page: newPage, limit: pagination.limit });
@@ -253,6 +274,10 @@ const updateExistingApplication = async () => {
     saveAndContinue,
     submitApplication,
     reviewQueue,
+    initiateReview,
+    reviewData,
+    selectedStatus,
+    setSelectedStatus,
     pagination,
     loadReviewQueue,
     changePage,
