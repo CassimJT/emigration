@@ -74,12 +74,12 @@ export default function PassportTypeStep({
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500focus:ring-offset-2"
-          //className="rounded-full bg-orange-500 px-8 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-70"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Loading..." : "Next"}
         </button>
+
       </div>
     </form>
   );
