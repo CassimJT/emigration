@@ -237,12 +237,10 @@ const updateExistingApplication = async () => {
     setLoading(true);
     setError(null);
     try {
-      const {data, status} = await startReview(applicationId);
-      if(status === "success "){
-      console.log("reviwed data:" + data);
+      const data = await startReview(applicationId);
+      console.log("Reviewed data:" + data);
       setReviewData(data)
       setSelectedStatus(data.status)
-      }
     } catch (error) {
       setError(error.message || 'Failed to load review queue');
       throw error;
