@@ -138,11 +138,15 @@ const createNewApplication = async (customPayload = null) => {
 
     return data;
   } catch (err) {
-    const errorMessage = err.message || 'Failed to create application';
-    setError(errorMessage);
-    setStatus('failed');
-    console.error('Create application error:', err);
-    throw err; 
+  console.error('Full API error:', err);
+  if (err.response) {  // assuming axios or similar
+    console.log('Response data:', err.response.data);
+    console.log('Status:', err.response.status);
+    console.log('Headers:', err.response.headers);
+  }
+  setError(err.message || 'Failed to update application');
+  setStatus('failed');
+  throw err;
   } finally {
     setLoading(false);
   }
@@ -163,9 +167,15 @@ const createNewApplication = async (customPayload = null) => {
       setStatus('success')
       return data
     } catch (err) {
-      setError(err.message || 'Failed to update application')
-      setStatus('failed')
-      throw err
+      console.error('Full API error:', err);
+    if (err.response) {  // assuming axios or similar
+      console.log('Response data:', err.response.data);
+      console.log('Status:', err.response.status);
+      console.log('Headers:', err.response.headers);
+  }
+  setError(err.message || 'Failed to update application');
+  setStatus('failed');
+  throw err;
     } finally {
       setLoading(false)
     }
