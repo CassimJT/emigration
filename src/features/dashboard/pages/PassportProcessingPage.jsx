@@ -128,6 +128,65 @@ import {
             </div>
         </div>
 
+        
+        <Card className="border-gray-200 shadow-sm">
+            <CardHeader className="bg-gray-50/50 border-b">
+            <CardTitle className="flex items-center gap-3">
+                <User className="h-6 w-6 text-indigo-600" />
+                Applicant Information
+            </CardTitle>
+            <CardDescription>
+                Personal details submitted by {getApplicantName(reviewData.formData)}
+            </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Full Name</Label>
+                <p className="mt-1 font-medium">{getApplicantName(reviewData.formData)}</p>
+                </div>
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Email</Label>
+                <p className="mt-1">{reviewData.formData?.[2]?.email || 'N/A'}</p>
+                </div>
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Passport Type</Label>
+                <p className="mt-1">{reviewData.formData?.[1]?.passportType || 'Ordinary'}</p>
+                </div>
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Booklet Type</Label>
+                <p className="mt-1">{reviewData.formData?.[1]?.bookletType || 'N/A'}</p>
+                </div>
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Service Type</Label>
+                <p className="mt-1">{reviewData.formData?.[1]?.serviceType || 'Normal'}</p>
+                </div>
+                <div>
+                <Label className="text-sm font-medium text-gray-500">Created</Label>
+                <div className="flex items-center gap-2 mt-1 text-gray-600">
+                    <Clock className="h-4 w-4" />
+                    {new Date(reviewData.createdAt).toLocaleString()}
+                </div>
+                </div>
+            </div>
+
+            <div className="border-t pt-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <FileText className="h-5 w-5 text-indigo-600" />
+                Documents & Verification
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                <Button variant="outline" >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download All Documents
+                </Button>
+                <div className="text-sm text-gray-500 italic">
+                    Photo, ID scan, Birth certificate previews here...
+                </div>
+                </div>
+            </div>
+            </CardContent>
+        </Card>
 
         <Tabs defaultValue="actions" className="space-y-6">
             <TabsList className="bg-gray-100">
