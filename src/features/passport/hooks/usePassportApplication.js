@@ -1,21 +1,28 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react';
 import {
   createApplication,
   updateApplication,
   submitApplication as apiSubmitApplication,
   fetchApplication,
   fetchApplicationsForReview,
-} from '../api/passport.api'
-import { useAuthContext } from '@/providers/AuthProvider' 
+} from '../api/passport.api';
+import { useAuthContext } from '@/providers/AuthProvider';
 
 export function usePassportApplication() {
-  const [currentStep, setCurrentStep] = useState(1)
-  const [stepsData, setStepsData] = useState({})
-  const [applicationId, setApplicationId] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [status, setStatus] = useState(null)
-  const [reviewQueue, setReviewQueue] = useState([]); // renamed from applications for clarity
+  const [currentStep, setCurrentStep] = useState(1);
+  const [stepsData, setStepsData] = useState({});
+  const [applicationId, setApplicationId] = useState(null);
+
+  // ─── Required root fields on every update 
+  const [appType, setAppType] = useState(null);
+  const [applicantId, setApplicantId] = useState(null);
+  const [identitySession, setIdentitySession] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [status, setStatus] = useState(null);
+
+  const [reviewQueue, setReviewQueue] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -23,255 +30,269 @@ export function usePassportApplication() {
     pages: 1,
   });
 
+  const { verificationSessionId } = useAuthContext();
+
   // Navigation
-  const nextStep = () => setCurrentStep((s) => s + 1)
-  const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1))
-
-  // Data Management
-
- const { verificationSessionId } = useAuthContext()
+  const nextStep = () => setCurrentStep((s) => s + 1);
+  const previousStep = () => setCurrentStep((s) => (s > 1 ? s - 1 : 1));
 
   const saveStepData = (step, data) => {
-    console.log(`Saving data for step ${step}:`, data)
+    console.log(`Saving data for step ${step}:`, data);
     setStepsData((prev) => ({
       ...prev,
       [step]: data,
-    }))
-    console.log(`updated data for ${step}:`,stepsData)
-    
-  }
+    }));
+  };
 
-  //resetApplication
   const resetApplication = () => {
-    setCurrentStep(0)
-    setStepsData({})
-    setApplicationId(null)
-    setError(null)
-    setStatus(null)
-    setLoading(false)
-  }
+    setCurrentStep(1);
+    setStepsData({});
+    setApplicationId(null);
+    setAppType(null);
+    setApplicantId(null);
+    setIdentitySession(null);
+    setError(null);
+    setStatus(null);
+    setLoading(false);
+  };
 
-  // API Operations
-
-  //loadApplication
- const loadApplication = async (id) => {
-    if (!id) return
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-    try {
-      const data = await fetchApplication(id)
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to fetch application')
-      }
-      setApplicationId(id)
-      setStepsData(data.data || {})
-      setStatus('success')
-      return data
-    } catch (err) {
-      setError(err.message || 'Failed to fetch application')
-      setStatus('failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", limit = 10 } = {}) => {
+  // ─── Load existing application ───
+  const loadApplication = async (id) => {
+    if (!id) return;
     setLoading(true);
     setError(null);
+    setStatus(null);
 
     try {
-      const response = await fetchApplicationsForReview({ status, page, limit });
+      const response = await fetchApplication(id);
+      if (!response || response.status !== 'success') {
+        throw new Error(response?.message || 'Failed to fetch application');
+      }
 
-      setReviewQueue(response.data || []);
-      setPagination(response.pagination || { page, limit, total: 0, pages: 1 });
+      const app = response.data;
+      setApplicationId(id);
+      setStepsData(app.formData || {});
 
+      // Capture required root fields for future updates
+      setAppType(app.type);
+      setApplicantId(app.applicant?._id || app.applicant);
+      setIdentitySession(app.identitySession?._id || app.identitySession);
+
+      setStatus('success');
       return response;
     } catch (err) {
-      setError(err.message || "Failed to load review queue");
+      setError(err.message || 'Failed to fetch application');
+      setStatus('failed');
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
-  // Helper to change page
+  // ─── Create ───
+  const createNewApplication = async (customPayload) => {
+    setLoading(true);
+    setError(null);
+    setStatus(null);
+
+    try {
+      const payload = customPayload || {
+        type: stepsData[1]?.passportType,
+        formData: stepsData,
+        identitySessionId: verificationSessionId,
+      };
+
+      console.log('Creating application with payload:', payload);
+      const response = await createApplication(payload);
+      console.log('Create application response:', response);
+
+      if (!response || response.status !== 'success') {
+        throw new Error(response?.message || 'Failed to create application');
+      }
+
+      const newApp = response.data;
+      const newId = newApp._id;
+
+      if (!newId) {
+        throw new Error('No application ID returned');
+      }
+
+      setApplicationId(newId);
+
+      // Capture required root fields for future updates
+      setAppType(newApp.type);
+      setApplicantId(newApp.applicant?._id || newApp.applicant);
+      setIdentitySession(newApp.identitySession?._id || newApp.identitySession);
+
+      setStatus('success');
+      console.log('Application created with ID:', newId);
+      return response;
+    } catch (err) {
+      console.error('Create error:', err);
+      if (err.response) {
+        console.log('Response data:', err.response.data);
+      }
+      setError(err.message || 'Failed to create application');
+      setStatus('failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ─── Update ─── (critical fix: always send required root fields)
+  const updateExistingApplication = async () => {
+    if (!applicationId) {
+      throw new Error('No applicationId set');
+    }
+    if (!appType || !applicantId || !identitySession) {
+      throw new Error('Missing required root fields (type/applicant/identitySession) – load or create first');
+    }
+
+    setLoading(true);
+    setError(null);
+    setStatus(null);
+
+    try {
+      // Flatten all steps into one object (backend expects formData as flat object)
+      const flattenedFormData = Object.values(stepsData).reduce(
+        (acc, stepData) => ({ ...acc, ...stepData }),
+        {}
+      );
+
+      // This payload satisfies backend validation (required fields)
+      const payload = {
+        type: appType,
+        applicant: applicantId,
+        identitySession: identitySession,
+        formData: flattenedFormData,
+      };
+
+      console.log('Updating application with payload:', payload);
+
+      const response = await updateApplication(applicationId, payload);
+
+      if (!response || response.status !== 'success') {
+        throw new Error(response?.message || 'Failed to update application');
+      }
+
+      setStatus('success');
+      return response;
+    } catch (err) {
+      console.error('Update error:', err);
+      if (err.response) {
+        console.log('Backend response data:', err.response.data);
+        console.log('Status:', err.response.status);
+      }
+      setError(err.message || 'Failed to update application');
+      setStatus('failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ─── Submit ───
+  const submitFinalApplication = async () => {
+    if (!applicationId) throw new Error('No applicationId set');
+
+    setLoading(true);
+    setError(null);
+    setStatus(null);
+
+    try {
+      const response = await apiSubmitApplication(applicationId);
+      if (!response || response.status !== 'success') {
+        throw new Error(response?.message || 'Failed to submit');
+      }
+      setStatus('success');
+      return response;
+    } catch (err) {
+      setError(err.message || 'Failed to submit application');
+      setStatus('failed');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Workflow helpers
+  const saveAndContinue = async (freshStepData) => {
+    if (freshStepData) {
+      saveStepData(currentStep, freshStepData);
+    }
+
+    if (!applicationId) {
+      const payload = {
+        type: freshStepData?.passportType || stepsData[1]?.passportType,
+        formData: {
+          ...stepsData,
+          [currentStep]: freshStepData || stepsData[currentStep] || {},
+        },
+        identitySessionId: verificationSessionId,
+      };
+      await createNewApplication(payload);
+    } else {
+      await updateExistingApplication();
+    }
+
+    nextStep();
+  };
+
+  const submitApplication = async () => {
+    if (!applicationId) {
+      await createNewApplication();
+    } else {
+      await updateExistingApplication();
+    }
+    return submitFinalApplication();
+  };
+
+  // Review queue (unchanged)
+  const loadReviewQueue = useCallback(
+    async ({ page = 1, status = 'DRAFT', limit = 10 } = {}) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetchApplicationsForReview({ status, page, limit });
+        setReviewQueue(response.data || []);
+        setPagination(response.pagination || { page, limit, total: 0, pages: 1 });
+        return response;
+      } catch (err) {
+        setError(err.message || 'Failed to load review queue');
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;
     loadReviewQueue({ page: newPage, limit: pagination.limit });
   };
 
-  //  createNewApplication
-const createNewApplication = async (customPayload = null) => {
-  setLoading(true);
-  setError(null);
-  setStatus(null);
-
-  try {
-    const payload = customPayload || {
-      type: stepsData[1]?.passportType,
-      formData: stepsData,
-      identitySessionId: verificationSessionId, 
-    };
-
-    console.log('Creating application with payload:', payload);
-
-    const data = await createApplication(payload);
-
-    console.log('Create application response:', data);
-
-    if (!data || data.status !== 'success') {
-      throw new Error(data?.message || 'Failed to create application');
-    }
-
-    const newAppId = data?.data?._id;
-
-    if (!newAppId) {
-      throw new Error('No application ID returned from createApplication');
-    }
-
-    setApplicationId(newAppId);
-    setStatus('success');
-
-    console.log('Application created with ID:', newAppId);
-
-    return data;
-  } catch (err) {
-  console.error('Full API error:', err);
-  if (err.response) {  // assuming axios or similar
-    console.log('Response data:', err.response.data);
-    console.log('Status:', err.response.status);
-    console.log('Headers:', err.response.headers);
-  }
-  setError(err.message || 'Failed to update application');
-  setStatus('failed');
-  throw err;
-  } finally {
-    setLoading(false);
-  }
-};
-//updateExistingApplication
-  const updateExistingApplication = async () => {
-    if (!applicationId) {
-      throw new Error('No applicationId set')
-    }
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-    try {
-      const data = await updateApplication(applicationId, stepsData)
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to update application')
-      }
-      setStatus('success')
-      return data
-    } catch (err) {
-      console.error('Full API error:', err);
-    if (err.response) {  // assuming axios or similar
-      console.log('Response data:', err.response.data);
-      console.log('Status:', err.response.status);
-      console.log('Headers:', err.response.headers);
-  }
-  setError(err.message || 'Failed to update application');
-  setStatus('failed');
-  throw err;
-    } finally {
-      setLoading(false)
-    }
-  }
-//submitFinalApplication
- const submitFinalApplication = async () => {
-    const id = applicationId
-    console.log('Submitting application with ID:', id)
-    if (!id) {
-      throw new Error('No applicationId set')
-    }
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-    try {
-      const data = await apiSubmitApplication(id)
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to submit application')
-      }
-      setStatus('success')
-      return data
-    } catch (err) {
-      setError(err.message || 'Failed to submit application')
-      setStatus('failed')
-      throw err
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // workflow helper
-
-const saveAndContinue = async (freshStepData = null) => {
-  if (freshStepData) {
-    saveStepData(currentStep, freshStepData);
-  }
-
-  const dataForThisStep = freshStepData || stepsData[currentStep] || {};
-
-  if (!applicationId) {
-    const payload = {
-      type: dataForThisStep.passportType,           
-      formData: {
-        ...stepsData,                               
-        [currentStep]: dataForThisStep,             
-      },
-      identitySessionId: verificationSessionId,
-    };
-
-    await createNewApplication(payload);
-  } else {
-    await updateExistingApplication();
-  }
-  nextStep();
-};
-
-const submitApplication = async () => {
-    if (!applicationId) {
-      await createNewApplication()
-    } else {
-      await updateExistingApplication()
-    }
-    return submitFinalApplication()
-  }
-
   return {
-    /* state */
     currentStep,
     stepsData,
     applicationId,
     loading,
     error,
     status,
-
-    /* navigation */
     nextStep,
     previousStep,
-
-    /* data */
     saveStepData,
     resetApplication,
-
-    /* api-backed actions */
-    loadApplication,            // -> fetchApplication
-    createNewApplication,       // -> createApplication
-    updateExistingApplication,  // -> updateApplication
-    submitFinalApplication,     // -> submitApplication
-    
-    /* workflow */
+    loadApplication,
+    createNewApplication,
+    updateExistingApplication,
+    submitFinalApplication,
     saveAndContinue,
     submitApplication,
-
-    // review queue
     reviewQueue,
     pagination,
     loadReviewQueue,
     changePage,
-  }
+  };
 }
