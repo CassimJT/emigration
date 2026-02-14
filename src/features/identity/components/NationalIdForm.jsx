@@ -36,7 +36,6 @@ export default function NationalIdForm({
       <div className="grid gap-2 mt-6">
         <Label htmlFor="nationalId" className="font-bold text-base">National ID</Label>
         <Input 
-          className="rounded-xl border-opacity-30 border-black h-14 placeholder:text-gray-500 text-lg"
           id="nationalId" 
           name="nationalId"
           type="text" 
@@ -45,6 +44,10 @@ export default function NationalIdForm({
           disabled={loading}
           onChange={onChange}
           value={nationalId}
+          className={cn(
+           "rounded-xl border-opacity-30 h-14 placeholder:text-gray-500 text-lg",
+            nationalId? "border-orange-500" : "border-black"
+          )}
         />
         {error && (
           <p className="text-sm text-red-600 mt-1">
