@@ -89,7 +89,7 @@ function PassportApplicationPage() {
       if(currentStep === 3){
        try{
         setLoading(true);
-        await saveAndContinue();
+        await saveAndContinue(payload);
         nextStep();
         return;
         
@@ -113,7 +113,7 @@ function PassportApplicationPage() {
         }
           return;
       }
-      await saveAndContinue();
+      await saveAndContinue(payload);
       //nextStep();
     }
 

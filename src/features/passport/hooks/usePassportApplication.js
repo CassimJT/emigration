@@ -103,38 +103,50 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
   };
 
   //  createNewApplication
- const createNewApplication = async () => {
-    setLoading(true)
-    setError(null)
-    setStatus(null)
-    try {
-      const payload = {
-        type: stepsData[1]?.passportType,
-        formData: stepsData,
-        identitySessionId: verificationSessionId,
-      }
-      console.log('Creating application with payload:', payload)
-      const data = await createApplication(payload)
-      console.log('Create application response:', data)
-      if (!data || data.status !== 'success') {
-        throw new Error(data?.message || 'Failed to create application')
-      }
-      const newAppId = data?.data?._id
-      if (!newAppId) {
-        throw new Error('No application ID returned from createApplication')
-      }
-      setApplicationId(newAppId)
-      setStatus('success')
-      console.log('Application created with ID:', newAppId)
-      return data
-    } catch (err) {
-      setError(err.message || 'Failed to create application')
-      setStatus('failed')
-      throw err
-    } finally {
-      setLoading(false)
+const createNewApplication = async (customPayload = null) => {
+  setLoading(true);
+  setError(null);
+  setStatus(null);
+
+  try {
+    const payload = customPayload || {
+      type: stepsData[1]?.passportType,
+      formData: stepsData,
+      identitySessionId: verificationSessionId, 
+    };
+
+    console.log('Creating application with payload:', payload);
+
+    const data = await createApplication(payload);
+
+    console.log('Create application response:', data);
+
+    if (!data || data.status !== 'success') {
+      throw new Error(data?.message || 'Failed to create application');
     }
+
+    const newAppId = data?.data?._id;
+
+    if (!newAppId) {
+      throw new Error('No application ID returned from createApplication');
+    }
+
+    setApplicationId(newAppId);
+    setStatus('success');
+
+    console.log('Application created with ID:', newAppId);
+
+    return data;
+  } catch (err) {
+    const errorMessage = err.message || 'Failed to create application';
+    setError(errorMessage);
+    setStatus('failed');
+    console.error('Create application error:', err);
+    throw err; 
+  } finally {
+    setLoading(false);
   }
+};
 //updateExistingApplication
   const updateExistingApplication = async () => {
     if (!applicationId) {
@@ -186,14 +198,29 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
 
   // workflow helper
 
-const saveAndContinue = async () => {
-    if (!applicationId) {
-      await createNewApplication()
-    } else {
-      await updateExistingApplication()
-    }
-    nextStep()
+const saveAndContinue = async (freshStepData = null) => {
+  if (freshStepData) {
+    saveStepData(currentStep, freshStepData);
   }
+
+  const dataForThisStep = freshStepData || stepsData[currentStep] || {};
+
+  if (!applicationId) {
+    const payload = {
+      type: dataForThisStep.passportType,           
+      formData: {
+        ...stepsData,                               
+        [currentStep]: dataForThisStep,             
+      },
+      identitySessionId: verificationSessionId,
+    };
+
+    await createNewApplication(payload);
+  } else {
+    await updateExistingApplication();
+  }
+  nextStep();
+};
 
 const submitApplication = async () => {
     if (!applicationId) {
