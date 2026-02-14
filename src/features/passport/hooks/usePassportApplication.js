@@ -212,7 +212,7 @@ const updateExistingApplication = async () => {
   };
 
   const loadReviewQueue = useCallback(
-    async ({ page = 1, status = 'DRAFT', limit = 10 } = {}) => {
+    async ({ page = 1, status = 'IN_PROGRESS', limit = 10 } = {}) => {
       setLoading(true);
       setError(null);
       try {
