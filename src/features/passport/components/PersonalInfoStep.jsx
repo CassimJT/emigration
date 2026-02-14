@@ -105,14 +105,8 @@ export default function PersonalInfoStep({
           disabled={loading}
           className="rounded-full bg-orange-500 px-8 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
         >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading...
-            </>
-          ) : (
-            "Next"
-          )}
+         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading ? "Loading..." : "Next"}
         </button>
       </div>
     </form>
