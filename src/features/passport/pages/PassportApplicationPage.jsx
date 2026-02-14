@@ -84,6 +84,7 @@ function PassportApplicationPage() {
   e.preventDefault();
 
   const payload = preparePayload();
+  console.log("Prepared payload for step", currentStep, payload);
   saveStepData(currentStep, payload);
 
   if (currentStep === 4) {
