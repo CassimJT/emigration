@@ -54,19 +54,16 @@ export function usePassportApplication() {
   // API Operations
 
   //loadApplication
-  const loadApplication = async (id) => {
+ const loadApplication = async (id) => {
     if (!id) return
     setLoading(true)
     setError(null)
     setStatus(null)
-
     try {
       const data = await fetchApplication(id)
-
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to fetch application')
       }
-
       setApplicationId(id)
       setStepsData(data.data || {})
       setStatus('success')
@@ -106,21 +103,19 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
   };
 
   //  createNewApplication
-  const createNewApplication = async () => {
+ const createNewApplication = async () => {
     setLoading(true)
     setError(null)
     setStatus(null)
-
     try {
-      const payload ={
-        type: stepsData[1]?.passportType, 
+      const payload = {
+        type: stepsData[1]?.passportType,
         formData: stepsData,
-        identitySessionId: verificationSessionId, // Include this if your backend needs it to associate the application with the user's session
+        identitySessionId: verificationSessionId,
       }
       console.log('Creating application with payload:', payload)
       const data = await createApplication(payload)
       console.log('Create application response:', data)
-
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to create application')
       }
@@ -130,7 +125,7 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
       }
       setApplicationId(newAppId)
       setStatus('success')
-      console.log('Application created with ID:',newAppId)
+      console.log('Application created with ID:', newAppId)
       return data
     } catch (err) {
       setError(err.message || 'Failed to create application')
@@ -145,18 +140,14 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
     if (!applicationId) {
       throw new Error('No applicationId set')
     }
-
     setLoading(true)
     setError(null)
     setStatus(null)
-
     try {
       const data = await updateApplication(applicationId, stepsData)
-
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to update application')
       }
-
       setStatus('success')
       return data
     } catch (err) {
@@ -168,24 +159,20 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
     }
   }
 //submitFinalApplication
-  const submitFinalApplication = async () => {
+ const submitFinalApplication = async () => {
     const id = applicationId
-    console.log('Submitting application with ID:', id) 
+    console.log('Submitting application with ID:', id)
     if (!id) {
       throw new Error('No applicationId set')
     }
-
     setLoading(true)
     setError(null)
     setStatus(null)
-
     try {
       const data = await apiSubmitApplication(id)
-
       if (!data || data.status !== 'success') {
         throw new Error(data?.message || 'Failed to submit application')
       }
-
       setStatus('success')
       return data
     } catch (err) {
@@ -199,7 +186,7 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
 
   // workflow helper
 
-  const saveAndContinue = async () => {
+const saveAndContinue = async () => {
     if (!applicationId) {
       await createNewApplication()
     } else {
@@ -208,7 +195,7 @@ const loadReviewQueue = React.useCallback(async ({ page = 1, status = "DRAFT", l
     nextStep()
   }
 
-  const submitApplication = async () => {
+const submitApplication = async () => {
     if (!applicationId) {
       await createNewApplication()
     } else {
