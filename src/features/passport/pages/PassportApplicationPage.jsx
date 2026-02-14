@@ -36,13 +36,12 @@ function PassportApplicationPage() {
         name: '',
         surname: '',
         email: '',
-        residentialStatus: 'Ordinary',
+        residentialStatus: 'Permanent',
         occupation: 'Ordinary',
    })
 
   const { 
     currentStep,
-    nextStep,
     previousStep,
     saveStepData,
     stepsData,
@@ -81,41 +80,43 @@ function PassportApplicationPage() {
       }
     };
 
-  const handleNext = async (e) => {
-      e.preventDefault();
-      const payload = preparePayload();
-      saveStepData(currentStep , payload);
+ const handleNext = async (e) => {
+  e.preventDefault();
 
-      if(currentStep === 3){
-       try{
-        setLoading(true);
-        await saveAndContinue(payload);
-        nextStep();
-        return;
-        
-       }
-        catch(err){ 
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-        
-      }
-      if(currentStep === 4){
-        try {
-          setIsSubmitting(true);
-          await submitFinalApplication();
-          navigate("/dashboard/payments");
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setIsSubmitting(false);
-        }
-          return;
-      }
-      await saveAndContinue(payload);
-      //nextStep();
+  const payload = preparePayload();
+  saveStepData(currentStep, payload);
+
+  if (currentStep === 4) {
+    try {
+      setIsSubmitting(true);
+      await submitFinalApplication();     
+      navigate("/dashboard/payments");
+    } catch (err) {
+      console.error("Submission failed:", err);
+    } finally {
+      setIsSubmitting(false);
     }
+    return; 
+  }
+
+  if (currentStep === 3) {
+    try {
+      setLoading(true);
+      await saveAndContinue(payload);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+    return;
+  }
+
+  try {
+    await saveAndContinue(payload);
+  } catch (err) {
+    console.error("Save & continue failed:", err);
+  }
+};
 
   const formData = {
       ...stepsData[1],
