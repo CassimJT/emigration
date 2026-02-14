@@ -7,6 +7,7 @@ import {
   fetchApplicationsForReview,
   startReview,
   approveApplication,
+  rejectApplication,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -274,6 +275,23 @@ const approve = useCallback(async (applicationId) => {
     }
   }, []);
 
+const reject = useCallback(async (applicationId, reason = "") => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updated = await rejectApplication(applicationId, reason);
+      setReviewData(updated);
+      setSelectedStatus("REJECTED");
+      return updated;
+    } catch (err) {
+      const msg = err.message || "Could not reject application";
+      setError(msg);
+      throw new Error(msg);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+  
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;
     loadReviewQueue({ page: newPage, limit: pagination.limit });
@@ -302,6 +320,7 @@ const approve = useCallback(async (applicationId) => {
     selectedStatus,
     setSelectedStatus,
     approve,
+    reject,
     pagination,
     loadReviewQueue,
     changePage,
