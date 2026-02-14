@@ -119,7 +119,7 @@ export function usePassportApplication() {
     }
   };
 
-const updateExistingApplication = async () => {
+const updateExistingApplication = async (customPayload) => {
   if (!applicationId) {
     throw new Error('No applicationId set');
   }
@@ -135,8 +135,11 @@ const updateExistingApplication = async () => {
     );
 
     const payload = {
-      formData: flattenedFormData
-    };
+      formData: {
+        ...flattenedFormData,
+        ...customPayload
+  }
+};
 
     console.log('Updating application with allowed payload:', payload);
 
@@ -199,7 +202,7 @@ const updateExistingApplication = async () => {
       };
       await createNewApplication(payload);
     } else {
-      await updateExistingApplication();
+      await updateExistingApplication(freshStepData);
     }
 
     nextStep();
