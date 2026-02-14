@@ -63,8 +63,8 @@ export default function PassportTypeStep({
             onChange={onChange}
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
-            <option>36 Pages</option>
-            <option>48 Pages</option>
+            <option>36 pages</option>
+            <option>48 pages</option>
           </select>
         </div>
       </div>
