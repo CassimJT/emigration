@@ -50,7 +50,7 @@ export function usePassportApplication() {
     setLoading(false);
   };
 
-  const loadApplication = async (id) => {
+  const loadApplication = useCallback(async (id) => {
     if (!id) return;
     setLoading(true);
     setError(null);
@@ -74,7 +74,7 @@ export function usePassportApplication() {
     } finally {
       setLoading(false);
     }
-  };
+  },[])
 
   const createNewApplication = async (customPayload) => {
     setLoading(true);
