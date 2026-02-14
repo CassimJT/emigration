@@ -121,10 +121,12 @@ export async function startReview(applicationId) {
 // Approve application (creates immigration record)
 export async function approveApplication(applicationId) {
   try {
-    const { data } = await api.post(
+    const { data, status, error } = await api.post(
       `/passport/admin/applications/${applicationId}/approve`
     )
+    if(status === "success")
     return data
+    throw error;
   } catch (error) {
     return handleError(error)
   }
