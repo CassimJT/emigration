@@ -105,12 +105,16 @@ export async function fetchApplicationsForReview({
 // Start review
 export async function startReview(applicationId) {
   try {
-    const { data, status } = await api.post(
+    const response = await api.post(
       `/passport/admin/applications/${applicationId}/start-review`
-    )
-    return {data, status}
+    );
+    if(response.status === "success")
+    return response.data;
+    else
+    throw response.error;
   } catch (error) {
-    return handleError(error)
+    console.log("rewie error:" + error)
+    return handleError(error);  
   }
 }
 
