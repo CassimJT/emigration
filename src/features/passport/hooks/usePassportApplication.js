@@ -6,6 +6,7 @@ import {
   fetchApplication,
   fetchApplicationsForReview,
   startReview,
+  approveApplication,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -249,6 +250,27 @@ const updateExistingApplication = async () => {
     }
   },[])
 
+const approve = useCallback(async (applicationId) => {
+    if (!applicationId) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const updated = await approveApplication(applicationId);
+
+      setReviewData(updated);
+      setSelectedStatus("APPROVED");
+      console.log("Application approved successfully");
+    } catch (err) {
+      const msg = err.message || "Could not approve application";
+      setError(msg);
+      console.error(msg);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;
     loadReviewQueue({ page: newPage, limit: pagination.limit });
@@ -276,6 +298,7 @@ const updateExistingApplication = async () => {
     reviewData,
     selectedStatus,
     setSelectedStatus,
+    approve,
     pagination,
     loadReviewQueue,
     changePage,
