@@ -100,7 +100,7 @@ function PassportApplicationPage() {
     return; 
   }
 
-  if (currentStep === 3) {
+  if (currentStep === 3 || currentStep === 2 || currentStep === 1) {
     try {
       setLoading(true);
       await saveAndContinue(payload);
@@ -112,11 +112,11 @@ function PassportApplicationPage() {
     return;
   }
 
-  try {
-    await saveAndContinue(payload);
-  } catch (err) {
-    console.error("Save & continue failed:", err);
-  }
+  // try {
+  //   await saveAndContinue(payload);
+  // } catch (err) {
+  //   console.error("Save & continue failed:", err);
+  // }
 };
 
   const formData = {
@@ -149,7 +149,8 @@ function PassportApplicationPage() {
               serviceType={passportTypeData.serviceType}
               bookletType={passportTypeData.bookletType}
               onChange={handleChange} 
-              onSubmit={handleNext} 
+              onSubmit={handleNext}
+              loading={loading} 
               initialData={formData} 
             />
           )}
@@ -162,7 +163,8 @@ function PassportApplicationPage() {
               occupation={personalInfoStepData.occupation}
               onBack={previousStep}
               onChange={handleChange}
-              onSubmit={handleNext} 
+              onSubmit={handleNext}
+              loading={loading} 
               initialData={formData} 
             />
           )}
