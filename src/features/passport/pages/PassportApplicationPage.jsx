@@ -42,6 +42,7 @@ function PassportApplicationPage() {
 
   const { 
     currentStep,
+    nextStep,
     previousStep,
     saveStepData,
     stepsData,
@@ -87,6 +88,18 @@ function PassportApplicationPage() {
   console.log("Prepared payload for step", currentStep, payload);
   saveStepData(currentStep, payload);
 
+  if (currentStep === 3) {
+    try {
+      setLoading(true);
+      nextStep();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+    return;
+  }
+
   if (currentStep === 4) {
     try {
       setIsSubmitting(true);
@@ -100,7 +113,7 @@ function PassportApplicationPage() {
     return; 
   }
 
-  if (currentStep === 3 || currentStep === 2 || currentStep === 1) {
+  if (currentStep === 2 || currentStep === 1) {
     try {
       setLoading(true);
       await saveAndContinue(payload);
