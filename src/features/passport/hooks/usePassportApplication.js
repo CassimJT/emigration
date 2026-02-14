@@ -13,10 +13,7 @@ export function usePassportApplication() {
   const [stepsData, setStepsData] = useState({});
   const [applicationId, setApplicationId] = useState(null);
 
-  // Required root fields — must be captured and resent on update
-  const [appType, setAppType] = useState(null);
-  const [applicantId, setApplicantId] = useState(null);
-  const [identitySession, setIdentitySession] = useState(null);
+
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -48,9 +45,6 @@ export function usePassportApplication() {
     setCurrentStep(1);
     setStepsData({});
     setApplicationId(null);
-    setAppType(null);
-    setApplicantId(null);
-    setIdentitySession(null);
     setError(null);
     setStatus(null);
     setLoading(false);
@@ -70,10 +64,6 @@ export function usePassportApplication() {
       setApplicationId(id);
       setStepsData(app.formData || {});
 
-      // Capture root fields
-      setAppType(app.type);
-      setApplicantId(app.applicant?._id || app.applicant);
-      setIdentitySession(app.identitySession?._id || app.identitySession);
 
       setStatus('success');
       return response;
@@ -112,11 +102,6 @@ export function usePassportApplication() {
 
       setApplicationId(newId);
 
-      // Capture root fields from response
-      setAppType(newApp.type);
-      setApplicantId(newApp.applicant?._id || newApp.applicant);
-      setIdentitySession(newApp.identitySession?._id || newApp.identitySession);
-
       setStatus('success');
       console.log('Application created with ID:', newId);
       return response;
@@ -131,59 +116,48 @@ export function usePassportApplication() {
     }
   };
 
-  const updateExistingApplication = async () => {
-    if (!applicationId) {
-      throw new Error('No applicationId set');
+const updateExistingApplication = async () => {
+  if (!applicationId) {
+    throw new Error('No applicationId set');
+  }
+
+  setLoading(true);
+  setError(null);
+  setStatus(null);
+
+  try {
+    const flattenedFormData = Object.values(stepsData).reduce(
+      (acc, stepData) => ({ ...acc, ...stepData }),
+      {}
+    );
+
+    const payload = {
+      formData: flattenedFormData
+    };
+
+    console.log('Updating application with allowed payload:', payload);
+
+    const response = await updateApplication(applicationId, payload);
+
+    if (!response || response.status !== 'success') {
+      throw new Error(response?.message || 'Failed to update application');
     }
-    if (!appType || !applicantId || !identitySession) {
-      console.error('Missing root fields at update time:', {
-        appType,
-        applicantId,
-        identitySession,
-      });
-      throw new Error('Missing required root fields – cannot update');
+
+    setStatus('success');
+    return response;
+  } catch (err) {
+    console.error('Update error:', err);
+    if (err.response) {
+      console.log('Backend response data:', err.response.data);
+      console.log('Status:', err.response.status);
     }
-
-    setLoading(true);
-    setError(null);
-    setStatus(null);
-
-    try {
-      const flattenedFormData = Object.values(stepsData).reduce(
-        (acc, stepData) => ({ ...acc, ...stepData }),
-        {}
-      );
-
-      const payload = {
-        type: appType,
-        applicant: applicantId,
-        identitySession: identitySession,
-        formData: flattenedFormData,
-      };
-
-      console.log('Updating application with payload:', payload);
-
-      const response = await updateApplication(applicationId, payload);
-
-      if (!response || response.status !== 'success') {
-        throw new Error(response?.message || 'Failed to update application');
-      }
-
-      setStatus('success');
-      return response;
-    } catch (err) {
-      console.error('Update error:', err);
-      if (err.response) {
-        console.log('Backend response data:', err.response.data);
-        console.log('Status:', err.response.status);
-      }
-      setError(err.message || 'Failed to update application');
-      setStatus('failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
+    setError(err.message || 'Failed to update application');
+    setStatus('failed');
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+};
 
   const submitFinalApplication = async () => {
     if (!applicationId) throw new Error('No applicationId set');
