@@ -347,7 +347,7 @@ export default function PassportProcessingPage() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-destructive hover:bg-destructive/90 rounded text-white">
+                      <AlertDialogCancel className="bg-red-600 hover:bg-red-700 rounded text-white">
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction
@@ -383,7 +383,7 @@ export default function PassportProcessingPage() {
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-destructive hover:bg-destructive/90 text-white rounded"
+                        className="bg-red-600 hover:bg-red-700 text-white rounded"
                         onClick={handleReject}
                         disabled={!hasRejectionReason || loading}
                       >
