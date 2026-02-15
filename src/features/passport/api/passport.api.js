@@ -103,20 +103,44 @@ export async function fetchApplicationsForReview({
 }
 
 // Start review
-export async function startReview(applicationId) {
+export const startReview = async (applicationId) => {
   try {
-    const response = await api.post(
+    const res = await api.post(
       `/passport/admin/applications/${applicationId}/start-review`
     );
-    if(response.status === "success")
-    return response.data;
-    else
-    throw response.error;
-  } catch (error) {
-    console.log("rewie error:" + error)
-    return handleError(error);  
+    console.log("Raw axios response:", res);
+    console.log("res.data:", res.data);
+    const responseData = res.data;
+
+    if (!responseData || typeof responseData !== 'object') {
+      throw new Error("Invalid response format from server");
+    }
+
+    if (responseData.status === "success") {
+      return {
+        status: "success",
+        data: responseData.data || responseData 
+      };
+    }
+
+    if (responseData._id && responseData.status) {
+      return {
+        status: "success",
+        data: responseData
+      };
+    }
+
+    throw new Error(responseData.message || "Unexpected response format");
+  } catch (err) {
+    const message =
+      err?.response?.data?.message ||
+      err?.message ||
+      "Failed to start review – please check your connection or try again";
+
+    console.error("[startReview error]", err);
+    throw new Error(message);
   }
-}
+};
 
 // Approve application (creates immigration record)
 export async function approveApplication(applicationId) {
