@@ -1,39 +1,40 @@
 // passport/pages/PassportApplicationPage.jsx
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { useOutletContext } from "react-router-dom";
+import React, { useState } from 'react';
+import ProgressIndicator from '../components/ProgressIndicator';
+import PassportTypeStep from '../components/PassportTypeStep';
+import PersonalInfoStep from '../components/PersonalInfoStep';
+import ReviewStep from '../components/ReviewStep';
+import { usePassportApplication } from '../hooks/usePassportApplication';
+import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Navigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
+import SubmitApplicationPage from '../components/SubmitApplication';
 
-import ProgressIndicator from "../components/ProgressIndicator";
-import PassportTypeStep from "../components/PassportTypeStep";
-import PersonalInfoStep from "../components/PersonalInfoStep";
-import ReviewStep from "../components/ReviewStep";
-
-import { usePassportApplication } from "../hooks/usePassportApplication";
-import SubmitApplicationPage from "../components/SubmitApplication";
-
-export default function PassportApplicationPage() {
+function PassportApplicationPage() {
   const { user } = useAuth();
   const { currentRole } = useOutletContext();
-  const role = (currentRole || user?.role || "client").toLowerCase();
+  const role = (currentRole || user?.role || 'client').toLowerCase();
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const selectedType = location.state?.selectedType || null;
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     currentStep,
-    nextStep,
     previousStep,
     saveStepData,
     stepsData,
     saveAndContinue,
     submitFinalApplication,
-    loading: hookLoading,
+    applicationId,
+    createNewApplication,
   } = usePassportApplication();
 
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-
-  // Flattened formData from all steps — single source of truth
+  // Flattened formData from hook (for display/review/submit)
   const formData = React.useMemo(() => {
     return Object.values(stepsData).reduce((acc, step) => ({ ...acc, ...step }), {});
   }, [stepsData]);
@@ -42,9 +43,20 @@ export default function PassportApplicationPage() {
     e.preventDefault();
 
     try {
-      // Save current step data if provided by the step component
+      // Save current step data if provided
       if (stepData) {
         saveStepData(currentStep, stepData);
+      }
+
+      // Create application ONLY after step 2 (Personal Info)
+      if (currentStep === 2 && !applicationId) {
+        setLoading(true);
+        const payload = {
+          type: formData.passportType || stepData?.passportType || 'Ordinary',
+          formData: { ...formData, ...stepData },
+          identitySessionId: 'your-verification-session-id-here', // ← replace with real value from auth/context
+        };
+        await createNewApplication(payload);
       }
 
       // Final submission
@@ -56,21 +68,18 @@ export default function PassportApplicationPage() {
         return;
       }
 
-      // Proceed to next step
+      // Normal next step
       await saveAndContinue(stepData);
     } catch (err) {
-      console.error("Error during next step:", err);
-      toast.error("Something went wrong. Please try again.");
+      console.error("Next failed:", err);
+      toast.error("Failed to proceed. Please try again.");
     } finally {
+      setLoading(false);
       setIsSubmitting(false);
     }
   };
 
-  const handleBack = () => {
-    previousStep();
-  };
-
-  if (role !== "client") {
+  if (role !== 'client') {
     return <Navigate to="*" replace />;
   }
 
@@ -89,35 +98,41 @@ export default function PassportApplicationPage() {
         <div className="mt-8 rounded-xl bg-white p-8 shadow-sm">
           {currentStep === 1 && (
             <PassportTypeStep
-              passportType={formData.passportType || "Ordinary"}
-              serviceType={formData.serviceType || "Normal"}
-              bookletType={formData.bookletType || "36 Pages"}
+              passportType={formData.passportType || selectedType?.type || 'Ordinary'}
+              serviceType={formData.serviceType || selectedType?.serviceType || 'Normal'}
+              bookletType={formData.bookletType || selectedType?.pages || '36 Pages'}
+              onChange={(id, value) => {
+                console.log(id,value)
+              }}
               onSubmit={handleNext}
-              loading={hookLoading}
+              loading={loading}
             />
           )}
 
           {currentStep === 2 && (
             <PersonalInfoStep
-              name={formData.name || ""}
-              surname={formData.surname || ""}
-              email={formData.email || ""}
-              height={formData.height || ""}
-              mothersPlaceOfBirth={formData.mothersPlaceOfBirth || ""}
-              residentialStatus={formData.residentialStatus || "Permanent"}
-              occupation={formData.occupation || "Ordinary"}
-              onBack={handleBack}
+              name={formData.name || ''}
+              surname={formData.surname || ''}
+              email={formData.email || ''}
+              height={formData.height || ''}
+              mothersPlaceOfBirth={formData.mothersPlaceOfBirth || ''}
+              residentialStatus={formData.residentialStatus || 'Permanent'}
+              occupation={formData.occupation || 'Ordinary'}
+              onBack={previousStep}
+              onChange={(id, value) => {
+                console.log(id,value)
+              }}
               onSubmit={handleNext}
-              loading={hookLoading}
+              loading={loading}
             />
           )}
 
           {currentStep === 3 && (
             <ReviewStep
               data={formData}
-              onBack={handleBack}
+              onBack={previousStep}
               onClick={handleNext}
-              loading={hookLoading}
+              loading={loading}
             />
           )}
 
@@ -130,7 +145,7 @@ export default function PassportApplicationPage() {
                   .trim(),
                 value,
               }))}
-              onBack={handleBack}
+              onBack={previousStep}
               onSubmit={handleNext}
               isSubmitting={isSubmitting}
             />
@@ -145,3 +160,5 @@ export default function PassportApplicationPage() {
     </div>
   );
 }
+
+export default PassportApplicationPage;
