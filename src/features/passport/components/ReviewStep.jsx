@@ -2,41 +2,46 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
-export default function ReviewStep({
-   data,
-   className,
-   onClick, 
-   onBack,
-   ...props
-  }) {
 
+export default function ReviewStep({
+  data = {},
+  onBack,
+  onClick,
+  loading = false,
+  className,
+  ...props
+}) {
+  // Helper to show value or fallback
+  const display = (value) => value || "—";
 
   return (
-    <div className={cn("space-y-8",className)} {...props}>
+    <div className={cn("space-y-8", className)} {...props}>
       <h2 className="text-2xl font-bold text-gray-800 text-center">
         Review Your Application
       </h2>
 
+      {/* Passport Details */}
       <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">
           Passport Details
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <span className="font-medium text-gray-600">Passport Type:</span>
-            <p>{data.passportType || '—'}</p>
+            <p className="mt-1">{display(data.passportType)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Service Type:</span>
-            <p>{data.serviceType || '—'}</p>
+            <p className="mt-1">{display(data.serviceType)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Booklet Type:</span>
-            <p>{data.bookletType || '—'}</p>
+            <p className="mt-1">{display(data.bookletType)}</p>
           </div>
         </div>
       </div>
 
+      {/* Personal Information */}
       <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">
           Personal Information
@@ -44,27 +49,40 @@ export default function ReviewStep({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
             <span className="font-medium text-gray-600">Name:</span>
-            <p>{data.name || '—'}</p>
+            <p className="mt-1">{display(data.name)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Surname:</span>
-            <p>{data.surname || '—'}</p>
+            <p className="mt-1">{display(data.surname)}</p>
           </div>
           <div className="col-span-2">
             <span className="font-medium text-gray-600">Email:</span>
-            <p>{data.email || '—'}</p>
+            <p className="mt-1">{display(data.email)}</p>
+          </div>
+          <div>
+            <span className="font-medium text-gray-600">National ID:</span>
+            <p className="mt-1 font-mono">{display(data.nationalId)}</p>
+          </div>
+          <div>
+            <span className="font-medium text-gray-600">Height:</span>
+            <p className="mt-1">{data.height ? `${data.height} cm` : "—"}</p>
+          </div>
+          <div className="col-span-2">
+            <span className="font-medium text-gray-600">Mother's Place of Birth:</span>
+            <p className="mt-1">{display(data.mothersPlaceOfBirth)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Residential Status:</span>
-            <p>{data.residentialStatus || '—'}</p>
+            <p className="mt-1">{display(data.residentialStatus)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Occupation:</span>
-            <p>{data.occupation || '—'}</p>
+            <p className="mt-1">{display(data.occupation)}</p>
           </div>
         </div>
       </div>
 
+      {/* Navigation */}
       <div className="flex justify-between pt-6">
         <button
           type="button"
@@ -79,9 +97,9 @@ export default function ReviewStep({
           onClick={onClick}
           className="rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500focus:ring-offset-2"
         >
-         Create Application
+          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+          {loading ? "Creating..." : "Create Application"}
         </button>
-
       </div>
 
       <p className="text-center text-sm text-gray-500 mt-6">

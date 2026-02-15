@@ -25,6 +25,42 @@ import {
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 import { toast } from "sonner";
 
+// Prefer populated NRB first 
+const getApplicantName = (reviewData) => {
+  const nrb = reviewData?.applicant?.nationalId || {};
+  const form = reviewData?.formData || {};
+
+  const first = nrb.firstName || form.name || '';
+  const sur   = nrb.surName   || form.surname || '';
+
+  return `${first} ${sur}`.trim() || 'Unknown Applicant';
+};
+
+const getNationalId = (reviewData) => {
+  return reviewData?.applicant?.nationalId?.nationalId || reviewData?.formData?.nationalId || 'N/A';
+};
+
+const getHeight = (reviewData) => {
+  const h = reviewData?.formData?.height;
+  return h ? `${h} cm` : 'N/A';
+};
+
+const getPlaceOfBirth = (reviewData) => {
+  const pob = reviewData?.formData?.placeOfBirth || {};
+  if (pob.district) {
+    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
+  }
+  return reviewData?.formData?.placeOfBirth || 'N/A';
+};
+
+const getMothersPlaceOfBirth = (reviewData) => {
+  const pob = reviewData?.formData?.mothersPlaceOfBirth || {};
+  if (pob.district) {
+    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
+  }
+  return reviewData?.formData?.mothersPlaceOfBirth || 'N/A';
+};
+
 const getStatusBadge = (status) => {
   const variants = {
     DRAFT: { label: 'Draft', variant: 'secondary' },
@@ -37,12 +73,6 @@ const getStatusBadge = (status) => {
   };
   const v = variants[status] || { label: status || 'Unknown', variant: 'secondary' };
   return <Badge variant={v.variant}>{v.label}</Badge>;
-};
-
-const getApplicantName = (formData = {}) => {
-  const name = formData.name || '';
-  const surname = formData.surname || '';
-  return `${name} ${surname}`.trim() || 'Unknown Applicant';
 };
 
 export default function PassportProcessingPage() {
@@ -95,9 +125,7 @@ export default function PassportProcessingPage() {
     );
   }
 
-    
-
-  if (error || !reviewData ) {
+  if (error || !reviewData) {
     return (
       <div className="p-8 text-center text-red-600">
         <AlertCircle className="h-12 w-12 mx-auto mb-4" />
@@ -109,10 +137,8 @@ export default function PassportProcessingPage() {
     );
   }
 
-    const canTakeAction = reviewData.status === "UNDER_REVIEW";
-    const hasRejectionReason = notes.trim().length > 0;
-
-    const formData = reviewData.formData || {};
+  const canTakeAction = reviewData.status === "UNDER_REVIEW";
+  const hasRejectionReason = notes.trim().length > 0;
 
   const handleApprove = async () => {
     try {
@@ -174,30 +200,51 @@ export default function PassportProcessingPage() {
             Applicant Information
           </CardTitle>
           <CardDescription>
-            Personal details submitted by {getApplicantName(formData)}
+            Personal details submitted by {getApplicantName(reviewData)}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-              <p className="mt-1 font-medium">{getApplicantName(formData)}</p>
+              <p className="mt-1 font-medium">{getApplicantName(reviewData)}</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-gray-500">National ID</Label>
+              <p className="mt-1 font-mono">{getNationalId(reviewData)}</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-gray-500">Height</Label>
+              <p className="mt-1">{getHeight(reviewData)}</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-gray-500">Place of Birth</Label>
+              <p className="mt-1">{getPlaceOfBirth(reviewData)}</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium text-gray-500">Mother's Place of Birth</Label>
+              <p className="mt-1">{getMothersPlaceOfBirth(reviewData)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Email</Label>
-              <p className="mt-1">{formData.email || 'N/A'}</p>
+              <p className="mt-1">
+                {reviewData?.applicant?.nationalId?.emailAddress ||
+                 reviewData?.applicant?.emailAddress ||
+                 reviewData?.formData?.email ||
+                 'N/A'}
+              </p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Passport Type</Label>
-              <p className="mt-1">{formData.passportType || 'Ordinary'}</p>
+              <p className="mt-1">{reviewData?.formData?.passportType || 'Ordinary'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Booklet Type</Label>
-              <p className="mt-1">{formData.bookletType || 'N/A'}</p>
+              <p className="mt-1">{reviewData?.formData?.bookletType || 'N/A'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Service Type</Label>
-              <p className="mt-1">{formData.serviceType || 'Normal'}</p>
+              <p className="mt-1">{reviewData?.formData?.serviceType || 'Normal'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Created</Label>
@@ -250,7 +297,6 @@ export default function PassportProcessingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Rejection reason / notes */}
               <div className="space-y-2">
                 <Label
                   htmlFor="notes"
@@ -277,10 +323,8 @@ export default function PassportProcessingPage() {
                 />
               </div>
 
-              {/* Action buttons */}
               <div className="flex flex-wrap gap-4 pt-4 border-t">
-                {/* Approve */}
-                <AlertDialog className="bg-white" >
+                <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       className="bg-green-600 hover:bg-green-700 text-white"
@@ -294,7 +338,7 @@ export default function PassportProcessingPage() {
                       Approve Application
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-white rounded border-4 border-gray-300" >
+                  <AlertDialogContent className="bg-white rounded border-4 border-gray-300">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Approve Application?</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -303,18 +347,19 @@ export default function PassportProcessingPage() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-destructive hover:bg-destructive/90 rounded text-white" >Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="bg-red-600 hover:bg-red-700 rounded text-white">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         className="bg-green-600 hover:bg-green-700 text-white rounded"
                         onClick={handleApprove}
                       >
-                        yes, Approve
+                        Yes, Approve
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
 
-                {/* Reject */}
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
@@ -334,9 +379,11 @@ export default function PassportProcessingPage() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white rounded" >Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white rounded">
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-destructive hover:bg-destructive/90 text-white rounded"
+                        className="bg-red-600 hover:bg-red-700 text-white rounded"
                         onClick={handleReject}
                         disabled={!hasRejectionReason || loading}
                       >

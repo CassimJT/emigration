@@ -1,114 +1,185 @@
 // passport/components/PersonalInfoStep.jsx
-import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
+import React from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function PersonalInfoStep({  
+export default function PersonalInfoStep({
+  name = "",
+  surname = "",
+  email = "",
+  height = "",
+  mothersPlaceOfBirth = "",
+  residentialStatus = "Permanent",
+  occupation = "Ordinary",
   onBack,
-  onSubmit,
-  onChange,
-  loading,
+  onChange,     
+  onSubmit,     
+  loading = false,
   className,
-  name,
-  surname,
-  email,
-  residentialStatus,
-  occupation,
-  ...props   
 }) {
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    onChange(id, value);
+  };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Send full step data to parent/hook
+    onSubmit(e, {
+      name,
+      surname,
+      email,
+      height,
+      mothersPlaceOfBirth,
+      residentialStatus,
+      occupation,
+    });
+  };
 
   return (
-    <form onSubmit={onSubmit} className={cn("space-y-6", className)} {...props}>
-      <h2 className="text-xl font-semibold text-gray-800">Personal Information</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name</label>
-          <input
-            id='name'
-            type="text"
-            value={name}
-            onChange={onChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
-            placeholder="Name"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Surname</label>
-          <input
-          id='surname'
-            type="text"
-            value={surname}
-            onChange={onChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
-            placeholder="Surname"
-            required
-          />
-        </div>
-      </div>
-
+    <form onSubmit={handleSubmit} className={cn("space-y-8", className)}>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Email</label>
-        <input
-          id='email'
-          type="email"
-          value={email}
-          onChange={onChange}
-          className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
-          placeholder="your.email@example.com"
-          required
-        />
+        <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+        <p className="mt-1 text-sm text-gray-500">
+          Your National ID and Place of Birth have been verified from NRB. Please provide the remaining details.
+        </p>
       </div>
 
+      {/* Core personal details (from NRB/formData) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Current Residential Status</label>
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium text-gray-700">
+            First Name
+          </Label>
+          <Input
+            id="name"
+            value={name}
+            onChange={handleChange}
+            placeholder="First Name"
+            disabled // Pre-filled from NRB
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="surname" className="text-sm font-medium text-gray-700">
+            Surname
+          </Label>
+          <Input
+            id="surname"
+            value={surname}
+            onChange={handleChange}
+            placeholder="Surname"
+            disabled // Pre-filled from NRB
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+            Email Address <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            onChange={handleChange}
+            placeholder="your.email@example.com"
+            required
+          />
+        </div>
+      </div>
+
+      {/* Required fields NOT in NRB */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="height" className="text-sm font-medium text-gray-700">
+            Height (cm) <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="height"
+            type="number"
+            value={height}
+            onChange={handleChange}
+            placeholder="e.g. 175"
+            required
+            min="50"
+            max="250"
+          />
+        </div>
+
+        <div className="space-y-2 md:col-span-2">
+          <Label htmlFor="mothersPlaceOfBirth" className="text-sm font-medium text-gray-700">
+            Mother's Place of Birth <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="mothersPlaceOfBirth"
+            value={mothersPlaceOfBirth}
+            onChange={handleChange}
+            placeholder="e.g. Blantyre, Malawi"
+            required
+          />
+        </div>
+      </div>
+
+      {/* Optional fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="residentialStatus" className="text-sm font-medium text-gray-700">
+            Current Residential Status
+          </Label>
           <select
-            id='residentialStatus'
+            id="residentialStatus"
             value={residentialStatus}
-            onChange={onChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
+            onChange={handleChange}
+            className="block w-full rounded-lg border border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-white"
           >
-            <option>Ordinary</option>
-            <option>Permanent Resident</option>
-            <option>Refugee</option>
-            <option>Other</option>
+            <option value="Permanent">Permanent Resident</option>
+            <option value="Temporary">Temporary Resident</option>
+            <option value="Refugee">Refugee</option>
+            <option value="Other">Other</option>
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Occupation</label>
-          <input
-            id='occupation'
-            type="text"
+        <div className="space-y-2">
+          <Label htmlFor="occupation" className="text-sm font-medium text-gray-700">
+            Occupation
+          </Label>
+          <Input
+            id="occupation"
             value={occupation}
-            onChange={onChange}
-            className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
-            placeholder="Occupation"
+            onChange={handleChange}
+            placeholder="e.g. Teacher, Engineer"
           />
         </div>
       </div>
 
-      <div className="flex justify-between pt-6">
-        <button
+      {/* Navigation */}
+      <div className="flex justify-between pt-8">
+        <Button
           type="button"
+          variant="outline"
           onClick={onBack}
-          className="rounded-full border border-gray-300 px-8 py-3 font-medium text-gray-700 hover:bg-gray-50"
+          className="px-8 py-2.5"
         >
           Back
-        </button>
+        </Button>
 
-        <button
+        <Button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-70"
-       >
-          {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-           {loading ? "Loading..." : "Next"}
-        </button>
-
+          className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-2.5 rounded-lg font-medium shadow-sm transition-colors"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+              Processing...
+            </>
+          ) : (
+            "Next"
+          )}
+        </Button>
       </div>
     </form>
   );

@@ -18,10 +18,31 @@ import {
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 import { StatusFilter } from '../components/StatusFilter';
 
-const getApplicantName = (formData = {}) => {
-  const name = formData.name || '';
-  const surname = formData.surname || '';
-  return `${name} ${surname}`.trim() || 'Unknown Applicant';
+// Prefer populated NRB (nationalId) first → fallback to formData
+const getApplicantName = (app) => {
+  const nrb = app?.applicant?.nationalId || {};
+  const form = app?.formData || {};
+
+  const first = nrb.firstName || form.name || '';
+  const sur   = nrb.surName   || form.surname || '';
+
+  return `${first} ${sur}`.trim() || 'Unknown Applicant';
+};
+
+const getNationalId = (app) => {
+  return app?.applicant?.nationalId?.nationalId || app?.formData?.nationalId || 'N/A';
+};
+
+const getHeight = (app) => {
+  return app?.formData?.height ? `${app.formData.height} cm` : 'N/A';
+};
+
+const getMothersPlaceOfBirth = (app) => {
+  const pob = app?.formData?.mothersPlaceOfBirth || {};
+  if (pob.district) {
+    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
+  }
+  return app?.formData?.mothersPlaceOfBirth || 'N/A';
 };
 
 const getStatusBadge = (status) => {
@@ -75,23 +96,22 @@ export default function PendingReviewsPage() {
     ? profile.firstName
     : (user?.emailAddress?.split('@')[0] || "User");
 
-  // Load queue when status changes or on mount
   useEffect(() => {
     loadReviewQueue({
       page: 1,
-      status: applicationStatus || undefined, 
+      status: applicationStatus || undefined,
     });
   }, [applicationStatus, loadReviewQueue]);
 
   const filteredApplications = React.useMemo(() => {
     if (!reviewQueue?.length) return [];
-
     const query = searchQuery.toLowerCase().trim();
     return reviewQueue.filter(app => {
-      const name = getApplicantName(app.formData).toLowerCase();
+      const name = getApplicantName(app).toLowerCase();
       const id = app._id?.toLowerCase() || '';
       const type = app.type?.toLowerCase() || '';
-      return id.includes(query) || name.includes(query) || type.includes(query);
+      const natId = getNationalId(app).toLowerCase();
+      return id.includes(query) || name.includes(query) || type.includes(query) || natId.includes(query);
     });
   }, [reviewQueue, searchQuery]);
 
@@ -143,7 +163,7 @@ export default function PendingReviewsPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by ID, name or type..."
+                placeholder="Search by ID, name, type or National ID..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-orange-500/10 focus:border-orange-500 transition-all bg-white"
@@ -175,6 +195,7 @@ export default function PendingReviewsPage() {
                       </div>
                     </th>
                     <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Applicant Name</th>
+                    <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">National ID</th>
                     <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Type</th>
                     <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Created Date</th>
                     <th className="px-6 py-4 text-[11px] font-bold text-gray-400 uppercase tracking-widest">Status</th>
@@ -189,7 +210,10 @@ export default function PendingReviewsPage() {
                           <span className="font-semibold text-gray-900">{app._id}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="font-medium text-gray-700">{getApplicantName(app.formData)}</div>
+                          <div className="font-medium text-gray-700">{getApplicantName(app)}</div>
+                        </td>
+                        <td className="px-6 py-4 font-mono text-gray-600">
+                          {getNationalId(app)}
                         </td>
                         <td className="px-6 py-4 text-gray-600">{app.type || 'Ordinary'}</td>
                         <td className="px-6 py-4">
@@ -220,7 +244,7 @@ export default function PendingReviewsPage() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500 font-medium">
+                      <td colSpan={7} className="px-6 py-12 text-center text-gray-500 font-medium">
                         {searchQuery.trim()
                           ? `No applications found matching "${searchQuery.trim()}"`
                           : "No pending applications found"}
