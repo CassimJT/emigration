@@ -17,6 +17,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
+import { StatusFilter } from '../components/StatusFilter';
 
 const getApplicantName = (formData) => {
   const personal = formData?.[2] || {};
@@ -39,23 +40,37 @@ const getStatusBadge = (status) => {
   );
 };
 
-export default function PendingReviewsPage() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const { currentRole, profile } = useOutletContext();
+ const statusOptions = [
+    { label: "All Statuses", value: "" },
+    { label: "Draft", value: "DRAFT" },
+    { label: "In Progress", value: "IN_PROGRESS" },
+    { label: "Submitted", value: "SUBMITTED" },
+    { label: "Under Review", value: "UNDER_REVIEW" },
+    { label: "Approved", value: "APPROVED" },
+    { label: "Rejected", value: "REJECTED" },
+    { label: "Expired", value: "EXPIRED" },
+    ] 
 
-  const {
-    reviewQueue,
-    pagination,
-    loading,
-    error,
-    loadReviewQueue,
-    changePage,
-  } = usePassportApplication();
-
+    
+    export default function PendingReviewsPage() {
+      const { user } = useAuth();
+      const navigate = useNavigate();
+      const { currentRole, profile } = useOutletContext();
+      
+      const {
+        reviewQueue,
+        applicationStatus,
+        setApplicationStatus,
+        pagination,
+        loading,
+        error,
+        loadReviewQueue,
+        changePage,
+      } = usePassportApplication();
+      
   React.useEffect(() => {
-    loadReviewQueue({ page: 1 }); // defaults: status="SUBMITTED", limit=10
-  }, [loadReviewQueue]);
+    loadReviewQueue({ page: 1, status:{applicationStatus} }); // defaults: status="SUBMITTED", limit=10
+  }, [applicationStatus, loadReviewQueue]);
 
   const [searchQuery, setSearchQuery] = React.useState('');
   const role = (currentRole || user?.role || 'officer').toLowerCase();
@@ -103,9 +118,12 @@ export default function PendingReviewsPage() {
           >
             Refresh
           </Button>
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Filter
+          <Button variant="ghost" size="sm">
+            <StatusFilter
+              value={applicationStatus || ""}
+              onChange={(newStatus) => setApplicationStatus(newStatus)}
+              statusOptions={statusOptions}
+            />
           </Button>
         </div>
       </div>

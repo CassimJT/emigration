@@ -24,6 +24,7 @@ export function usePassportApplication() {
 
   const [reviewQueue, setReviewQueue] = useState([]);
   const [reviewData, setReviewData] = useState();
+  const [applicationStatus, setApplicationStatus] = useState('');
   const [selectedStatus, setSelectedStatus] = useState();
   const [pagination, setPagination] = useState({
     page: 1,
@@ -220,7 +221,7 @@ const updateExistingApplication = async (customPayload) => {
   };
 
   const loadReviewQueue = useCallback(
-    async ({ page = 1, status = 'SUBMITTED', limit = 10 } = {}) => {
+    async ({ page = 1, status = applicationStatus || 'SUBMITTED', limit = 10 } = {}) => {
       setLoading(true);
       setError(null);
       try {
@@ -235,7 +236,7 @@ const updateExistingApplication = async (customPayload) => {
         setLoading(false);
       }
     },
-    []
+    [applicationStatus]
   );
 
  // in usePassportApplication.js
@@ -326,6 +327,8 @@ const reject = useCallback(async (applicationId, reason = "") => {
     reviewData,
     selectedStatus,
     setSelectedStatus,
+    applicationStatus,
+    setApplicationStatus,
     approve,
     reject,
     pagination,
