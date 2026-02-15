@@ -1,70 +1,88 @@
 // passport/components/PassportTypeStep.jsx
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-export default function PassportTypeStep({ 
-  onChange,
-  onSubmit,
+export default function PassportTypeStep({
+  passportType = "Ordinary",
+  serviceType = "Normal",
+  bookletType = "36 Pages",
+  onChange,   // now expects (id, value)
+  onSubmit,   // expects to receive full step data object
+  loading = false,
   className,
-  loading,
-  passportType,
-  serviceType,
-  bookletType,
-  ...props
-
 }) {
-  
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    onChange(id, value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Send full step data to parent/hook
+    onSubmit(e, {
+      passportType,
+      serviceType,
+      bookletType,
+    });
+  };
 
   return (
-    <form onSubmit={onSubmit} className={cn("space-y-6", className)} {...props}>
+    <form onSubmit={handleSubmit} className={cn("space-y-6", className)}>
       <h2 className="text-xl font-semibold text-gray-800">Passport Details</h2>
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Passport Type
+          <label htmlFor="passportType" className="block text-sm font-medium text-gray-700">
+            Passport Type <span className="text-red-500">*</span>
           </label>
           <select
-            id='passportType'
+            id="passportType"
             value={passportType}
-            onChange={onChange}
+            onChange={handleChange}
+            required
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
-            <option>Ordinary</option>
-            <option>Diplomatic</option>
-            <option>Official</option>
+            <option value="">Select passport type</option>
+            <option value="Ordinary">Ordinary</option>
+            <option value="Diplomatic">Diplomatic</option>
+            <option value="Service">Service</option>
+            <option value="Temporary">Temporary</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Service Type
+          <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700">
+            Service Type <span className="text-red-500">*</span>
           </label>
           <select
-            id='serviceType'
+            id="serviceType"
             value={serviceType}
-            onChange={onChange}
+            onChange={handleChange}
+            required
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
-            <option>Basic processing</option>
-            <option>Priority processing</option>
-            <option>Expedited processing</option>
-            <option>Normal</option>
-            <option>Express</option>
+            <option value="">Select service type</option>
+            <option value="Normal">Normal</option>
+            <option value="Express">Express</option>
+            <option value="Urgent">Urgent</option>
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Booklet Type
+          <label htmlFor="bookletType" className="block text-sm font-medium text-gray-700">
+            Booklet Type <span className="text-red-500">*</span>
           </label>
           <select
-            id='bookletType'
+            id="bookletType"
             value={bookletType}
-            onChange={onChange}
+            onChange={handleChange}
+            required
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
-            <option>36 Pages</option>
-            <option>48 Pages</option>
+            <option value="">Select booklet type</option>
+            <option value="36 Pages">36 Pages</option>
+            <option value="48 Pages">48 Pages</option>
           </select>
         </div>
       </div>
@@ -73,12 +91,12 @@ export default function PassportTypeStep({
         <button
           type="submit"
           disabled={loading}
-          className="rounded-full bg-orange-500 px-8 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+          className="rounded-full bg-orange-500 px-8 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 disabled:opacity-70"
         >
           {loading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading...
+              <Loader2 className="mr-2 h-4 w-4 animate-spin inline" />
+              Processing...
             </>
           ) : (
             "Next"

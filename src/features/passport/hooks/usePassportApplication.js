@@ -15,13 +15,9 @@ export function usePassportApplication() {
   const [currentStep, setCurrentStep] = useState(1);
   const [stepsData, setStepsData] = useState({});
   const [applicationId, setApplicationId] = useState(null);
-
-
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(null);
-
   const [reviewQueue, setReviewQueue] = useState([]);
   const [reviewData, setReviewData] = useState(null);
   const [applicationStatus, setApplicationStatus] = useState('');
@@ -69,8 +65,6 @@ export function usePassportApplication() {
       const app = response.data;
       setApplicationId(id);
       setStepsData(app.formData || {});
-
-
       setStatus('success');
       return response;
     } catch (err) {
@@ -80,7 +74,7 @@ export function usePassportApplication() {
     } finally {
       setLoading(false);
     }
-  },[])
+  }, []);
 
   const createNewApplication = async (customPayload) => {
     setLoading(true);
@@ -92,22 +86,16 @@ export function usePassportApplication() {
         formData: stepsData,
         identitySessionId: verificationSessionId,
       };
-
       console.log('Creating application with payload:', payload);
       const response = await createApplication(payload);
       console.log('Create application response:', response);
-
       if (!response || response.status !== 'success') {
         throw new Error(response?.message || 'Failed to create application');
       }
-
       const newApp = response.data;
       const newId = newApp._id;
-
       if (!newId) throw new Error('No application ID returned');
-
       setApplicationId(newId);
-
       setStatus('success');
       console.log('Application created with ID:', newId);
       return response;
@@ -122,48 +110,41 @@ export function usePassportApplication() {
     }
   };
 
-const updateExistingApplication = async () => {
-  if (!applicationId) {
-    throw new Error('No applicationId set');
-  }
-
-  setLoading(true);
-  setError(null);
-  setStatus(null);
-
-  try {
-    const flattenedFormData = Object.values(stepsData).reduce(
-      (acc, stepData) => ({ ...acc, ...stepData }),
-      {}
-    );
-
-    const payload = {
-      formData: flattenedFormData
-    };
-
-    console.log('Updating application with allowed payload:', payload);
-
-    const response = await updateApplication(applicationId, payload);
-
-    if (!response || response.status !== 'success') {
-      throw new Error(response?.message || 'Failed to update application');
+  const updateExistingApplication = async () => {
+    if (!applicationId) {
+      throw new Error('No applicationId set');
     }
-
-    setStatus('success');
-    return response;
-  } catch (err) {
-    console.error('Update error:', err);
-    if (err.response) {
-      console.log('Backend response data:', err.response.data);
-      console.log('Status:', err.response.status);
+    setLoading(true);
+    setError(null);
+    setStatus(null);
+    try {
+      const flattenedFormData = Object.values(stepsData).reduce(
+        (acc, stepData) => ({ ...acc, ...stepData }),
+        {}
+      );
+      const payload = {
+        formData: flattenedFormData,
+      };
+      console.log('Updating application with allowed payload:', payload);
+      const response = await updateApplication(applicationId, payload);
+      if (!response || response.status !== 'success') {
+        throw new Error(response?.message || 'Failed to update application');
+      }
+      setStatus('success');
+      return response;
+    } catch (err) {
+      console.error('Update error:', err);
+      if (err.response) {
+        console.log('Backend response data:', err.response.data);
+        console.log('Status:', err.response.status);
+      }
+      setError(err.message || 'Failed to update application');
+      setStatus('failed');
+      throw err;
+    } finally {
+      setLoading(false);
     }
-    setError(err.message || 'Failed to update application');
-    setStatus('failed');
-    throw err;
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const submitFinalApplication = async () => {
     if (!applicationId) throw new Error('No applicationId set');
@@ -190,7 +171,6 @@ const updateExistingApplication = async () => {
     if (freshStepData) {
       saveStepData(currentStep, freshStepData);
     }
-
     if (!applicationId) {
       const payload = {
         type: freshStepData?.passportType || stepsData[1]?.passportType,
@@ -204,7 +184,6 @@ const updateExistingApplication = async () => {
     } else {
       await updateExistingApplication();
     }
-
     nextStep();
   };
 
@@ -236,41 +215,37 @@ const updateExistingApplication = async () => {
     [applicationStatus]
   );
 
- // in usePassportApplication.js
-
-const initiateReview = useCallback(async (applicationId) => {
-  setLoading(true);
-  setError(null);
-  try {
-    const result = await startReview(applicationId);
-    const appData = result.data || result;
-
-    if (appData && appData._id) {
-      setReviewData(appData);
-    } else {
-      throw new Error("No valid application data received");
-    }
-  } catch (err) {
-    const msg = err?.message || "Could not load application for review";
-    setError(msg);
-    console.warn("Initiate review failed:", err);
-  } finally {
-    setLoading(false);
-  }
-}, []);
-
-const approve = useCallback(async (applicationId) => {
-    if (!applicationId) return;
-
+  const initiateReview = useCallback(async (applicationId) => {
     setLoading(true);
     setError(null);
+    try {
+      const result = await startReview(applicationId);
+      const appData = result.data || result;
+      if (appData && appData._id) {
+        setReviewData(appData);
+      } else {
+        throw new Error("No valid application data received");
+      }
+    } catch (err) {
+      const msg = err?.message || "Could not load application for review";
+      setError(msg);
+      console.warn("Initiate review failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  const approve = useCallback(async (applicationId) => {
+    if (!applicationId) return;
+    setLoading(true);
+    setError(null);
     try {
       const updated = await approveApplication(applicationId);
-
       setReviewData(updated);
       setSelectedStatus("APPROVED");
       console.log("Application approved successfully");
+      // Optional: reload full queue after approval
+      // await loadReviewQueue({ page: pagination.page });
     } catch (err) {
       const msg = err.message || "Could not approve application";
       setError(msg);
@@ -280,13 +255,15 @@ const approve = useCallback(async (applicationId) => {
     }
   }, []);
 
-const reject = useCallback(async (applicationId, reason = "") => {
+  const reject = useCallback(async (applicationId, reason = "") => {
     setLoading(true);
     setError(null);
     try {
       const updated = await rejectApplication(applicationId, reason);
       setReviewData(updated);
       setSelectedStatus("REJECTED");
+      // Optional: reload queue
+      // await loadReviewQueue({ page: pagination.page });
       return updated;
     } catch (err) {
       const msg = err.message || "Could not reject application";
@@ -296,7 +273,7 @@ const reject = useCallback(async (applicationId, reason = "") => {
       setLoading(false);
     }
   }, []);
-  
+
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;
     loadReviewQueue({ page: newPage, limit: pagination.limit });
