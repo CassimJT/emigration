@@ -15,24 +15,17 @@ export default function SubmitApplicationPage({
   className,
   ...props
 }) {
-  // Helper to format values nicely
   const formatValue = (value) => {
     if (value == null || value === "") return "—";
-    if (typeof value === "number") return `${value} cm`; // height
+    if (typeof value === "number") return `${value} cm`;
     if (typeof value === "object" && value.district) {
-      return `${value.district}, ${value.village || ""}`.trim() || "—"; // placeOfBirth if nested
+      return `${value.district}, ${value.village || ""}`.trim() || "—";
     }
     return value;
   };
 
-  // Group fields for better readability
-  const passportFields = summaryData.filter(item =>
-    ["passportType", "serviceType", "bookletType"].includes(item.label.toLowerCase())
-  );
-
-  const personalFields = summaryData.filter(item =>
-    ["name", "surname", "email", "nationalid", "height", "placeofbirth", "mothersplaceofbirth", "residentialstatus", "occupation"].includes(item.label.toLowerCase())
-  );
+  // Show ALL fields in submit (including NRB-sourced ones)
+  const displayData = summaryData;
 
   return (
     <div className={cn("space-y-8", className)} {...props}>
@@ -45,42 +38,29 @@ export default function SubmitApplicationPage({
           {/* Passport Details */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-700">Passport Details</h3>
-            {passportFields.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between border-b pb-2 text-sm"
-              >
-                <span className="font-medium text-muted-foreground">
-                  {item.label}
-                </span>
-                <span>{formatValue(item.value)}</span>
-              </div>
-            ))}
-            {passportFields.length === 0 && (
-              <p className="text-gray-500 text-center">No passport details provided</p>
-            )}
+            {displayData
+              .filter(item => ["passportType", "serviceType", "bookletType"].includes(item.label.toLowerCase()))
+              .map((item, index) => (
+                <div key={index} className="flex justify-between border-b pb-2 text-sm">
+                  <span className="font-medium text-muted-foreground">{item.label}:</span>
+                  <span>{formatValue(item.value)}</span>
+                </div>
+              ))}
           </div>
 
-          {/* Personal Information */}
+          {/* Personal Information – ALL fields visible */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-700">Personal Information</h3>
-            {personalFields.map((item, index) => (
-              <div
-                key={index}
-                className="flex justify-between border-b pb-2 text-sm"
-              >
-                <span className="font-medium text-muted-foreground">
-                  {item.label}
-                  {["nationalid", "height", "mothersplaceofbirth"].includes(item.label.toLowerCase()) && (
-                    <span className="text-red-500 ml-1">*</span>
-                  )}
-                </span>
-                <span className="font-mono">{formatValue(item.value)}</span>
-              </div>
-            ))}
-            {personalFields.length === 0 && (
-              <p className="text-gray-500 text-center">No personal information provided</p>
-            )}
+            {displayData
+              .filter(item => !["passportType", "serviceType", "bookletType"].includes(item.label.toLowerCase()))
+              .map((item, index) => (
+                <div key={index} className="flex justify-between border-b pb-2 text-sm">
+                  <span className="font-medium text-muted-foreground">
+                    {item.label}
+                  </span>
+                  <span className="font-mono">{formatValue(item.value)}</span>
+                </div>
+              ))}
           </div>
 
           {/* Buttons */}

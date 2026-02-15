@@ -11,7 +11,6 @@ export default function ReviewStep({
   className,
   ...props
 }) {
-  // Helper to show value or fallback
   const display = (value) => value || "—";
 
   return (
@@ -41,33 +40,37 @@ export default function ReviewStep({
         </div>
       </div>
 
-      {/* Personal Information */}
+      {/* Personal Information – all fields visible (NRB + user-entered) */}
       <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-700 mb-4">
-          Personal Information
+          Personal Information (Verified & Entered)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
           <div>
-            <span className="font-medium text-gray-600">Name:</span>
+            <span className="font-medium text-gray-600">First Name:</span>
             <p className="mt-1">{display(data.name)}</p>
           </div>
           <div>
             <span className="font-medium text-gray-600">Surname:</span>
             <p className="mt-1">{display(data.surname)}</p>
           </div>
-          <div className="col-span-2">
-            <span className="font-medium text-gray-600">Email:</span>
-            <p className="mt-1">{display(data.email)}</p>
-          </div>
           <div>
             <span className="font-medium text-gray-600">National ID:</span>
             <p className="mt-1 font-mono">{display(data.nationalId)}</p>
           </div>
           <div>
+            <span className="font-medium text-gray-600">Email:</span>
+            <p className="mt-1">{display(data.email)}</p>
+          </div>
+          <div>
             <span className="font-medium text-gray-600">Height:</span>
             <p className="mt-1">{data.height ? `${data.height} cm` : "—"}</p>
           </div>
-          <div className="col-span-2">
+          <div>
+            <span className="font-medium text-gray-600">Place of Birth:</span>
+            <p className="mt-1">{display(data.placeOfBirth)}</p>
+          </div>
+          <div>
             <span className="font-medium text-gray-600">Mother's Place of Birth:</span>
             <p className="mt-1">{display(data.mothersPlaceOfBirth)}</p>
           </div>
@@ -95,7 +98,8 @@ export default function ReviewStep({
         <button
           type="button"
           onClick={onClick}
-          className="rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500focus:ring-offset-2"
+          disabled={loading}
+          className="flex items-center justify-center gap-2 rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Creating..." : "Create Application"}
