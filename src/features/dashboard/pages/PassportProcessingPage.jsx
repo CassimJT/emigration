@@ -95,12 +95,9 @@ export default function PassportProcessingPage() {
     );
   }
 
-    const canTakeAction = reviewData.status === "UNDER_REVIEW";
-    const hasRejectionReason = notes.trim().length > 0;
+    
 
-    const formData = reviewData.formData || {};
-
-  if (error || !reviewData || !canTakeAction) {
+  if (error || !reviewData ) {
     return (
       <div className="p-8 text-center text-red-600">
         <AlertCircle className="h-12 w-12 mx-auto mb-4" />
@@ -112,6 +109,10 @@ export default function PassportProcessingPage() {
     );
   }
 
+    const canTakeAction = reviewData.status === "UNDER_REVIEW";
+    const hasRejectionReason = notes.trim().length > 0;
+
+    const formData = reviewData.formData || {};
 
   const handleApprove = async () => {
     try {
