@@ -39,12 +39,10 @@ const getStatusBadge = (status) => {
   return <Badge variant={v.variant}>{v.label}</Badge>;
 };
 
-const getApplicantName = (formData) => {
-  if (!Array.isArray(formData) || formData.length < 3) {
-    return 'Unknown Applicant';
-  }
-  const personal = formData[2] || {};
-  return `${personal.name || ''} ${personal.surname || ''}`.trim() || 'Unknown Applicant';
+const getApplicantName = (formData = {}) => {
+  const name = formData.name || '';
+  const surname = formData.surname || '';
+  return `${name} ${surname}`.trim() || 'Unknown Applicant';
 };
 
 export default function PassportProcessingPage() {
@@ -112,6 +110,8 @@ export default function PassportProcessingPage() {
   const canTakeAction = reviewData.status === "UNDER_REVIEW";
   const hasRejectionReason = notes.trim().length > 0;
 
+  const formData = reviewData.formData || {};
+
   const handleApprove = async () => {
     try {
       await approve(paramId);
@@ -132,7 +132,6 @@ export default function PassportProcessingPage() {
       toast.warning("Please provide a rejection reason");
       return;
     }
-
     try {
       await reject(paramId, reason);
       toast.success("Application rejected", {
@@ -173,30 +172,30 @@ export default function PassportProcessingPage() {
             Applicant Information
           </CardTitle>
           <CardDescription>
-            Personal details submitted by {getApplicantName(reviewData.formData)}
+            Personal details submitted by {getApplicantName(formData)}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-              <p className="mt-1 font-medium">{getApplicantName(reviewData.formData)}</p>
+              <p className="mt-1 font-medium">{getApplicantName(formData)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Email</Label>
-              <p className="mt-1">{reviewData.formData?.[2]?.email || 'N/A'}</p>
+              <p className="mt-1">{formData.email || 'N/A'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Passport Type</Label>
-              <p className="mt-1">{reviewData.formData?.[1]?.passportType || 'Ordinary'}</p>
+              <p className="mt-1">{formData.passportType || 'Ordinary'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Booklet Type</Label>
-              <p className="mt-1">{reviewData.formData?.[1]?.bookletType || 'N/A'}</p>
+              <p className="mt-1">{formData.bookletType || 'N/A'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Service Type</Label>
-              <p className="mt-1">{reviewData.formData?.[1]?.serviceType || 'Normal'}</p>
+              <p className="mt-1">{formData.serviceType || 'Normal'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Created</Label>
@@ -213,8 +212,8 @@ export default function PassportProcessingPage() {
               Documents & Verification
             </h3>
             <div className="flex flex-wrap gap-4">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => toast.info("Document download functionality not implemented yet")}
               >
                 <Download className="h-4 w-4 mr-2" />
@@ -251,8 +250,8 @@ export default function PassportProcessingPage() {
             <CardContent className="space-y-6">
               {/* Rejection reason / notes */}
               <div className="space-y-2">
-                <Label 
-                  htmlFor="notes" 
+                <Label
+                  htmlFor="notes"
                   className={!hasRejectionReason ? "text-destructive" : ""}
                 >
                   Rejection Reason / Internal Notes
@@ -269,8 +268,8 @@ export default function PassportProcessingPage() {
                   onChange={(e) => setNotes(e.target.value)}
                   rows={4}
                   className={
-                    !hasRejectionReason 
-                      ? "border-destructive focus-visible:ring-destructive" 
+                    !hasRejectionReason
+                      ? "border-destructive focus-visible:ring-destructive"
                       : ""
                   }
                 />
@@ -350,14 +349,13 @@ export default function PassportProcessingPage() {
         </TabsContent>
 
         <TabsContent value="notes">
-          {/* Notes & History content – add your implementation here */}
           <Card>
             <CardHeader>
               <CardTitle>Review History & Notes</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">History and notes will appear here...</p>
-              {/* Add your history/log items */}
+              {/* Add your history/log items when available */}
             </CardContent>
           </Card>
         </TabsContent>
