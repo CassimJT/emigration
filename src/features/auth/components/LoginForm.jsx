@@ -68,7 +68,10 @@ export default function LoginForm({
             disabled={loading}
             value={values.email}
             onChange={onChange}
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            className={cn(
+              "rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg",
+               values.email ? "border-orange-500" : "border-black"
+            )}
           />
         </div>
 
@@ -89,7 +92,10 @@ export default function LoginForm({
               disabled={loading}
               value={values.password}
               onChange={onChange}
-              className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+              className={cn(
+                "rounded-xl border-opacity-30 h-12 placeholder:text-gray-500 text-lg",
+                 values.password ? "border-orange-500" : "border-black"
+              )}
             />
             <button
               type="button"

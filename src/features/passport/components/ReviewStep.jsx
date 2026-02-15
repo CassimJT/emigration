@@ -95,8 +95,7 @@ export default function ReviewStep({
         <button
           type="button"
           onClick={onClick}
-          disabled={loading}
-          className="flex items-center justify-center gap-2 rounded-full bg-green-600 px-10 py-3 font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-70"
+          className="rounded-full bg-orange-500 px-10 py-3 font-medium text-white hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500focus:ring-offset-2"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Creating..." : "Create Application"}

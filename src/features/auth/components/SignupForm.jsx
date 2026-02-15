@@ -56,7 +56,6 @@ export default function SignupForm({
         <div className="grid gap-1.5">
           <Label htmlFor="email" className="font-bold text-base">Email</Label>
           <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
             id="email" 
             name="email"
             type="email"
@@ -65,6 +64,10 @@ export default function SignupForm({
             required 
             disabled={loading}
             onChange={onChange}
+             className={cn(
+                "rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg",
+                  values.email ? "border-orange-500" : "border-black"
+             )}
           />
         </div>
 
@@ -73,7 +76,7 @@ export default function SignupForm({
 
           <div className="relative">
            <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg" 
+          
             id="password" 
             name="password"
             type={showPassword ? "text" : "password"} 
@@ -82,6 +85,10 @@ export default function SignupForm({
             required 
             disabled={loading}
             onChange={onChange}
+            className={cn(
+              "rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg",
+               values.password ? "border-orange-500" : "border-black" 
+            )}
           />
           <button
               type="button"
@@ -99,7 +106,7 @@ export default function SignupForm({
           <Label htmlFor="confirmPassword" className="font-bold text-base">Confirm Password</Label>
           <div className="relative"> 
           <Input 
-            className="rounded-xl border-opacity-30 border-black h-12 placeholder:text-gray-500 text-lg"
+            
             id="confirmPassword" 
             name="confirmPassword"
             type={showConfirmPassword ? "text" : "password"} 
@@ -108,6 +115,10 @@ export default function SignupForm({
             required 
             disabled={loading}
             onChange={onChange}
+            className={cn(
+              "rounded-xl border-opacity-30 h-12 placeholder:text-gray-500 text-lg",
+               values.confirmPassword ? "border-orange-500" : "border-black"
+            )}
           />
           <button
               type="button"

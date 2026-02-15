@@ -22,6 +22,7 @@ export default function PassportApplicationPage() {
 
   const {
     currentStep,
+    nextStep,
     previousStep,
     saveStepData,
     stepsData,
