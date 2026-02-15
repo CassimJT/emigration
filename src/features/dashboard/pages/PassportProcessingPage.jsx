@@ -95,22 +95,23 @@ export default function PassportProcessingPage() {
     );
   }
 
-  if (error || !reviewData) {
+    const canTakeAction = reviewData.status === "UNDER_REVIEW";
+    const hasRejectionReason = notes.trim().length > 0;
+
+    const formData = reviewData.formData || {};
+
+  if (error || !reviewData || !canTakeAction) {
     return (
       <div className="p-8 text-center text-red-600">
         <AlertCircle className="h-12 w-12 mx-auto mb-4" />
         <h2 className="text-xl font-semibold">Cannot load application</h2>
         <p className="mt-2">
-          {error || 'Application not found, already under review, or invalid ID.'}
+          {error || 'Application not found, already reviewed, or invalid ID.'}
         </p>
       </div>
     );
   }
 
-  const canTakeAction = reviewData.status === "UNDER_REVIEW";
-  const hasRejectionReason = notes.trim().length > 0;
-
-  const formData = reviewData.formData || {};
 
   const handleApprove = async () => {
     try {
@@ -278,7 +279,7 @@ export default function PassportProcessingPage() {
               {/* Action buttons */}
               <div className="flex flex-wrap gap-4 pt-4 border-t">
                 {/* Approve */}
-                <AlertDialog>
+                <AlertDialog className="bg-white" >
                   <AlertDialogTrigger asChild>
                     <Button
                       className="bg-green-600 hover:bg-green-700 text-white"
@@ -292,7 +293,7 @@ export default function PassportProcessingPage() {
                       Approve Application
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white rounded border-4 border-gray-300" >
                     <AlertDialogHeader>
                       <AlertDialogTitle>Approve Application?</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -301,12 +302,12 @@ export default function PassportProcessingPage() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="bg-destructive hover:bg-destructive/90 rounded text-white" >Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-green-600 hover:bg-green-700 text-white"
+                        className="bg-green-600 hover:bg-green-700 text-white rounded"
                         onClick={handleApprove}
                       >
-                        Yes, Approve
+                        yes, Approve
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -323,7 +324,7 @@ export default function PassportProcessingPage() {
                       Reject Application
                     </Button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent>
+                  <AlertDialogContent className="bg-white rounded border-4 border-gray-300">
                     <AlertDialogHeader>
                       <AlertDialogTitle>Reject Application?</AlertDialogTitle>
                       <AlertDialogDescription>
@@ -332,9 +333,9 @@ export default function PassportProcessingPage() {
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className="bg-green-600 hover:bg-green-700 text-white rounded" >Cancel</AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-destructive hover:bg-destructive/90 text-white"
+                        className="bg-destructive hover:bg-destructive/90 text-white rounded"
                         onClick={handleReject}
                         disabled={!hasRejectionReason || loading}
                       >
@@ -355,7 +356,6 @@ export default function PassportProcessingPage() {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">History and notes will appear here...</p>
-              {/* Add your history/log items when available */}
             </CardContent>
           </Card>
         </TabsContent>

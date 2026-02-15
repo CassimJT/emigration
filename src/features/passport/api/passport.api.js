@@ -108,7 +108,6 @@ export const startReview = async (applicationId) => {
     const res = await api.post(
       `/passport/admin/applications/${applicationId}/start-review`
     );
-    console.log("Raw axios response:", res);
     console.log("res.data:", res.data);
     const responseData = res.data;
 
