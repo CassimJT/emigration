@@ -235,21 +235,28 @@ const updateExistingApplication = async () => {
     []
   );
 
-  const initiateReview = useCallback( async (applicationId) =>{
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await startReview(applicationId);
-      console.log("Reviewed data:" + data);
-      setReviewData(data)
-      setSelectedStatus(data.status)
-    } catch (error) {
-      setError(error.message || 'Failed to load review queue');
-      throw error;
-    }finally{
-      setLoading(false);
+ // in usePassportApplication.js
+
+const initiateReview = useCallback(async (applicationId) => {
+  setLoading(true);
+  setError(null);
+  try {
+    const result = await startReview(applicationId);
+    const appData = result.data || result;
+
+    if (appData && appData._id) {
+      setReviewData(appData);
+    } else {
+      throw new Error("No valid application data received");
     }
-  },[])
+  } catch (err) {
+    const msg = err?.message || "Could not load application for review";
+    setError(msg);
+    console.warn("Initiate review failed:", err);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
 const approve = useCallback(async (applicationId) => {
     if (!applicationId) return;
