@@ -55,7 +55,7 @@ function PassportApplicationPage() {
         bookletType: passportTypeData.bookletType.trim()
       };
     }
-    else if (currentStep === 2) {
+    if (currentStep === 2) {
       return {
         name: personalInfoStepData.name.trim(),
         surname: personalInfoStepData.surname.trim(),
@@ -67,8 +67,7 @@ function PassportApplicationPage() {
     return {};
   };
 
-  const handleChange = (e) => {
-    const { id, value } = e.target;
+  const handleChange = (id, value) => {
     if (currentStep === 1) {
       setPassportTypeData((prev) => ({ ...prev, [id]: value }));
     } else if (currentStep === 2) {
@@ -78,37 +77,34 @@ function PassportApplicationPage() {
 
   const handleNext = async (e) => {
     e.preventDefault();
+
     const payload = preparePayload();
     console.log("Prepared payload for step", currentStep, payload);
 
+    // Always save current step data
     saveStepData(currentStep, payload);
 
     setLoading(true);
 
     try {
-      if (currentStep === 2) {
-        await saveAndContinue(payload);   
-      } 
+      if (currentStep === 1 || currentStep === 2) {
+        await saveAndContinue(payload);  
+      }
       else if (currentStep === 3) {
-        nextStep();                      
-      } 
+        nextStep();
+      }
       else if (currentStep === 4) {
         setIsSubmitting(true);
         await submitFinalApplication();
         toast.success("Application submitted successfully!");
         navigate("/dashboard/payments");
         return;
-      } 
-      else {
-        // Step 1: only save data, no creation
-        nextStep();
       }
     } catch (err) {
       console.error("Next failed:", err);
       toast.error("Failed to proceed. Please try again.");
     } finally {
       setLoading(false);
-      setIsSubmitting(false);
     }
   };
 
@@ -139,7 +135,6 @@ function PassportApplicationPage() {
               onChange={handleChange}
               onSubmit={handleNext}
               loading={loading}
-              initialData={formData}
             />
           )}
 
@@ -154,7 +149,6 @@ function PassportApplicationPage() {
               onChange={handleChange}
               onSubmit={handleNext}
               loading={loading}
-              initialData={formData}
             />
           )}
 
