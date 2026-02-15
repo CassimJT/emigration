@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,20 +19,23 @@ import {
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 import { StatusFilter } from '../components/StatusFilter';
 
-const getApplicantName = (formData) => {
-  const personal = formData?.[2] || {};
-  return `${personal.name || ''} ${personal.surname || ''}`.trim() || 'Unknown Applicant';
+const getApplicantName = (formData = {}) => {
+  const name = formData.name || '';
+  const surname = formData.surname || '';
+  return `${name} ${surname}`.trim() || 'Unknown Applicant';
 };
 
 const getStatusBadge = (status) => {
   const variants = {
     DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-700 border-gray-300' },
     SUBMITTED: { label: 'Pending Review', color: 'bg-yellow-100 text-yellow-800 border-yellow-300' },
-    'In Review': { label: 'In Review', color: 'bg-blue-100 text-blue-800 border-blue-300' },
+    UNDER_REVIEW: { label: 'Under Review', color: 'bg-blue-100 text-blue-800 border-blue-300' },
     APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800 border-green-300' },
     REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800 border-red-300' },
+    EXPIRED: { label: 'Expired', color: 'bg-gray-200 text-gray-700 border-gray-300' },
+    IN_PROGRESS: { label: 'In Progress', color: 'bg-purple-100 text-purple-800 border-purple-300' },
   };
-  const variant = variants[status] || { label: status || 'Unknown', color: 'bg-gray-100 text-gray-700' };
+  const variant = variants[status] || { label: status || 'Unknown', color: 'bg-gray-100 text-gray-700 border-gray-300' };
   return (
     <Badge className={`font-semibold px-3 py-1 rounded-full border ${variant.color} shadow-none text-[10px]`}>
       {variant.label}
@@ -40,46 +43,50 @@ const getStatusBadge = (status) => {
   );
 };
 
- const statusOptions = [
-    { label: "All Statuses", value: "" },
-    { label: "Draft", value: "DRAFT" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Submitted", value: "SUBMITTED" },
-    { label: "Under Review", value: "UNDER_REVIEW" },
-    { label: "Approved", value: "APPROVED" },
-    { label: "Rejected", value: "REJECTED" },
-    { label: "Expired", value: "EXPIRED" },
-    ] 
+const statusOptions = [
+  { label: "All Statuses", value: "" },
+  { label: "Draft", value: "DRAFT" },
+  { label: "In Progress", value: "IN_PROGRESS" },
+  { label: "Submitted", value: "SUBMITTED" },
+  { label: "Under Review", value: "UNDER_REVIEW" },
+  { label: "Approved", value: "APPROVED" },
+  { label: "Rejected", value: "REJECTED" },
+  { label: "Expired", value: "EXPIRED" },
+];
 
-    
-    export default function PendingReviewsPage() {
-      const { user } = useAuth();
-      const navigate = useNavigate();
-      const { currentRole, profile } = useOutletContext();
-      
-      const {
-        reviewQueue,
-        applicationStatus,
-        setApplicationStatus,
-        pagination,
-        loading,
-        error,
-        loadReviewQueue,
-        changePage,
-      } = usePassportApplication();
-      
-  React.useEffect(() => {
-    loadReviewQueue({ page: 1, status:{applicationStatus} }); // defaults: status="SUBMITTED", limit=10
-  }, [applicationStatus, loadReviewQueue]);
+export default function PendingReviewsPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { currentRole, profile } = useOutletContext();
+  const {
+    reviewQueue,
+    applicationStatus,
+    setApplicationStatus,
+    pagination,
+    loading,
+    error,
+    loadReviewQueue,
+    changePage,
+  } = usePassportApplication();
 
-  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
   const role = (currentRole || user?.role || 'officer').toLowerCase();
   const displayName = profile?.firstName && profile.firstName !== "null"
     ? profile.firstName
     : (user?.emailAddress?.split('@')[0] || "User");
 
+  // Load queue when status changes or on mount
+  useEffect(() => {
+    loadReviewQueue({
+      page: 1,
+      status: applicationStatus || undefined, // "" or undefined = all
+    });
+  }, [applicationStatus, loadReviewQueue]);
+
   const filteredApplications = React.useMemo(() => {
-    if (!reviewQueue?.length) {console.log("zero applications"); return [];}
+    if (!reviewQueue?.length) return [];
+
     const query = searchQuery.toLowerCase().trim();
     return reviewQueue.filter(app => {
       const name = getApplicantName(app.formData).toLowerCase();
@@ -95,6 +102,7 @@ const getStatusBadge = (status) => {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
+      {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -108,6 +116,7 @@ const getStatusBadge = (status) => {
             Welcome, {displayName}. Manage and process pending passport applications.
           </p>
         </div>
+
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
@@ -118,16 +127,16 @@ const getStatusBadge = (status) => {
           >
             Refresh
           </Button>
-          <Button variant="ghost" size="sm">
-            <StatusFilter
-              value={applicationStatus || ""}
-              onChange={(newStatus) => setApplicationStatus(newStatus)}
-              statusOptions={statusOptions}
-            />
-          </Button>
+
+          <StatusFilter
+            value={applicationStatus || ""}
+            onChange={(newStatus) => setApplicationStatus(newStatus)}
+            statusOptions={statusOptions}
+          />
         </div>
       </div>
 
+      {/* Main Card */}
       <Card className="border-gray-200/60 shadow-sm overflow-hidden bg-white/50 backdrop-blur-sm">
         <CardHeader className="bg-white/80 border-b border-gray-100/80 py-4">
           <div className="flex items-center gap-4">
@@ -225,13 +234,12 @@ const getStatusBadge = (status) => {
           )}
         </CardContent>
 
-        {/* Pagination Controls */}
+        {/* Pagination */}
         <div className="px-6 py-4 border-t border-gray-100 bg-white/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
           <p className="text-gray-600">
             Showing {filteredApplications.length} of {pagination.total || 0} applications
             {pagination.total > 0 && ` (page ${pagination.page} of ${pagination.pages})`}
           </p>
-
           <div className="flex items-center gap-3">
             <Button
               variant="outline"
@@ -242,11 +250,9 @@ const getStatusBadge = (status) => {
             >
               Previous
             </Button>
-
             <span className="font-medium min-w-[80px] text-center">
               Page {pagination.page} / {pagination.pages || 1}
             </span>
-
             <Button
               variant="outline"
               size="sm"
