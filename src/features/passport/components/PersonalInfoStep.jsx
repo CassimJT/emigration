@@ -16,18 +16,19 @@ export default function PersonalInfoStep({
   occupation = "Ordinary",
   onBack,
   onChange,     
-  onSubmit,     
+  onSubmit,
   loading = false,
   className,
 }) {
   const handleChange = (e) => {
     const { id, value } = e.target;
-    onChange(id, value);
+    if (typeof onChange === "function") {
+      onChange(id, value);
+    }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Send full step data to parent/hook
     onSubmit(e, {
       name,
       surname,
