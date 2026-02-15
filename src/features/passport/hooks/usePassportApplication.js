@@ -23,9 +23,9 @@ export function usePassportApplication() {
   const [status, setStatus] = useState(null);
 
   const [reviewQueue, setReviewQueue] = useState([]);
-  const [reviewData, setReviewData] = useState();
+  const [reviewData, setReviewData] = useState(null);
   const [applicationStatus, setApplicationStatus] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState();
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,

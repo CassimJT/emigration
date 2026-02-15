@@ -79,7 +79,7 @@ export default function PendingReviewsPage() {
   useEffect(() => {
     loadReviewQueue({
       page: 1,
-      status: applicationStatus || undefined, // "" or undefined = all
+      status: applicationStatus || undefined, 
     });
   }, [applicationStatus, loadReviewQueue]);
 
