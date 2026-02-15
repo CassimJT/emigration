@@ -182,7 +182,7 @@ export function usePassportApplication() {
       };
       await createNewApplication(payload);
     } else {
-      await updateExistingApplication();
+      await updateExistingApplication(freshStepData);
     }
     nextStep();
   };
