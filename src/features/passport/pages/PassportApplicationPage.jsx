@@ -118,7 +118,30 @@ function PassportApplicationPage() {
 
     try {
       if (currentStep === 1 || currentStep === 2) {
-        // Just save local state and move next (already saved above)
+        
+        // --- DATA INTEGRITY FIX: Ensure Name/Surname are populated ---
+        if (currentStep === 2) {
+             const { name, surname, nationalId } = payload;
+             if (!name || !surname || !nationalId) {
+                 console.log("Detecting missing identity info in payload. Attempting to re-fetch/fill...");
+                 
+                 const citizen = await fetchIdentityDetails(verificationSessionId);
+                 if (citizen) {
+                     payload.name = citizen.firstName || payload.name;
+                     payload.surname = citizen.surName || payload.surname;
+                     payload.nationalId = citizen.nationalId || payload.nationalId;
+                     
+                     setPersonalInfoStepData(prev => ({
+                         ...prev,
+                         name: payload.name,
+                         surname: payload.surname,
+                     }));
+                     
+                     saveStepData(currentStep, payload);
+                 }
+            }
+        }
+        
         nextStep();
       }
       else if (currentStep === 3) {
@@ -202,7 +225,8 @@ function PassportApplicationPage() {
 
           {currentStep === 4 && (
             <SubmitApplicationPage
-              summaryData={Object.entries(formData).map(([label, value]) => ({ label, value }))}
+              passportDetails={stepsData[1]}
+              personalDetails={stepsData[2]}
               onBack={previousStep}
               onSubmit={handleNext}
               isSubmitting={isSubmitting}

@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 export default function SubmitApplicationPage({
   title = "Submit Application",
   description = "Review your details before submission.",
-  summaryData = [],
+  passportDetails = {},
+  personalDetails = {},
   isSubmitting = false,
   onSubmit,
   onBack,
@@ -25,7 +26,6 @@ export default function SubmitApplicationPage({
   };
 
   // Show ALL fields in submit (including NRB-sourced ones)
-  const displayData = summaryData;
 
   return (
     <div className={cn("space-y-8", className)} {...props}>
@@ -38,12 +38,12 @@ export default function SubmitApplicationPage({
           {/* Passport Details */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-700">Passport Details</h3>
-            {displayData
-              .filter(item => ["passportType", "serviceType", "bookletType"].includes(item.label.toLowerCase()))
-              .map((item, index) => (
-                <div key={index} className="flex justify-between border-b pb-2 text-sm">
-                  <span className="font-medium text-muted-foreground">{item.label}:</span>
-                  <span>{formatValue(item.value)}</span>
+            {Object.entries(passportDetails).map(([key, value]) => (
+                <div key={key} className="flex justify-between border-b pb-2 text-sm">
+                  <span className="font-medium text-muted-foreground capitalize">
+                    {key.replace(/([A-Z])/g, ' $1').trim()}:
+                  </span>
+                  <span>{formatValue(value)}</span>
                 </div>
               ))}
           </div>
@@ -51,14 +51,12 @@ export default function SubmitApplicationPage({
           {/* Personal Information – ALL fields visible */}
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-700">Personal Information</h3>
-            {displayData
-              .filter(item => !["passportType", "serviceType", "bookletType"].includes(item.label.toLowerCase()))
-              .map((item, index) => (
-                <div key={index} className="flex justify-between border-b pb-2 text-sm">
-                  <span className="font-medium text-muted-foreground">
-                    {item.label}
+            {Object.entries(personalDetails).map(([key, value]) => (
+                <div key={key} className="flex justify-between border-b pb-2 text-sm">
+                  <span className="font-medium text-muted-foreground capitalize">
+                     {key.replace(/([A-Z])/g, ' $1').trim()}
                   </span>
-                  <span className="font-mono">{formatValue(item.value)}</span>
+                  <span className="font-mono">{formatValue(value)}</span>
                 </div>
               ))}
           </div>
