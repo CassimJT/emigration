@@ -32,7 +32,14 @@ export function useIdentityVerification() {
         throw new Error(data?.message || 'Verification failed')
       }
 
-      startIdentitySession(data.referenceId)
+      // Extract citizen profile from response
+      const citizenProfile = data.profile ? {
+        firstName: data.profile.firstName,
+        surName: data.profile.surName,
+        nationalId: payload.nationalId, // Use the nationalId from the request
+      } : null
+
+      startIdentitySession(data.referenceId, citizenProfile)
       setStatus('success') 
       return data
     } catch (err) {

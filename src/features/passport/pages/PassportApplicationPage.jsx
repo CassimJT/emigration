@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 
 function PassportApplicationPage() {
-  const { user, verificationSessionId } = useAuth();
+  const { user, verificationSessionId, citizenProfile } = useAuth();
   const { currentRole } = useOutletContext();
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
@@ -42,24 +42,18 @@ function PassportApplicationPage() {
     mothersPlaceOfBirth: '',
   });
 
-  // Fetch identity details to pre-fill form
+  // Pre-fill form with citizen profile data from auth context
   useEffect(() => {
-    const fetchIdentity = async () => {
-      if (!verificationSessionId) return;
-      
-      const citizen = await fetchIdentityDetails(verificationSessionId);
-      if (citizen) {
-        setPersonalInfoStepData(prev => ({
-          ...prev,
-          name: citizen.firstName || '',
-          surname: citizen.surName || '',
-          nationalId: citizen.nationalId || '',
-        }));
-      }
-    };
-
-    fetchIdentity();
-  }, [verificationSessionId]);
+    if (citizenProfile) {
+      console.log("Pre-filling form with citizen profile:", citizenProfile);
+      setPersonalInfoStepData(prev => ({
+        ...prev,
+        name: citizenProfile.firstName || '',
+        surname: citizenProfile.surName || '',
+        nationalId: citizenProfile.nationalId || '',
+      }));
+    }
+  }, [citizenProfile]);
 
   const {
     currentStep,
@@ -116,42 +110,8 @@ function PassportApplicationPage() {
 
     try {
       if (currentStep === 1 || currentStep === 2) {
-        
-        // --- DATA INTEGRITY FIX: Ensure Name/Surname/NationalId are populated BEFORE saving ---
-        if (currentStep === 2) {
-             const { name, surname, nationalId } = payload;
-             console.log("Step 2 - Checking identity fields:", { name, surname, nationalId });
-             
-             // ALWAYS fetch identity details to ensure we have the data
-             console.log("Fetching identity details for session:", verificationSessionId);
-             const citizen = await fetchIdentityDetails(verificationSessionId);
-             console.log("Fetched citizen data:", citizen);
-             
-             if (citizen) {
-                 // Populate from citizen data, overriding any empty values
-                 payload.name = citizen.firstName || name || '';
-                 payload.surname = citizen.surName || surname || '';
-                 payload.nationalId = citizen.nationalId || nationalId || '';
-                 
-                 console.log("Updated payload with citizen data:", {
-                     name: payload.name,
-                     surname: payload.surname,
-                     nationalId: payload.nationalId
-                 });
-                 
-                 // Update local state too so it reflects in UI if we go back
-                 setPersonalInfoStepData(prev => ({
-                     ...prev,
-                     name: payload.name,
-                     surname: payload.surname,
-                     nationalId: payload.nationalId,
-                 }));
-             } else {
-                 console.warn("Failed to fetch citizen data - proceeding with form values");
-             }
-        }
-        
-        // NOW save the (potentially updated) payload
+        // Data is already populated from citizenProfile in useEffect
+        // Just save and proceed
         console.log("Saving step data:", currentStep, payload);
         saveStepData(currentStep, payload);
         nextStep();
