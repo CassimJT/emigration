@@ -182,6 +182,16 @@ export async function fetchImmigrationRecord(applicationId) {
   }
 }
 
+// IDENTITY STATUS
+export async function getIdentityStatus(referenceId) {
+  try {
+    const { data } = await api.get(`/identity/status/${referenceId}`)
+    return data
+  } catch (error) {
+    return handleError(error)
+  }
+}
+
   // ERROR HANDLING
 
 function handleError(error) {

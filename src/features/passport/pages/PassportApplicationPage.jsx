@@ -1,5 +1,5 @@
 // passport/pages/PassportApplicationPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProgressIndicator from '../components/ProgressIndicator';
 import PassportTypeStep from '../components/PassportTypeStep';
 import PersonalInfoStep from '../components/PersonalInfoStep';
@@ -11,8 +11,9 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useLocation } from "react-router-dom";
 import { toast } from "sonner";
 
+
 function PassportApplicationPage() {
-  const { user } = useAuth();
+  const { user, verificationSessionId } = useAuth();
   const { currentRole } = useOutletContext();
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
@@ -36,8 +37,28 @@ function PassportApplicationPage() {
     residentialStatus: 'Permanent',
     occupation: 'Ordinary',
     height: '',
+    placeOfBirth: '',
     mothersPlaceOfBirth: '',
   });
+
+  // Fetch identity details to pre-fill form
+  useEffect(() => {
+    const fetchIdentity = async () => {
+      if (!verificationSessionId) return;
+      
+      const citizen = await fetchIdentityDetails(verificationSessionId);
+      if (citizen) {
+        setPersonalInfoStepData(prev => ({
+          ...prev,
+          name: citizen.firstName || '',
+          surname: citizen.surName || '',
+          nationalId: citizen.nationalId || '',
+        }));
+      }
+    };
+
+    fetchIdentity();
+  }, [verificationSessionId]);
 
   const {
     currentStep,
@@ -49,6 +70,7 @@ function PassportApplicationPage() {
     createNewApplication,
     updateExistingApplication,
     applicationId,
+    fetchIdentityDetails,
   } = usePassportApplication();
 
   const preparePayload = () => {
@@ -67,7 +89,9 @@ function PassportApplicationPage() {
         residentialStatus: personalInfoStepData.residentialStatus.trim() || 'Ordinary',
         occupation: personalInfoStepData.occupation.trim() || 'Ordinary',
         height: personalInfoStepData.height,
+        placeOfBirth: personalInfoStepData.placeOfBirth?.trim(),
         mothersPlaceOfBirth: personalInfoStepData.mothersPlaceOfBirth?.trim(),
+        nationalId: personalInfoStepData.nationalId, // Include nationalId in payload
       };
     }
     return {};
@@ -158,6 +182,7 @@ function PassportApplicationPage() {
               residentialStatus={personalInfoStepData.residentialStatus}
               occupation={personalInfoStepData.occupation}
               height={personalInfoStepData.height}
+              placeOfBirth={personalInfoStepData.placeOfBirth}
               mothersPlaceOfBirth={personalInfoStepData.mothersPlaceOfBirth}
               onBack={previousStep}
               onChange={handleChange}
