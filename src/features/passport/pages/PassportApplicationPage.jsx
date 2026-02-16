@@ -108,18 +108,15 @@ function PassportApplicationPage() {
   const handleNext = async (e) => {
     e.preventDefault();
 
-    const payload = preparePayload();
+    let payload = preparePayload();
     console.log("Prepared payload for step", currentStep, payload);
-
-    // Always save current step data
-    saveStepData(currentStep, payload);
 
     setLoading(true);
 
     try {
       if (currentStep === 1 || currentStep === 2) {
         
-        // --- DATA INTEGRITY FIX: Ensure Name/Surname are populated ---
+        // --- DATA INTEGRITY FIX: Ensure Name/Surname are populated BEFORE saving ---
         if (currentStep === 2) {
              const { name, surname, nationalId } = payload;
              if (!name || !surname || !nationalId) {
@@ -131,17 +128,21 @@ function PassportApplicationPage() {
                      payload.surname = citizen.surName || payload.surname;
                      payload.nationalId = citizen.nationalId || payload.nationalId;
                      
+                     // Update local state too so it reflects in UI if we go back
                      setPersonalInfoStepData(prev => ({
                          ...prev,
                          name: payload.name,
                          surname: payload.surname,
+                         nationalId: payload.nationalId,
                      }));
                      
-                     saveStepData(currentStep, payload);
+                     console.log("Updated payload with identity details:", payload);
                  }
             }
         }
         
+        // NOW save the (potentially updated) payload
+        saveStepData(currentStep, payload);
         nextStep();
       }
       else if (currentStep === 3) {
