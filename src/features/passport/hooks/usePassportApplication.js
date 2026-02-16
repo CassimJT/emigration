@@ -8,6 +8,7 @@ import {
   startReview,
   approveApplication,
   rejectApplication,
+  getIdentityStatus,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -75,6 +76,25 @@ export function usePassportApplication() {
       setLoading(false);
     }
   }, []);
+
+  const fetchIdentityDetails = async (sessionId) => {
+    if (!sessionId) return null;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await getIdentityStatus(sessionId);
+      if (response?.status === 'success' && response?.citizen) {
+        return response.citizen;
+      }
+      return null;
+    } catch (err) {
+      console.error("Failed to fetch identity details:", err);
+      // We don't necessarily want to set a global error state here as it might not block the flow
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const createNewApplication = async (customPayload) => {
     setLoading(true);
@@ -157,6 +177,7 @@ export function usePassportApplication() {
         throw new Error(response?.message || 'Failed to submit');
       }
       setStatus('success');
+      console.log('Application submitted successfully:', response.data);
       return response;
     } catch (err) {
       setError(err.message || 'Failed to submit application');
@@ -308,5 +329,6 @@ export function usePassportApplication() {
     pagination,
     loadReviewQueue,
     changePage,
+    fetchIdentityDetails,
   };
 }

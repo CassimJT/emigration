@@ -11,6 +11,7 @@ export default function PersonalInfoStep({
   surname = "",
   email = "",
   height = "",
+  placeOfBirth = "",
   mothersPlaceOfBirth = "",
   residentialStatus = "Permanent",
   occupation = "Ordinary",
@@ -34,6 +35,7 @@ export default function PersonalInfoStep({
       surname,
       email,
       height,
+      placeOfBirth,
       mothersPlaceOfBirth,
       residentialStatus,
       occupation,
@@ -110,7 +112,22 @@ export default function PersonalInfoStep({
           />
         </div>
 
-        <div className="space-y-2 md:col-span-2">
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
+          <Label htmlFor="placeOfBirth" className="text-sm font-medium text-gray-700">
+            Place of Birth <span className="text-red-500">*</span>
+          </Label>
+          <Input
+            id="placeOfBirth"
+            value={placeOfBirth}
+            onChange={handleChange}
+            placeholder="e.g. Lilongwe, Malawi"
+            required
+          />
+        </div>
+
+        <div className="space-y-2">
           <Label htmlFor="mothersPlaceOfBirth" className="text-sm font-medium text-gray-700">
             Mother's Place of Birth <span className="text-red-500">*</span>
           </Label>
