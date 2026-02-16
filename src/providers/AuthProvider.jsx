@@ -16,6 +16,7 @@ export function AuthProvider({ children }) {
 
   const [isAuthReady, setIsAuthReady] = useState(false)
   const [user, setUser] = useState(null)
+  const [citizenProfile, setCitizenProfile] = useState(null)
   const [verificationSessionId, setVerificationSessionId] = useState(null)
   const [loginSessionId, setLoginSessionId] = useState(null)
   
@@ -31,6 +32,7 @@ export function AuthProvider({ children }) {
       const storedTemp = getTempSession();
 
       if (storedUser) setUser(storedUser);
+      if (storedTemp?.citizenProfile) setCitizenProfile(storedTemp.citizenProfile);
       if (storedTemp?.verificationSessionId) setVerificationSessionId(storedTemp.verificationSessionId);
       if (storedTemp?.loginSessionId) setLoginSessionId(storedTemp.loginSessionId);
     } catch (err) {
@@ -45,13 +47,18 @@ export function AuthProvider({ children }) {
 
   /* ---------------- Identity phase ---------------- */
 
-  const startIdentitySession = (sessionId) => {
+  const startIdentitySession = (sessionId, profile = null) => {
     setVerificationSessionId(sessionId)
-    setTempSession({ verificationSessionId: sessionId })
+    setCitizenProfile(profile)
+    setTempSession({ 
+      verificationSessionId: sessionId,
+      citizenProfile: profile 
+    })
   }
 
   const clearIdentitySession = () => {
     setVerificationSessionId(null)
+    setCitizenProfile(null)
     setTempSession({})
   }
 
@@ -60,6 +67,7 @@ export function AuthProvider({ children }) {
   const startLoginSession = (sessionId) => {
     setLoginSessionId(sessionId)
     setTempSession({
+      citizenProfile,
       verificationSessionId,
       loginSessionId: sessionId,
     })
@@ -67,7 +75,7 @@ export function AuthProvider({ children }) {
 
   const clearLoginSession = () => {
     setLoginSessionId(null)
-    setTempSession({ verificationSessionId })
+    setTempSession({ citizenProfile, verificationSessionId })
   }
 
   /* ---------------- Authenticated phase ---------------- */
@@ -91,6 +99,7 @@ export function AuthProvider({ children }) {
     clearTempSession()
     clearCurrentDashboardView()
     setUser(null)
+    setCitizenProfile(null)
     setVerificationSessionId(null)
     setLoginSessionId(null)
   }
@@ -103,6 +112,7 @@ export function AuthProvider({ children }) {
         isAuthReady,
 
 
+        citizenProfile,
         verificationSessionId,
         startIdentitySession,
         clearIdentitySession,
