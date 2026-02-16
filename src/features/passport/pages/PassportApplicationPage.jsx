@@ -35,6 +35,8 @@ function PassportApplicationPage() {
     email: '',
     residentialStatus: 'Permanent',
     occupation: 'Ordinary',
+    height: '',
+    mothersPlaceOfBirth: '',
   });
 
   const {
@@ -43,8 +45,10 @@ function PassportApplicationPage() {
     previousStep,
     saveStepData,
     stepsData,
-    saveAndContinue,
     submitFinalApplication,
+    createNewApplication,
+    updateExistingApplication,
+    applicationId,
   } = usePassportApplication();
 
   const preparePayload = () => {
@@ -62,6 +66,8 @@ function PassportApplicationPage() {
         email: personalInfoStepData.email.trim(),
         residentialStatus: personalInfoStepData.residentialStatus.trim() || 'Ordinary',
         occupation: personalInfoStepData.occupation.trim() || 'Ordinary',
+        height: personalInfoStepData.height,
+        mothersPlaceOfBirth: personalInfoStepData.mothersPlaceOfBirth?.trim(),
       };
     }
     return {};
@@ -88,9 +94,15 @@ function PassportApplicationPage() {
 
     try {
       if (currentStep === 1 || currentStep === 2) {
-        await saveAndContinue(payload);  
+        // Just save local state and move next (already saved above)
+        nextStep();
       }
       else if (currentStep === 3) {
+        if (applicationId) {
+          await updateExistingApplication();
+        } else {
+          await createNewApplication();
+        }
         nextStep();
       }
       else if (currentStep === 4) {
@@ -145,6 +157,8 @@ function PassportApplicationPage() {
               email={personalInfoStepData.email}
               residentialStatus={personalInfoStepData.residentialStatus}
               occupation={personalInfoStepData.occupation}
+              height={personalInfoStepData.height}
+              mothersPlaceOfBirth={personalInfoStepData.mothersPlaceOfBirth}
               onBack={previousStep}
               onChange={handleChange}
               onSubmit={handleNext}
