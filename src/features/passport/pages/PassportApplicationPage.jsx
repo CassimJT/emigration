@@ -33,9 +33,10 @@ function PassportApplicationPage() {
   const [personalInfoStepData, setPersonalInfoStepData] = useState({
     name: '',
     surname: '',
+    nationalId: '',
     email: '',
     residentialStatus: 'Permanent',
-    occupation: 'Ordinary',
+    occupation: 'Working',
     height: '',
     placeOfBirth: '',
     mothersPlaceOfBirth: '',
@@ -116,32 +117,42 @@ function PassportApplicationPage() {
     try {
       if (currentStep === 1 || currentStep === 2) {
         
-        // --- DATA INTEGRITY FIX: Ensure Name/Surname are populated BEFORE saving ---
+        // --- DATA INTEGRITY FIX: Ensure Name/Surname/NationalId are populated BEFORE saving ---
         if (currentStep === 2) {
              const { name, surname, nationalId } = payload;
-             if (!name || !surname || !nationalId) {
-                 console.log("Detecting missing identity info in payload. Attempting to re-fetch/fill...");
+             console.log("Step 2 - Checking identity fields:", { name, surname, nationalId });
+             
+             // ALWAYS fetch identity details to ensure we have the data
+             console.log("Fetching identity details for session:", verificationSessionId);
+             const citizen = await fetchIdentityDetails(verificationSessionId);
+             console.log("Fetched citizen data:", citizen);
+             
+             if (citizen) {
+                 // Populate from citizen data, overriding any empty values
+                 payload.name = citizen.firstName || name || '';
+                 payload.surname = citizen.surName || surname || '';
+                 payload.nationalId = citizen.nationalId || nationalId || '';
                  
-                 const citizen = await fetchIdentityDetails(verificationSessionId);
-                 if (citizen) {
-                     payload.name = citizen.firstName || payload.name;
-                     payload.surname = citizen.surName || payload.surname;
-                     payload.nationalId = citizen.nationalId || payload.nationalId;
-                     
-                     // Update local state too so it reflects in UI if we go back
-                     setPersonalInfoStepData(prev => ({
-                         ...prev,
-                         name: payload.name,
-                         surname: payload.surname,
-                         nationalId: payload.nationalId,
-                     }));
-                     
-                     console.log("Updated payload with identity details:", payload);
-                 }
-            }
+                 console.log("Updated payload with citizen data:", {
+                     name: payload.name,
+                     surname: payload.surname,
+                     nationalId: payload.nationalId
+                 });
+                 
+                 // Update local state too so it reflects in UI if we go back
+                 setPersonalInfoStepData(prev => ({
+                     ...prev,
+                     name: payload.name,
+                     surname: payload.surname,
+                     nationalId: payload.nationalId,
+                 }));
+             } else {
+                 console.warn("Failed to fetch citizen data - proceeding with form values");
+             }
         }
         
         // NOW save the (potentially updated) payload
+        console.log("Saving step data:", currentStep, payload);
         saveStepData(currentStep, payload);
         nextStep();
       }
