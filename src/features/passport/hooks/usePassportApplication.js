@@ -101,9 +101,15 @@ export function usePassportApplication() {
     setError(null);
     setStatus(null);
     try {
+      // Flatten stepsData into a single formData object
+      const flattenedFormData = Object.values(stepsData).reduce(
+        (acc, stepData) => ({ ...acc, ...stepData }),
+        {}
+      );
+      
       const payload = customPayload || {
         type: stepsData[1]?.passportType,
-        formData: stepsData,
+        formData: flattenedFormData,
         identitySessionId: verificationSessionId,
       };
       console.log('Creating application with payload:', payload);
