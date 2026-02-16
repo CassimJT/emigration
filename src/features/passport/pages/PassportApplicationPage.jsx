@@ -44,14 +44,23 @@ function PassportApplicationPage() {
 
   // Pre-fill form with citizen profile data from auth context
   useEffect(() => {
+    console.log("=== CITIZEN PROFILE CHECK ===");
+    console.log("citizenProfile from auth:", citizenProfile);
+    
     if (citizenProfile) {
       console.log("Pre-filling form with citizen profile:", citizenProfile);
-      setPersonalInfoStepData(prev => ({
-        ...prev,
-        name: citizenProfile.firstName || '',
-        surname: citizenProfile.surName || '',
-        nationalId: citizenProfile.nationalId || '',
-      }));
+      setPersonalInfoStepData(prev => {
+        const updated = {
+          ...prev,
+          name: citizenProfile.firstName || '',
+          surname: citizenProfile.surName || '',
+          nationalId: citizenProfile.nationalId || '',
+        };
+        console.log("Updated personalInfoStepData:", updated);
+        return updated;
+      });
+    } else {
+      console.warn("No citizenProfile available in auth context!");
     }
   }, [citizenProfile]);
 

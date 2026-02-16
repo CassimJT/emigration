@@ -32,12 +32,22 @@ export function useIdentityVerification() {
         throw new Error(data?.message || 'Verification failed')
       }
 
+      console.log("=== IDENTITY VERIFICATION SUCCESS ===");
+      console.log("Full response data:", data);
+      console.log("Payload nationalId:", payload.nationalId);
+
       // Extract citizen profile from response
       const citizenProfile = data.profile ? {
         firstName: data.profile.firstName,
         surName: data.profile.surName,
         nationalId: payload.nationalId, // Use the nationalId from the request
       } : null
+
+      console.log("Extracted citizenProfile:", citizenProfile);
+      console.log("Calling startIdentitySession with:", {
+        referenceId: data.referenceId,
+        profile: citizenProfile
+      });
 
       startIdentitySession(data.referenceId, citizenProfile)
       setStatus('success') 
