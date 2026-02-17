@@ -8,7 +8,6 @@ import {
   startReview,
   approveApplication,
   rejectApplication,
-  getIdentityStatus,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -77,24 +76,6 @@ export function usePassportApplication() {
     }
   }, []);
 
-  const fetchIdentityDetails = async (sessionId) => {
-    if (!sessionId) return null;
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await getIdentityStatus(sessionId);
-      if (response?.status === 'success' && response?.citizen) {
-        return response.citizen;
-      }
-      return null;
-    } catch (err) {
-      console.error("Failed to fetch identity details:", err);
-      // We don't necessarily want to set a global error state here as it might not block the flow
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const createNewApplication = async (customPayload) => {
     setLoading(true);
@@ -271,8 +252,6 @@ export function usePassportApplication() {
       setReviewData(updated);
       setSelectedStatus("APPROVED");
       console.log("Application approved successfully");
-      // Optional: reload full queue after approval
-      // await loadReviewQueue({ page: pagination.page });
     } catch (err) {
       const msg = err.message || "Could not approve application";
       setError(msg);
@@ -289,8 +268,6 @@ export function usePassportApplication() {
       const updated = await rejectApplication(applicationId, reason);
       setReviewData(updated);
       setSelectedStatus("REJECTED");
-      // Optional: reload queue
-      // await loadReviewQueue({ page: pagination.page });
       return updated;
     } catch (err) {
       const msg = err.message || "Could not reject application";
@@ -335,6 +312,5 @@ export function usePassportApplication() {
     pagination,
     loadReviewQueue,
     changePage,
-    fetchIdentityDetails,
   };
 }

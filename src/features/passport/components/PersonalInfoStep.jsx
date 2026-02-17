@@ -59,20 +59,20 @@ export default function PersonalInfoStep({
             id="name"
             value={name}
             onChange={handleChange}
-            placeholder="First Name"
+            placeholder="First Name (from NRB)"
             disabled // Pre-filled from NRB
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="surname" className="text-sm font-medium text-gray-700">
+          <Label htmlFor="surname " className="text-sm font-medium text-gray-700">
             Surname
           </Label>
           <Input
-            id="surname"
+            id="surname "
             value={surname}
             onChange={handleChange}
-            placeholder="Surname"
+            placeholder="Surname (from NRB)"
             disabled // Pre-filled from NRB
           />
         </div>
@@ -107,21 +107,6 @@ export default function PersonalInfoStep({
             required
             min="50"
             max="250"
-          />
-        </div>
-
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2">
-          <Label htmlFor="placeOfBirth" className="text-sm font-medium text-gray-700">
-            Place of Birth <span className="text-red-500">*</span>
-          </Label>
-          <Input
-            id="placeOfBirth"
-            value={placeOfBirth}
-            onChange={handleChange}
-            placeholder="e.g. Lilongwe, Malawi"
-            required
           />
         </div>
 

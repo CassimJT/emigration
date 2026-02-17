@@ -67,10 +67,6 @@ export default function ReviewStep({
             <p className="mt-1">{data.height ? `${data.height} cm` : "—"}</p>
           </div>
           <div>
-            <span className="font-medium text-gray-600">Place of Birth:</span>
-            <p className="mt-1">{display(data.placeOfBirth)}</p>
-          </div>
-          <div>
             <span className="font-medium text-gray-600">Mother's Place of Birth:</span>
             <p className="mt-1">{display(data.mothersPlaceOfBirth)}</p>
           </div>

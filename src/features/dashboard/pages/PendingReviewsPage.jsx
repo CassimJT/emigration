@@ -33,18 +33,6 @@ const getNationalId = (app) => {
   return app?.applicant?.nationalId?.nationalId || app?.formData?.nationalId || 'N/A';
 };
 
-const getHeight = (app) => {
-  return app?.formData?.height ? `${app.formData.height} cm` : 'N/A';
-};
-
-const getMothersPlaceOfBirth = (app) => {
-  const pob = app?.formData?.mothersPlaceOfBirth || {};
-  if (pob.district) {
-    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
-  }
-  return app?.formData?.mothersPlaceOfBirth || 'N/A';
-};
-
 const getStatusBadge = (status) => {
   const variants = {
     DRAFT: { label: 'Draft', color: 'bg-gray-100 text-gray-700 border-gray-300' },
