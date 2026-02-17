@@ -25,45 +25,43 @@ import {
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 import { toast } from "sonner";
 
-const getApplicantName = (reviewData) => {
+const getApplicantName = (reviewData = {}) => {
   const nrb = reviewData?.applicant?.nationalId || {};
   const form = reviewData?.formData || {};
-
   const first = nrb.firstName || form.name || '';
   const sur = nrb.surName || form.surname || '';
   return `${first} ${sur}`.trim() || 'Unknown Applicant';
 };
 
-const getNationalId = (reviewData) => {
+const getNationalId = (reviewData = {}) => {
   const nrb = reviewData?.applicant?.nationalId || {};
-  return nrb.nationalId || 'N/A';
+  return nrb.nationalId || reviewData?.formData?.nationalId || 'N/A';
 };
 
-const getHeight = (reviewData) => {
-  const form = reviewData?.formData || {};
-  const h = form.height;
+const getHeight = (reviewData = {}) => {
+  const h = reviewData?.formData?.height;
   return h ? `${h} cm` : 'N/A';
 };
 
-const getPlaceOfBirth = (reviewData) => {
+const getPlaceOfBirth = (reviewData = {}) => {
   const nrb = reviewData?.applicant?.nationalId || {};
-  const pob = nrb.placeOfBirth || {};
-  if (pob.district) {
-    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
-  }
-  return pob || 'N/A';
-};
-
-const getMothersPlaceOfBirth = (reviewData) => {
   const form = reviewData?.formData || {};
-  const pob = form.mothersPlaceOfBirth || {};
+  const pob = nrb.placeOfBirth || form.placeOfBirth || {};
   if (pob.district) {
     return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
   }
-  return form.mothersPlaceOfBirth || 'N/A';
+  return 'N/A';
 };
 
-const getStatusBadge = (status) => {
+const getMothersPlaceOfBirth = (reviewData = {}) => {
+  const pob = reviewData?.formData?.mothersPlaceOfBirth || {};
+  if (pob.district) {
+    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
+  }
+  return 'N/A';
+};
+
+const getStatusBadge = (status = 'UNKNOWN') => {
   const variants = {
     DRAFT: { label: 'Draft', variant: 'secondary' },
     IN_PROGRESS: { label: 'In Progress', variant: 'secondary' },
@@ -73,7 +71,7 @@ const getStatusBadge = (status) => {
     REJECTED: { label: 'Rejected', variant: 'destructive' },
     EXPIRED: { label: 'Expired', variant: 'secondary' },
   };
-  const v = variants[status] || { label: status || 'Unknown', variant: 'secondary' };
+  const v = variants[status] || { label: status, variant: 'secondary' };
   return <Badge variant={v.variant}>{v.label}</Badge>;
 };
 
@@ -82,7 +80,7 @@ export default function PassportProcessingPage() {
   const { user } = useAuth();
   const { currentRole, profile } = useOutletContext();
   const {
-    reviewData,
+    reviewData = null,  
     loading,
     error,
     initiateReview,
@@ -119,7 +117,7 @@ export default function PassportProcessingPage() {
     return <Navigate to="*" replace />;
   }
 
-  if (loading && !reviewData) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Loader2 className="h-12 w-12 animate-spin text-indigo-600" />
@@ -127,13 +125,13 @@ export default function PassportProcessingPage() {
     );
   }
 
-  if (error || !reviewData) {
+  if (error || !reviewData || typeof reviewData !== 'object' || Object.keys(reviewData).length === 0) {
     return (
       <div className="p-8 text-center text-red-600">
         <AlertCircle className="h-12 w-12 mx-auto mb-4" />
         <h2 className="text-xl font-semibold">Cannot load application</h2>
         <p className="mt-2">
-          {error || 'Application not found, already reviewed, or invalid ID.'}
+          {error || 'Application not found, already reviewed, invalid ID, or no data available.'}
         </p>
       </div>
     );
@@ -183,7 +181,7 @@ export default function PassportProcessingPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Process Application</h1>
           <p className="text-gray-500 mt-1">
             Reviewing passport application • ID:{' '}
-            <span className="font-mono font-medium">{reviewData._id}</span>
+            <span className="font-mono font-medium">{reviewData._id || 'N/A'}</span>
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -252,7 +250,7 @@ export default function PassportProcessingPage() {
               <Label className="text-sm font-medium text-gray-500">Created</Label>
               <div className="flex items-center gap-2 mt-1 text-gray-600">
                 <Clock className="h-4 w-4" />
-                {new Date(reviewData.createdAt).toLocaleString()}
+                {reviewData?.createdAt ? new Date(reviewData.createdAt).toLocaleString() : 'N/A'}
               </div>
             </div>
           </div>
