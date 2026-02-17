@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 
 function PassportApplicationPage() {
-  const { user, verificationSessionId, citizenProfile } = useAuth();
+  const { user, citizenProfile } = useAuth();
   const { currentRole } = useOutletContext();
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
@@ -38,7 +38,6 @@ function PassportApplicationPage() {
     residentialStatus: 'Permanent',
     occupation: 'Working',
     height: '',
-    placeOfBirth: '',
     mothersPlaceOfBirth: '',
   });
 
@@ -74,7 +73,6 @@ function PassportApplicationPage() {
     createNewApplication,
     updateExistingApplication,
     applicationId,
-    fetchIdentityDetails,
   } = usePassportApplication();
 
   const preparePayload = () => {
@@ -93,7 +91,6 @@ function PassportApplicationPage() {
         residentialStatus: personalInfoStepData.residentialStatus.trim() || 'Ordinary',
         occupation: personalInfoStepData.occupation.trim() || 'Ordinary',
         height: personalInfoStepData.height,
-        placeOfBirth: personalInfoStepData.placeOfBirth?.trim(),
         mothersPlaceOfBirth: personalInfoStepData.mothersPlaceOfBirth?.trim(),
         nationalId: personalInfoStepData.nationalId, // Include nationalId in payload
       };
@@ -186,7 +183,6 @@ function PassportApplicationPage() {
               residentialStatus={personalInfoStepData.residentialStatus}
               occupation={personalInfoStepData.occupation}
               height={personalInfoStepData.height}
-              placeOfBirth={personalInfoStepData.placeOfBirth}
               mothersPlaceOfBirth={personalInfoStepData.mothersPlaceOfBirth}
               onBack={previousStep}
               onChange={handleChange}

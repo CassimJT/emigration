@@ -25,40 +25,42 @@ import {
 import { usePassportApplication } from '@/features/passport/hooks/usePassportApplication';
 import { toast } from "sonner";
 
-// Prefer populated NRB first 
 const getApplicantName = (reviewData) => {
   const nrb = reviewData?.applicant?.nationalId || {};
   const form = reviewData?.formData || {};
 
   const first = nrb.firstName || form.name || '';
-  const sur   = nrb.surName   || form.surname || '';
-
+  const sur = nrb.surName || form.surname || '';
   return `${first} ${sur}`.trim() || 'Unknown Applicant';
 };
 
 const getNationalId = (reviewData) => {
-  return reviewData?.applicant?.nationalId?.nationalId || reviewData?.formData?.nationalId || 'N/A';
+  const nrb = reviewData?.applicant?.nationalId || {};
+  return nrb.nationalId || 'N/A';
 };
 
 const getHeight = (reviewData) => {
-  const h = reviewData?.formData?.height;
+  const form = reviewData?.formData || {};
+  const h = form.height;
   return h ? `${h} cm` : 'N/A';
 };
 
 const getPlaceOfBirth = (reviewData) => {
-  const pob = reviewData?.formData?.placeOfBirth || {};
+  const nrb = reviewData?.applicant?.nationalId || {};
+  const pob = nrb.placeOfBirth || {};
   if (pob.district) {
     return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
   }
-  return reviewData?.formData?.placeOfBirth || 'N/A';
+  return pob || 'N/A';
 };
 
 const getMothersPlaceOfBirth = (reviewData) => {
-  const pob = reviewData?.formData?.mothersPlaceOfBirth || {};
+  const form = reviewData?.formData || {};
+  const pob = form.mothersPlaceOfBirth || {};
   if (pob.district) {
     return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
   }
-  return reviewData?.formData?.mothersPlaceOfBirth || 'N/A';
+  return form.mothersPlaceOfBirth || 'N/A';
 };
 
 const getStatusBadge = (status) => {
