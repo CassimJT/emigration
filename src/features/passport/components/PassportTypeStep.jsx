@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 export default function PassportTypeStep({
   passportType = "Ordinary",
   serviceType = "Normal",
-  bookletType = "36 Pages",
+  bookletType = "36",
   onChange,   // now expects (id, value)
   onSubmit,   // expects to receive full step data object
   loading = false,
@@ -81,8 +81,8 @@ export default function PassportTypeStep({
             className="mt-1 block w-full rounded-lg border-gray-300 px-3 py-2 shadow-sm focus:border-orange-500 focus:ring-orange-500"
           >
             <option value="">Select booklet type</option>
-            <option value="36 Pages">36 Pages</option>
-            <option value="48 Pages">48 Pages</option>
+            <option value="36">36 Pages</option>
+            <option value="48">48 Pages</option>
           </select>
         </div>
       </div>
