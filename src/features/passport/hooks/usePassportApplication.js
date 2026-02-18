@@ -228,6 +228,7 @@ export function usePassportApplication() {
     setError(null);
     try {
       const result = await startReview(applicationId);
+      console.log("review data: " ,result)
       const appData = result.data || result;
       if (appData && appData._id) {
         setReviewData(appData);
@@ -249,8 +250,10 @@ export function usePassportApplication() {
     setError(null);
     try {
       const updated = await approveApplication(applicationId);
+      console.log("Approve obj: "+ updated)
       setReviewData(updated);
       setSelectedStatus("APPROVED");
+      console.log("Approve obj: ",reviewData)
       console.log("Application approved successfully");
     } catch (err) {
       const msg = err.message || "Could not approve application";
@@ -259,15 +262,17 @@ export function usePassportApplication() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [reviewData]);
 
   const reject = useCallback(async (applicationId, reason = "") => {
     setLoading(true);
     setError(null);
     try {
       const updated = await rejectApplication(applicationId, reason);
+      console.log("Reject App obj: ", updated )
       setReviewData(updated);
       setSelectedStatus("REJECTED");
+      console.log("Reject App obj: ", reviewData )
       return updated;
     } catch (err) {
       const msg = err.message || "Could not reject application";
@@ -276,7 +281,7 @@ export function usePassportApplication() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [reviewData]);
 
   const changePage = (newPage) => {
     if (newPage < 1 || newPage > pagination.pages) return;

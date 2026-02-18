@@ -25,9 +25,9 @@ function PassportApplicationPage() {
   const selectedType = location.state?.selectedType || null;
 
   const [passportTypeData, setPassportTypeData] = useState({
-    passportType: selectedType?.type || 'Ordinary',
-    serviceType: selectedType?.serviceType || 'Normal',
-    bookletType: selectedType?.pages || '36',
+    passportType: selectedType?.type || ' ',
+    serviceType: selectedType?.serviceType || ' ',
+    bookletType: selectedType?.pages || ' ',
   });
 
   const [personalInfoStepData, setPersonalInfoStepData] = useState({
