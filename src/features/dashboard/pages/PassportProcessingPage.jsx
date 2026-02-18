@@ -54,11 +54,8 @@ const getPlaceOfBirth = (reviewData = {}) => {
 };
 
 const getMothersPlaceOfBirth = (reviewData = {}) => {
-  const pob = reviewData?.formData?.mothersPlaceOfBirth || {};
-  if (pob.district) {
-    return `${pob.district}, ${pob.village || ''}`.trim() || 'N/A';
-  }
-  return 'N/A';
+  const pob = reviewData?.formData?.mothersPlaceOfBirth || 'N/A';
+  return pob;
 };
 
 const getStatusBadge = (status = 'UNKNOWN') => {
@@ -240,7 +237,7 @@ export default function PassportProcessingPage() {
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Booklet Type</Label>
-              <p className="mt-1">{reviewData?.formData?.bookletType || 'N/A'}</p>
+              <p className="mt-1">{reviewData?.formData?.bookletType + ' pages' || 'N/A'}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Service Type</Label>
