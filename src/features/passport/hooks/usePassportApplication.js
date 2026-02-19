@@ -228,7 +228,6 @@ export function usePassportApplication() {
     setError(null);
     try {
       const result = await startReview(applicationId);
-      console.log("review data: " ,result)
       const appData = result.data || result;
       if (appData && appData._id) {
         setReviewData(appData);
@@ -252,7 +251,7 @@ export function usePassportApplication() {
       const updated = await approveApplication(applicationId);
       setReviewData(updated);
       setSelectedStatus("APPROVED");
-      console.log("Application approved successfully");
+      console.log("Application approved successfully",updated);
     } catch (err) {
       const msg = err.message || "Could not approve application";
       setError(msg);
