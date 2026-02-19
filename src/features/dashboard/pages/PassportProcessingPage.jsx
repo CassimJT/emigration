@@ -28,7 +28,7 @@ import { toast } from "sonner";
 const getApplicantName = (reviewData = {}) => {
   const nrb = reviewData?.applicant?.nationalId || {};
   const form = reviewData?.formData || {};
-  const first = nrb.firstName || form.name || '';
+  const first = nrb.firstName || form.firstName || '';
   const sur = nrb.surName || form.surname || '';
   return `${first} ${sur}`.trim() || 'Unknown Applicant';
 };
@@ -76,6 +76,7 @@ export default function PassportProcessingPage() {
   const { applicationId: paramId } = useParams();
   const { user } = useAuth();
   const { currentRole, profile } = useOutletContext();
+  const { nationalId, firstName, surName, placeOfBirth } = useLocation().state || {};
   const {
     reviewData = null,  
     loading,
@@ -197,18 +198,18 @@ export default function PassportProcessingPage() {
             Applicant Information
           </CardTitle>
           <CardDescription>
-            Personal details submitted by {getApplicantName(reviewData)}
+            Personal details submitted by {getApplicantName(reviewData) || `${firstName} ${surName}`}
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-              <p className="mt-1 font-medium">{getApplicantName(reviewData)}</p>
+              <p className="mt-1 font-medium">{getApplicantName(reviewData) || `${firstName} ${surName}`}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">National ID</Label>
-              <p className="mt-1 font-mono">{getNationalId(reviewData)}</p>
+              <p className="mt-1 font-mono">{getNationalId(reviewData) || nationalId}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Height</Label>
@@ -216,7 +217,7 @@ export default function PassportProcessingPage() {
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Place of Birth</Label>
-              <p className="mt-1">{getPlaceOfBirth(reviewData)}</p>
+              <p className="mt-1">{getPlaceOfBirth(reviewData) || placeOfBirth}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Mother's Place of Birth</Label>
