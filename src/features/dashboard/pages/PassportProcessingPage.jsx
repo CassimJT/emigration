@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useOutletContext, useParams, Navigate } from 'react-router-dom';
+import { useOutletContext, useParams, Navigate, useLocation } from 'react-router-dom';
 import {
   Loader2, AlertCircle, CheckCircle2, XCircle, FileText, MessageSquare,
   User, Clock, ShieldCheck, Download
