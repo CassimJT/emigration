@@ -219,7 +219,7 @@ export default function PendingReviewsPage() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50"
-                              onClick={() => navigate(`/dashboard/passport/process/${app._id}`)}
+                              onClick={() => navigate(`/dashboard/passport/process/${app._id}`, { state: { applicationId: app._id, firstName: app?.applicant?.nationalId.firstName, surName: app?.applicant?.nationalId.lastName, nationalId: app?.applicant?.nationalId?.nationalId, placeOfBirth: app?.applicant?.nationalId?.placeOfBirth } })}
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
