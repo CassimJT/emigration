@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useOutletContext, useParams, Navigate, useLocation } from 'react-router-dom';
+import { useOutletContext, useParams, Navigate } from 'react-router-dom';
 import {
   Loader2, AlertCircle, CheckCircle2, XCircle, FileText, MessageSquare,
   User, Clock, ShieldCheck, Download
@@ -76,7 +76,6 @@ export default function PassportProcessingPage() {
   const { applicationId: paramId } = useParams();
   const { user } = useAuth();
   const { currentRole, profile } = useOutletContext();
-  const { nationalId, firstName, surName, placeOfBirth } = useLocation().state || {};
   const {
     reviewData = null,  
     loading,
@@ -123,17 +122,30 @@ export default function PassportProcessingPage() {
     );
   }
 
-  if (error || !reviewData || typeof reviewData !== 'object' || Object.keys(reviewData).length === 0) {
-    return (
-      <div className="p-8 text-center text-red-600">
-        <AlertCircle className="h-12 w-12 mx-auto mb-4" />
-        <h2 className="text-xl font-semibold">Cannot load application</h2>
-        <p className="mt-2">
-          {error || 'Application not found, already reviewed, invalid ID, or no data available.'}
-        </p>
-      </div>
-    );
-  }
+if (error || !reviewData || (typeof reviewData === 'object' && Object.keys(reviewData).length === 0)) {
+  return (
+    <div className="p-8 text-center text-red-600">
+      <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+      <h2 className="text-xl font-semibold">Cannot load application</h2>
+      <p className="mt-2">
+        {error || 'Application not found, invalid ID, or no data available.'}
+      </p>
+    </div>
+  );
+}
+
+if (!['SUBMITTED', 'UNDER_REVIEW'].includes(reviewData.status)) {
+  return (
+    <div className="p-8 text-center text-amber-600">
+      <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+      <h2 className="text-xl font-semibold">Application not available for review</h2>
+      <p className="mt-2">
+        Current status: {reviewData.status || 'Unknown'}<br />
+        Only SUBMITTED or UNDER_REVIEW applications can be processed here.
+      </p>
+    </div>
+  );
+}
 
   const canTakeAction = reviewData.status === "UNDER_REVIEW";
   const hasRejectionReason = notes.trim().length > 0;
@@ -198,18 +210,18 @@ export default function PassportProcessingPage() {
             Applicant Information
           </CardTitle>
           <CardDescription>
-            Personal details submitted by {getApplicantName(reviewData) || `${firstName} ${surName}`}
+            Personal details submitted by {getApplicantName(reviewData) }
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div>
               <Label className="text-sm font-medium text-gray-500">Full Name</Label>
-              <p className="mt-1 font-medium">{getApplicantName(reviewData) || `${firstName} ${surName}`}</p>
+              <p className="mt-1 font-medium">{getApplicantName(reviewData)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">National ID</Label>
-              <p className="mt-1 font-mono">{getNationalId(reviewData) || nationalId}</p>
+              <p className="mt-1 font-mono">{getNationalId(reviewData)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Height</Label>
@@ -217,7 +229,7 @@ export default function PassportProcessingPage() {
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Place of Birth</Label>
-              <p className="mt-1">{getPlaceOfBirth(reviewData) || placeOfBirth}</p>
+              <p className="mt-1">{getPlaceOfBirth(reviewData)}</p>
             </div>
             <div>
               <Label className="text-sm font-medium text-gray-500">Mother's Place of Birth</Label>
