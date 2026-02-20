@@ -249,9 +249,16 @@ export function usePassportApplication() {
     setError(null);
     try {
       const updated = await approveApplication(applicationId);
-      setReviewData(updated);
+      
+      if (updated?.status !== "success" || !updated?.data?._id) {
+      throw new Error(updated?.message || "Invalid approval response");
+      }
+
+      const updatedApp = updated.data
+      setReviewData(updatedApp);
       setSelectedStatus("APPROVED");
-      console.log("Application approved successfully",updated);
+      console.log("Application approved successfully",updatedApp);
+      return updatedApp;
     } catch (err) {
       const msg = err.message || "Could not approve application";
       setError(msg);

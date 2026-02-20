@@ -195,7 +195,19 @@ export default function PendingReviewsPage() {
                     filteredApplications.map((app) => (
                       <tr key={app._id} className="hover:bg-orange-50/30 transition-colors group">
                         <td className="px-6 py-4">
-                          <span className="font-semibold text-gray-900">{app._id}</span>
+                          <div className="group relative inline-block font-semibold text-gray-900">
+                            <span className="truncate max-w-[160px] inline-block">
+                              ...{app._id.slice(-10)}
+                            </span>
+
+                            <div className="
+                              pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-full mb-2
+                              hidden group-hover:block z-10 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-md
+                              whitespace-nowrap max-w-[90vw] break-all shadow-lg border border-gray-700
+                            ">
+                              {app._id}
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="font-medium text-gray-700">{getApplicantName(app)}</div>

@@ -17,7 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useOutletContext, useParams, Navigate } from 'react-router-dom';
+import { useOutletContext, useParams, Navigate, useNavigate } from 'react-router-dom';
 import {
   Loader2, AlertCircle, CheckCircle2, XCircle, FileText, MessageSquare,
   User, Clock, ShieldCheck, Download
@@ -76,8 +76,9 @@ export default function PassportProcessingPage() {
   const { applicationId: paramId } = useParams();
   const { user } = useAuth();
   const { currentRole, profile } = useOutletContext();
+  const navigate = useNavigate();
   const {
-    reviewData = null,  
+    reviewData = null, 
     loading,
     error,
     initiateReview,
@@ -156,6 +157,7 @@ if (!['SUBMITTED', 'UNDER_REVIEW'].includes(reviewData.status)) {
       toast.success("Application approved", {
         description: "Immigration record has been created.",
       });
+      navigate("/dashboard/passport/reviews");
       setNotes("");
     } catch (err) {
       toast.error("Approval failed", {
