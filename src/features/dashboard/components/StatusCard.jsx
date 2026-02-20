@@ -1,12 +1,36 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { APP_STATUS_ARRAY, IS_PAID} from "@/utils/constants";
-import { useDashboard } from "@/features/dashboard/hooks/useDashboard";
+import { IS_PAID} from "@/utils/constants";
+import { usePassportApplication } from "@/features/passport/hooks/usePassportApplication";
+import React from "react";
 
 
 export default function StatusCard({ className = "" }) {
-        const { progress, mainStage, pgarry } = useDashboard();
+        const { applicationData, loadApplication, applicationId } = usePassportApplication();
+
+const applicationProgress = React.useMemo(() => {
+    switch (applicationData?.status) {
+        case 'Draft':
+        return {progress:25, appStatus:"draft", className:"text-gray-600"};
+        case 'SUBMITTED':
+        return {progress:50, appStatus:"submitted", className:"text-orange-600"};
+        case 'APPROVED':
+        return {progress:100, appStatus:"approved", className:" text-green-600"}; 
+        case 'REJECTED':
+        return {progress:0, appStatus:"rejected", className:" text-red-600"};
+        case 'UNDER_REVIEW':
+        return {progress:75, appStatus:"under review", className:"text-blue-600"};
+        default:
+        return {progress:0, appStatus:"unknown", className:""}; 
+    }
+    }, [applicationData?.status]);
+
+    React.useEffect(() => {
+    if (applicationId) {
+        loadApplication(applicationId);
+    }
+    }, [applicationId, loadApplication]);
 
     return (
         <Card className={`bg-gray-50 relative min-h-[250px] w-full rounded border shadow ${className}`}>
@@ -15,23 +39,18 @@ export default function StatusCard({ className = "" }) {
             Application status
             </CardTitle>
         </CardHeader>
-        {APP_STATUS_ARRAY.map((status) => (
-            status.status === 'approved' && (
-                <Badge 
-                    key={status.id} 
-                    className={`absolute top-4 right-10 ${status.status} bg-blue-100 text-green-600 mb-2 ml-4`}
-                >
-                    {status.status}
-                </Badge>
-            )
-        ))}
+        {
+            <Badge className={`absolute top-4 right-10 mb-2 ml-4 bg-blue-100 ${applicationProgress.className}`}>
+                {applicationProgress.appStatus }
+            </Badge>
+        }
         <CardContent className="space-y-3">
             <p className="text-sm font-light text-indigo-600">
             Processing Progress :
             </p>
-            <Progress value={progress} className="  border border-border" />
+            <Progress value={applicationProgress.progress} className="  border border-border" />
             <p className="text-sm text-muted-foreground">
-            Step {mainStage} of {pgarry.length} completed
+            Step {applicationProgress.progress/25} of 4 completed
             </p>
         </CardContent>
         <CardContent className="flex flex-col gap-4 border-t border-gray-50 pt-4 ">

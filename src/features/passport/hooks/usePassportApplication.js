@@ -15,6 +15,7 @@ export function usePassportApplication() {
   const [currentStep, setCurrentStep] = useState(1);
   const [stepsData, setStepsData] = useState({});
   const [applicationId, setApplicationId] = useState(null);
+  const [applicationData, setApplicationData] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(null);
@@ -52,29 +53,25 @@ export function usePassportApplication() {
     setLoading(false);
   };
 
-  const loadApplication = useCallback(async (id) => {
-    if (!id) return;
-    setLoading(true);
-    setError(null);
-    setStatus(null);
-    try {
-      const response = await fetchApplication(id);
-      if (!response || response.status !== 'success') {
-        throw new Error(response?.message || 'Failed to fetch application');
-      }
-      const app = response.data;
-      setApplicationId(id);
-      setStepsData(app.formData || {});
-      setStatus('success');
-      return response;
-    } catch (err) {
-      setError(err.message || 'Failed to fetch application');
-      setStatus('failed');
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+const loadApplication = useCallback(async (id) => {
+  if (!id) return;
+  setLoading(true);
+  setError(null);
+  try {
+    const app = await fetchApplication(id); 
+    setApplicationId(id);
+    setApplicationData(app)
+    setStatus('success');
+    return app;
+  } catch (err) {
+    const msg = err.response?.data?.message || err.message || 'Failed to load application';
+    setError(msg);
+    setStatus('failed');
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
 
   const createNewApplication = async (customPayload) => {
@@ -293,6 +290,7 @@ export function usePassportApplication() {
     currentStep,
     stepsData,
     applicationId,
+    applicationData,
     loading,
     error,
     status,

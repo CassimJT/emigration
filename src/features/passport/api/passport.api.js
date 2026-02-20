@@ -28,11 +28,15 @@ export async function updateApplication(applicationId, payload) {
 // Fetch a single application
 export async function fetchApplication(applicationId) {
   try {
-    const { data } = await api.get(`/passport/applications/${applicationId}`)
-    if (data.status === 'success') {
-    return data
-  }  throw new Error(data.message || 'Failed to fetch application') 
-  } catch (error) {
+    const { data, ok, status } = await api.get(`/passport/applications/${applicationId}`,
+      {credentials: 'include'}
+    )
+    console.log("Application Data: ", data)
+    if (!ok) throw new Error('Network response was not ok');
+    if (status === 'success') {
+      return data;
+  }  
+} catch (error) {
     return handleError(error)
   }
 }
