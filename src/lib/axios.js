@@ -44,6 +44,11 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
   res => res,
   async error => {
+    if (!error || typeof error !== 'object') {
+      console.error("Interceptor received non-error rejection:", error);
+      return Promise.reject(error || new Error("Unknown rejection"));
+    }
+
     const originalRequest = error.config
 
     if (error.response?.status === 401 && !originalRequest._retry) {

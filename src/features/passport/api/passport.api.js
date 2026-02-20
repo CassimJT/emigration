@@ -109,16 +109,20 @@ export const startReview = async (applicationId) => {
       `/passport/admin/applications/${applicationId}/start-review`
     );
     console.log("res.data:", res.data);
-    const responseData = res.data;
+    const responseData = res.data ?? {};
 
     if (!responseData || typeof responseData !== 'object') {
-      throw new Error("Invalid response format from server");
+      return {
+        status: "failed",
+        message: "Invalid response format from server",
+        code: "INVALID_FORMAT"
+      };
     }
 
     if (responseData.status === "success") {
       return {
         status: "success",
-        data: responseData.data || responseData 
+        data: responseData.data ?? responseData 
       };
     }
 
@@ -129,27 +133,72 @@ export const startReview = async (applicationId) => {
       };
     }
 
-    throw new Error(responseData.message || "Unexpected response format");
-  } catch (err) {
-    const message =
-      err?.response?.data?.message ||
-      err?.message ||
-      "Failed to start review – please check your connection or try again";
+    if (responseData.status === "failed" || responseData.error || responseData.message) {
+      return {
+        status: "failed",
+        message: responseData.message || responseData.error || "Operation failed",
+        code: responseData.code,
+        details: responseData.details
+      };
+    }
 
-    console.error("[startReview error]", err);
-    throw new Error(message);
+    return {
+      status: "failed",
+      message: "Unexpected response format",
+      raw: responseData
+    };
+
+    
+  } catch (err) {
+    if (err.response) {
+      const data = err.response.data ?? {};
+      return {
+        status: "failed",
+        httpStatus: err.response.status,
+        message: data.message || data.error || `Server error (${err.response.status})`,
+        code: data.code,
+        details: data.details || data
+      };
+    }
+
+    if (err.request) {
+      return {
+        status: "failed",
+        httpStatus: 0,
+        message: "No response from server – check your network",
+        code: "NETWORK_ERROR"
+      };
+    }
+
+    return {
+      status: "failed",
+      httpStatus: 0,
+      message: err.message || "Unexpected client error",
+      code: "CLIENT_ERROR"
+    };
   }
 };
 
 // Approve application (creates immigration record)
 export async function approveApplication(applicationId) {
   try {
-    const { data, status, error } = await api.post(
+    const res = await api.post(
       `/passport/admin/applications/${applicationId}/approve`
     )
-    if(status === "success")
-    return data
-    throw error;
+    const payload = res.data ?? {}
+
+    if(payload.status === "success"){
+    return {
+        status: "success",
+        data: payload.data ?? payload, 
+    };
+  }
+
+  if (payload.status === "failed" || payload.error || payload.message) {
+      throw new Error(payload.message || payload.error || "Approval failed");
+  }
+
+  throw new Error("Unexpected response format from server");
   } catch (error) {
     return handleError(error)
   }
