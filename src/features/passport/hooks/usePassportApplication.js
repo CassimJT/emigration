@@ -58,16 +58,15 @@ const loadApplication = useCallback(async (id) => {
   setLoading(true);
   setError(null);
   try {
-    const app = await fetchApplication(id); 
-    setApplicationId(id);
-    setApplicationData(app)
+    const app = await fetchApplication(id);
+    setApplicationData(app);         
     setStatus('success');
     return app;
   } catch (err) {
-    const msg = err.response?.data?.message || err.message || 'Failed to load application';
+    const msg = err?.response?.data?.message || err.message || 'Failed to load application';
     setError(msg);
     setStatus('failed');
-    throw err;
+    console.error("loadApplication error:", err);
   } finally {
     setLoading(false);
   }
