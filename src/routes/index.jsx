@@ -32,6 +32,7 @@ import ManageUsersDemo from '@/pages/ManageUsersDemo'
 import ProfilePage from '@/features/dashboard/pages/ProfilePage'
 import UserDetailPage from '@/features/dashboard/pages/UserDetailsPage'
 import PassportProcessingPage from '@/features/dashboard/pages/PassportProcessingPage'
+import ApplicationDetails from '@/features/passport/components/ApplicationDetails'
 
 export const router = createBrowserRouter([
 
@@ -75,6 +76,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <DashboardOverview />, allowedRoles: ['client','officer', 'admin','superadmin'] },
           { path: 'passport/apply', element: <PassportApplicationPage />, allowedRoles: ['client'] },
+          { path: 'passport/applications/:id', element: <ApplicationDetails />, allowedRoles: ['client'] },
           { path: 'payments', element: <PaymentPage />, allowedRoles: ['client'] },
           { path: 'payment/success', element: <PaymentSuccessPage />, allowedRoles: ['client'] },
           { path: 'payment/failed', element: <PaymentFailedPage />, allowedRoles: ['client'] },
