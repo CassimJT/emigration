@@ -1,8 +1,8 @@
-import StatusCard from '@/features/dashboard/components/StatusCard';
 import CheckList from '@/features/dashboard/components/DashboardCheckList';
 import QuickActions from '@/features/dashboard/components/QuickActions';
 import ImportantInformation from '@/features/dashboard/components/ImportantInfor';
 import PassportTypes from '@/features/dashboard/components/PassportTypes';
+import MyApplicationsTable from '@/features/passport/components/MyApplicationsTable';
 
 export default function ClientOverview() {
     return (
@@ -12,7 +12,7 @@ export default function ClientOverview() {
                 <PassportTypes />
             </section>
             <section className="w-full">
-                <StatusCard />
+                <MyApplicationsTable />
             </section>
             
             <section className="flex flex-col sm:flex-row gap-10 w-full">

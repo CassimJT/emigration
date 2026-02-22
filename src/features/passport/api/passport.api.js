@@ -70,17 +70,37 @@ export async function submitApplication(applicationId) {
 }
 
 // Fetch logged-in user's applications
-export async function fetchMyApplications(status = null) {
+export const getUserApplications = async ({ page = 1, limit = 5 } = {}) => {
   try {
-    const query = status ? `?status=${status}` : ''
-    const { data } = await api.get(
-      `/passport/applications${query}`
-    )
-    return data
+    const response = await api.get('/passport/applications', {
+      params: { page, limit },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const json = await response.json(); 
+
+    if (json.status !== 'success') {
+      throw new Error(json.message || 'Failed to load your applications');
+    }
+
+    return {
+      applications: json.data || [],
+      pagination: json.pagination || {
+        page: 1,
+        limit: 5,
+        total: 0,
+        pages: 1,
+      },
+    };
   } catch (error) {
-    return handleError(error)
+    console.error('getUserApplications error:', error);
+    throw error;
   }
-}
+};
 
  //  OFFICER / ADMIN – REVIEW FLOW
 

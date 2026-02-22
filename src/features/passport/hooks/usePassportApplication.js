@@ -8,6 +8,7 @@ import {
   startReview,
   approveApplication,
   rejectApplication,
+  getUserApplications,
 } from '../api/passport.api';
 import { useAuthContext } from '@/providers/AuthProvider';
 
@@ -23,13 +24,11 @@ export function usePassportApplication() {
   const [reviewData, setReviewData] = useState(null);
   const [applicationStatus, setApplicationStatus] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
-  const [pagination, setPagination] = useState({
-    page: 1,
-    limit: 10,
-    total: 0,
-    pages: 1,
-  });
-
+  const [pagination, setPagination] = useState({page: 1, limit: 10, total: 0, pages: 1,});
+  const [myAppsPagination, setMyAppsPagination] = useState({page: 1, limit: 5, total: 0, pages: 1,});
+  const [myApplications, setMyApplications] = useState([]);
+  const [myAppsLoading, setMyAppsLoading] = useState(false);
+  const [myAppsError, setMyAppsError] = useState(null);
   const { verificationSessionId } = useAuthContext();
 
   // Navigation
@@ -72,6 +71,27 @@ const loadApplication = useCallback(async (id) => {
   }
 }, []);
 
+const loadMyApplications = useCallback(async (page = 1) => {
+  setMyAppsLoading(true);
+  setMyAppsError(null);
+
+  try {
+    const response = await getUserApplications({ page, limit: 5 });
+
+    setMyApplications(response.applications || response.data || []);
+    setMyAppsPagination(response.pagination || {
+      page,
+      limit: 5,
+      total: 0,
+      pages: 1,
+    });
+  } catch (err) {
+    const msg = err.message || "Failed to load your applications";
+    setMyAppsError(msg);
+  } finally {
+    setMyAppsLoading(false);
+  }
+}, []);
 
   const createNewApplication = async (customPayload) => {
     setLoading(true);
@@ -289,6 +309,7 @@ const loadApplication = useCallback(async (id) => {
     currentStep,
     stepsData,
     applicationId,
+    setApplicationId,
     applicationData,
     loading,
     error,
@@ -298,6 +319,11 @@ const loadApplication = useCallback(async (id) => {
     saveStepData,
     resetApplication,
     loadApplication,
+    loadMyApplications,
+    myApplications,
+    myAppsPagination,
+    myAppsLoading,
+    myAppsError,
     createNewApplication,
     updateExistingApplication,
     submitFinalApplication,
