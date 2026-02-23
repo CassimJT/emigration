@@ -72,6 +72,7 @@ import {
             </CardHeader>
             <CardContent>
             <div className="space-y-4">
+                <Loader className="animate-spin absolute top-[50%] left-[50%] " />
                 <Skeleton className="bg-gray-50 h-10 w-full" />
                 <Skeleton className="bg-gray-50 h-10 w-full" />
                 <Skeleton className="bg-gray-50 h-10 w-full" />
