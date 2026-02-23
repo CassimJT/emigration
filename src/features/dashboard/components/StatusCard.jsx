@@ -4,10 +4,11 @@
     import { IS_PAID } from "@/utils/constants";
     import { usePassportApplication } from "@/features/passport/hooks/usePassportApplication";
     import React from "react";
+import { useParams } from "react-router-dom";
 
     export default function StatusCard({ className = "", showHeader = true }) {
-    const { applicationData, loadApplication, applicationId } = usePassportApplication();
-
+    const { applicationData, loadApplication } = usePassportApplication();
+    const {id} = useParams();
     const applicationProgress = React.useMemo(() => {
         const status = applicationData?.status || "unknown";
 
@@ -28,10 +29,25 @@
     }, [applicationData?.status]);
 
     React.useEffect(() => {
-        if (applicationId) {
-        loadApplication(applicationId);
+        if (id) {
+        loadApplication(id);
         }
-    }, [applicationId, loadApplication]);
+    }, [id,loadApplication]);
+
+    if (!id) {
+    return (
+        <Card className={className}>
+            <CardHeader>
+            <CardTitle>Problem</CardTitle>
+            </CardHeader>
+            <CardContent>
+            <p className="text-muted-foreground">
+                Something went wrong, we will take action soon
+            </p>
+            </CardContent>
+        </Card>
+        );
+    }
 
     return (
         <Card className={`bg-gray-50 relative min-h-[250px] w-full rounded border shadow ${className}`}>
