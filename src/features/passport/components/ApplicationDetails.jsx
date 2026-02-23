@@ -40,7 +40,7 @@ import StatusCard from "@/features/dashboard/components/StatusCard";
         return (
         <div className={`container mx-auto py-8 px-4 ${className}`}>
             <div className="max-w-4xl mx-auto space-y-8">
-            <Loader className="animate-spin absolute top-[50%] " />
+            <Loader className="animate-spin absolute top-[50%] left-[50%] " />
             <Skeleton className="bg-gray-50 h-10 w-64" />
             <Skeleton className="bg-gray-50 h-[300px] w-full" />
             <Skeleton className="bg-gray-50 h-64 w-full" />
