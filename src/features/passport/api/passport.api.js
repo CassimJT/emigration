@@ -78,7 +78,7 @@ export const getUserApplications = async ({ page = 1, limit = 5 } = {}) => {
     });
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(json.message || `HTTP ${response.status}`);
     }
 
     const json = await response.json(); 
