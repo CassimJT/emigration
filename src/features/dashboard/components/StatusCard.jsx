@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
         const status = applicationData?.status || "unknown";
 
         switch (status) {
-        case "Draft":
+        case "DRAFT":
             return { progress: 25, appStatus: "Draft", className: "text-gray-600" };
         case "SUBMITTED":
             return { progress: 50, appStatus: "Submitted", className: "text-orange-600" };
