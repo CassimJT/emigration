@@ -11,7 +11,7 @@ import {
     } from "@/components/ui/card";
     import { Button } from "@/components/ui/button";
     import { Skeleton } from "@/components/ui/skeleton";
-    import { ArrowLeft } from "lucide-react";
+    import { ArrowLeft, Loader } from "lucide-react";
 
     import { usePassportApplication } from "@/features/passport/hooks/usePassportApplication";
 import StatusCard from "@/features/dashboard/components/StatusCard";
@@ -40,9 +40,10 @@ import StatusCard from "@/features/dashboard/components/StatusCard";
         return (
         <div className={`container mx-auto py-8 px-4 ${className}`}>
             <div className="max-w-4xl mx-auto space-y-8">
-            <Skeleton className="h-10 w-64" />
-            <Skeleton className="h-[300px] w-full" />
-            <Skeleton className="h-64 w-full" />
+            <Loader className="animate-spin absolute top-[50%] " />
+            <Skeleton className="bg-gray-50 h-10 w-64" />
+            <Skeleton className="bg-gray-50 h-[300px] w-full" />
+            <Skeleton className="bg-gray-50 h-64 w-full" />
             </div>
         </div>
         );

@@ -72,9 +72,9 @@ import {
             </CardHeader>
             <CardContent>
             <div className="space-y-4">
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
-                <Skeleton className="h-10 w-full" />
+                <Skeleton className="bg-gray-50 h-10 w-full" />
+                <Skeleton className="bg-gray-50 h-10 w-full" />
+                <Skeleton className="bg-gray-50 h-10 w-full" />
             </div>
             </CardContent>
         </Card>
