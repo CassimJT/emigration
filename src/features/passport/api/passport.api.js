@@ -97,7 +97,7 @@ export const getUserApplications = async ({ page = 1, limit = 5 } = {}) => {
       },
     };
   } catch (error) {
-    console.error('getUserApplications error:', error.message);
+    console.error('getUserApplications error:', error);
     throw error;
   }
 };
