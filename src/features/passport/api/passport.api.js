@@ -72,30 +72,17 @@ export async function submitApplication(applicationId) {
 // Fetch logged-in user's applications
 export const getUserApplications = async ({ page = 1, limit = 5 } = {}) => {
   try {
-    const response = await api.get('/passport/applications', {
+  const {data} = await api.get('/passport/applications', {
       params: { page, limit },
       credentials: 'include',
     });
 
-    if (!response.ok) {
-      throw new Error(json.message || `HTTP ${response.status}`);
-    }
-
-    const json = await response.json(); 
-
-    if (json.status !== 'success') {
-      throw new Error(json.message || 'Failed to load your applications');
-    }
-
-    return {
-      applications: json.data || [],
-      pagination: json.pagination || {
-        page: 1,
-        limit: 5,
-        total: 0,
-        pages: 1,
-      },
-    };
+    if (data.status === "success") {
+      return {
+        applications: data.data || [],
+        pagination: data.pagination || { page, limit, total: 0, pages: 1 },
+      };
+    } throw new Error(data.message || "Failed to load your applications");
   } catch (error) {
     console.error('getUserApplications error:', error);
     throw error;

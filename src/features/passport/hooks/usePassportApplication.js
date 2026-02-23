@@ -78,7 +78,7 @@ const loadMyApplications = useCallback(async (page = 1) => {
   try {
     const response = await getUserApplications({ page, limit: 5 });
 
-    setMyApplications(response.applications || response.data || []);
+    setMyApplications(response.applications || []);
     setMyAppsPagination(response.pagination || {
       page,
       limit: 5,
