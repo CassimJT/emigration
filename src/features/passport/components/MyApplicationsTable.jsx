@@ -154,7 +154,7 @@ import {
                             <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => navigate(`/passport/applications/${app._id}`)}
+                            onClick={() => navigate(`/dashboard/passport/applications/${app._id}`)}
                             title="View details"
                             >
                             <Eye className="h-4 w-4" />
