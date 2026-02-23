@@ -29,7 +29,7 @@ import {
     PaginationPrevious,
     } from "@/components/ui/pagination";
     import { Skeleton } from "@/components/ui/skeleton";
-    import { Eye } from "lucide-react";
+    import { Eye, Loader } from "lucide-react";
 
     import { usePassportApplication } from "@/features/passport/hooks/usePassportApplication";
 
