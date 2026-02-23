@@ -71,7 +71,7 @@ import {
             <CardTitle>My Applications</CardTitle>
             </CardHeader>
             <CardContent>
-            <div className="space-y-4">
+            <div className="space-y-4 relative">
                 <Loader className="animate-spin absolute top-[50%] left-[50%] " />
                 <Skeleton className="bg-gray-50 h-10 w-full" />
                 <Skeleton className="bg-gray-50 h-10 w-full" />
