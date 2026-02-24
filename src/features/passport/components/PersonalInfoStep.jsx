@@ -59,21 +59,20 @@ export default function PersonalInfoStep({
             id="name"
             value={name}
             onChange={handleChange}
-            placeholder="First Name (from NRB)"
-            disabled // Pre-filled from NRB
+            placeholder="First Name"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="surname " className="text-sm font-medium text-gray-700">
+          <Label htmlFor="surname" className="text-sm font-medium text-gray-700">
             Surname
           </Label>
           <Input
-            id="surname "
+            id="surname"
             value={surname}
             onChange={handleChange}
-            placeholder="Surname (from NRB)"
-            disabled // Pre-filled from NRB
+            placeholder="Surname"
+            required
           />
         </div>
 
