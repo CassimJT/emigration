@@ -28,7 +28,7 @@ import { toast } from "sonner";
 const getApplicantName = (reviewData = {}) => {
   const nrb = reviewData?.applicant?.nationalId || {};
   const form = reviewData?.formData || {};
-  const first = nrb.firstName || form.firstName || '';
+  const first = nrb.firstName || form.name || '';
   const sur = nrb.surName || form.surname || '';
   return `${first} ${sur}`.trim() || 'Unknown Applicant';
 };
