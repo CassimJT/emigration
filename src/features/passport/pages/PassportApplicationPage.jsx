@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 
 function PassportApplicationPage() {
-  const { user, citizenProfile } = useAuth();
+  const { user } = useAuth();
   const { currentRole } = useOutletContext();
   const role = (currentRole || user?.role || 'client').toLowerCase();
 
@@ -42,26 +42,6 @@ function PassportApplicationPage() {
   });
 
   // Pre-fill form with citizen profile data from auth context
-  useEffect(() => {
-    console.log("=== CITIZEN PROFILE CHECK ===");
-    console.log("citizenProfile from auth:", citizenProfile);
-    
-    if (citizenProfile) {
-      console.log("Pre-filling form with citizen profile:", citizenProfile);
-      setPersonalInfoStepData(prev => {
-        const updated = {
-          ...prev,
-          name: citizenProfile.firstName || '',
-          surname: citizenProfile.surName || '',
-          nationalId: citizenProfile.nationalId || '',
-        };
-        console.log("Updated personalInfoStepData:", updated);
-        return updated;
-      });
-    } else {
-      console.warn("No citizenProfile available in auth context!");
-    }
-  }, [citizenProfile]);
 
   const {
     currentStep,
@@ -116,8 +96,6 @@ function PassportApplicationPage() {
 
     try {
       if (currentStep === 1 || currentStep === 2) {
-        // Data is already populated from citizenProfile in useEffect
-        // Just save and proceed
         console.log("Saving step data:", currentStep, payload);
         saveStepData(currentStep, payload);
         nextStep();
